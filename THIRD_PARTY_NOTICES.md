@@ -1,102 +1,95 @@
 # Third-Party Notices
 
-This project (Palm Applications) is a collection of open-source palm recognition and gesture interaction applications. Each sub-project uses various third-party open-source software and assets. This file provides a consolidated overview of third-party dependencies across all sub-projects.
-
-For detailed third-party notices specific to each sub-project, please refer to:
-- [GlassWiper Third-Party Notices](./glasswiper/THIRD_PARTY_NOTICES.md)
-- [Palm Racer Third-Party Notices](./palm-racer/THIRD_PARTY_NOTICES)
+本项目（GlassWiper）使用了以下第三方开源软件和素材资源。在此向这些优秀的开源项目和工具致以诚挚的感谢。
 
 ---
 
-## 一、Open-Source Software Dependencies
+## 一、开源软件依赖
 
-### 1. MediaPipe Hands / Camera Utils / Drawing Utils
+所有第三方 JavaScript 库均通过 CDN 引入，本仓库中**不包含**其源代码副本。
 
-- **Used by**: GlassWiper, Palm Racer
-- **Purpose**: Real-time hand keypoint detection (21 landmarks) for gesture recognition
-- **Project**: https://github.com/google/mediapipe
-- **License**: Apache License 2.0
-- **Copyright**: Copyright © Google LLC
+### 1. MediaPipe Hands
 
-### 2. Babylon.js
+- **用途**：实时手部关键点检测（21 个关键点），实现"体感擦玻璃"手势识别
+- **项目主页**：https://github.com/google/mediapipe
+- **协议**：Apache License 2.0
+- **版权**：Copyright © Google LLC
+- **引入方式**：CDN (`cdn.jsdelivr.net/npm/@mediapipe/hands`)
 
-- **Used by**: Palm Racer
-- **Purpose**: 3D rendering engine for racing game visuals and vehicle physics
-- **Project**: https://github.com/BabylonJS/Babylon.js
-- **License**: Apache License 2.0
-- **Copyright**: Copyright © Microsoft Corporation
+### 2. MediaPipe Camera Utils
 
-### 3. Vue.js 3
+- **用途**：将摄像头视频帧输入到 MediaPipe 模型
+- **项目主页**：https://github.com/google/mediapipe
+- **协议**：Apache License 2.0
+- **版权**：Copyright © Google LLC
+- **引入方式**：CDN (`cdn.jsdelivr.net/npm/@mediapipe/camera_utils`)
 
-- **Used by**: Palm Racer
-- **Purpose**: Frontend framework for web application UI
-- **Project**: https://github.com/vuejs/core
-- **License**: MIT License
-- **Copyright**: Copyright © Evan You
+### 3. MediaPipe Drawing Utils
 
-### 4. FastAPI
+- **用途**：手部骨架和关键点的绘制工具
+- **项目主页**：https://github.com/google/mediapipe
+- **协议**：Apache License 2.0
+- **版权**：Copyright © Google LLC
+- **引入方式**：CDN (`cdn.jsdelivr.net/npm/@mediapipe/drawing_utils`)
 
-- **Used by**: PalmDestiny
-- **Purpose**: Python web framework for backend API services
-- **Project**: https://github.com/tiangolo/fastapi
-- **License**: MIT License
-- **Copyright**: Copyright © Sebastián Ramírez
+### 4. Noto Sans SC
 
-### 5. Noto Sans SC
-
-- **Used by**: GlassWiper
-- **Purpose**: Chinese font for game interface
-- **Project**: https://fonts.google.com/noto/specimen/Noto+Sans+SC
-- **License**: SIL Open Font License 1.1
-- **Copyright**: Copyright © Google LLC / Adobe Systems Incorporated
+- **用途**：游戏界面中文字体
+- **项目主页**：https://fonts.google.com/noto/specimen/Noto+Sans+SC
+- **协议**：SIL Open Font License 1.1
+- **版权**：Copyright © Google LLC / Adobe Systems Incorporated
+- **引入方式**：Google Fonts CDN (`fonts.googleapis.com`)
 
 ---
 
-## 二、3D Models & Assets
+## 二、AI 生成素材
 
-### Ferrari LaFerrari (3D Model)
+本项目 `assets/images/` 目录下的所有图片均由 AI 模型生成。
 
-- **Used by**: Palm Racer
-- **Author**: wwwvecarzcom
-- **Source**: https://sketchfab.com/3d-models/ferrari-laferrari-wwwvecarzcom-979f7085012e4d6399f38de3f9c39012
-- **License**: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
-- **Modifications**: Converted to GLB format for WebGL rendering
+### 生成工具
 
----
+- **模型**：Nano Banana（Google Gemini 2.5 Flash Image）
+- **提供方**：Google DeepMind
+- **官方说明**：https://deepmind.google/technologies/gemini/
 
-## 三、AI-Generated Assets
+### 涉及文件
 
-### GlassWiper Level Images
+| 文件路径 | 用途 |
+|---|---|
+| `assets/images/level1.png` | 第 1 关隐藏图片 |
+| `assets/images/level2.png` | 第 2 关隐藏图片 |
+| `assets/images/level3.png` | 第 3 关隐藏图片 |
+| `assets/images/level4.png` | 第 4 关隐藏图片 |
+| `assets/images/level5.png` | 第 5 关隐藏图片 |
+| `assets/images/level6.png` | 第 6 关隐藏图片 |
+| `assets/images/boss1.png` | Boss 1 关卡图片 |
+| `assets/images/boss2.png` | Boss 2 关卡图片 |
 
-- **Used by**: GlassWiper
-- **Generation Tool**: Nano Banana (Google Gemini 2.5 Flash Image)
-- **Provider**: Google DeepMind
-- **Details**: https://deepmind.google/technologies/gemini/
-- **Note**: Generated images contain SynthID invisible digital watermarks identifying AI-generated origin
-- **Usage**: Per Google Gemini API Terms of Service, users have usage rights for generated content, including personal and commercial use
+### 使用授权
 
----
-
-## 四、License Full Texts
-
-### Apache License 2.0 (MediaPipe, Babylon.js)
-
-Full text: https://www.apache.org/licenses/LICENSE-2.0
-
-### MIT License (Vue.js, FastAPI)
-
-Full text: https://opensource.org/licenses/MIT
-
-### SIL Open Font License 1.1 (Noto Sans SC)
-
-Full text: https://scripts.sil.org/OFL
-
-### CC BY 4.0 (3D Models)
-
-Full text: https://creativecommons.org/licenses/by/4.0/legalcode
+- 依据 Google Gemini API 服务条款，用户对生成内容享有使用权，允许个人及商业用途
+- Nano Banana 生成的图片包含 **SynthID 隐形数字水印**，用于标识 AI 生成来源
 
 ---
 
-## 五、Contact
+## 三、项目自身代码
 
-If you believe this project uses unauthorized materials, or have questions about the use of third-party resources, please contact us via Issue or Pull Request and we will address it promptly.
+本项目的 HTML、CSS、JavaScript 源代码由项目作者原创编写，采用 **MIT License** 开源，详见 [LICENSE](./LICENSE)。
+
+---
+
+## 四、协议全文
+
+### Apache License 2.0（适用于 MediaPipe）
+
+完整协议文本请访问：https://www.apache.org/licenses/LICENSE-2.0
+
+### SIL Open Font License 1.1（适用于 Noto Sans SC）
+
+完整协议文本请访问：https://scripts.sil.org/OFL
+
+---
+
+## 五、问题反馈
+
+如果您认为本项目使用了未经授权的素材，或对第三方资源的使用存在疑问，请通过 Issue 或 Pull Request 联系我们，我们将尽快处理。

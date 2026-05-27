@@ -1,0 +1,37 @@
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Documentation
+README.md
+README_en.md
+DESIGN.md
+THIRD_PARTY_NOTICES.md
+LICENSE
+
+# IDE / OS
+.vscode
+.idea
+*.swp
+.DS_Store
+Thumbs.db
+
+# Logs / temp
+logs
+*.log
+tmp
+temp
+.cache
+
+# CI/CD
+.github
+.gitlab-ci.yml
+
+# Internal deploy folder
+.with
