@@ -1,280 +1,405 @@
-# Contributing to Palm Applications
+# Contributing to Palm Racer
 
-感谢你对 Palm Applications 项目的关注！本指南将帮助你快速上手参与贡献。
-
-Thank you for your interest in contributing to Palm Applications! This guide will help you get started.
+Thank you for your interest in contributing to Palm Racer! This guide will help you get started.
 
 ---
 
-## 目录 / Table of Contents
+## Table of Contents
 
-- [行为准则 / Code of Conduct](#行为准则--code-of-conduct)
-- [开发环境 / Development Environment](#开发环境--development-environment)
-- [项目结构 / Project Structure](#项目结构--project-structure)
-- [如何贡献 / How to Contribute](#如何贡献--how-to-contribute)
-- [代码风格 / Code Style](#代码风格--code-style)
-- [提交规范 / Commit Convention](#提交规范--commit-convention)
-- [分支策略 / Branch Strategy](#分支策略--branch-strategy)
-- [Pull Request 指南](#pull-request-指南)
-- [报告问题 / Reporting Issues](#报告问题--reporting-issues)
-- [许可证 / License](#许可证--license)
-
----
-
-## 行为准则 / Code of Conduct
-
-请在参与本项目时保持友善和尊重。我们致力于为每个人提供一个开放、包容的社区环境。
-
-Please be kind and respectful when participating in this project. We are committed to providing an open and inclusive community for everyone.
+- [Development Environment](#development-environment)
+- [Code Formatting Tools](#code-formatting-tools)
+- [Code Style](#code-style)
+- [Testing Guide](#testing-guide)
+- [Commit Message Convention](#commit-message-convention)
+- [Branch Strategy](#branch-strategy)
+- [Pull Request Guide](#pull-request-guide)
+- [Project Structure](#project-structure)
+- [Reporting Issues](#reporting-issues)
+- [Acknowledgments](#acknowledgments)
+- [License](#license)
 
 ---
 
-## 开发环境 / Development Environment
+## Development Environment
 
-由于本仓库包含多个子项目，不同项目有不同的技术栈要求：
+### Prerequisites
 
-### GlassWiper（体感擦玻璃）
+| Tool | Version | Purpose |
+|------|---------|---------|
+| Node.js | >= 18 | Frontend build |
+| npm | >= 9 | Frontend package management |
+| Go | >= 1.25 | Backend compilation |
+| Make | any | Build automation |
+| protoc | >= 3.21 | Protocol Buffers compilation (only when modifying proto files) |
+| Docker | >= 20.10 | Containerized deployment (optional) |
 
-| 工具 | 版本 | 用途 |
-|------|------|------|
-| 任意 HTTP 服务器 | - | 本地开发服务 |
-| 现代浏览器 | Chrome/Edge/Firefox 最新版 | 运行和调试 |
+### Installing Prerequisites
+
+<details>
+<summary><b>macOS</b></summary>
 
 ```bash
-cd glasswiper
-# 使用任意 HTTP 服务器，例如：
-python3 -m http.server 8080
-# 或
-npx serve .
+# Install Homebrew (if not already installed)
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Install dependencies
+brew install node@18 go make protobuf
 ```
 
-### PalmDestiny（AI 掌纹算命）
+</details>
 
-| 工具 | 版本 | 用途 |
-|------|------|------|
-| Python | >= 3.9 | 后端运行 |
-| pip | 最新版 | 包管理 |
+<details>
+<summary><b>Ubuntu / Debian</b></summary>
 
 ```bash
-cd celina-PalmDestiny
-pip install -r requirements.txt
-python main.py
+# Node.js 18 (via NodeSource)
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# Go (download latest)
+wget https://go.dev/dl/go1.25.0.linux-amd64.tar.gz
+sudo tar -C /usr/local -xzf go1.25.0.linux-amd64.tar.gz
+echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
+
+# protoc
+sudo apt-get install -y protobuf-compiler make
 ```
 
-### Palm Racer（体感赛车）
+</details>
 
-| 工具 | 版本 | 用途 |
-|------|------|------|
-| Node.js | >= 18 | 前端构建 |
-| npm | >= 9 | 前端包管理 |
-| Go | >= 1.25 | 后端编译 |
-| Docker | >= 20.10 | 容器化部署（可选） |
+<details>
+<summary><b>Windows</b></summary>
+
+```powershell
+# Using winget or scoop
+winget install OpenJS.NodeJS.LTS
+winget install GoLang.Go
+
+# protoc: download from https://github.com/protocolbuffers/protobuf/releases
+# Make: install Git Bash or choco install make
+```
+
+</details>
+
+### Quick Start (Makefile)
+
+The root `Makefile` provides unified commands for all common tasks:
 
 ```bash
-# 前端
-cd palm-racer/web
+make help          # Show all available commands
+make dev-web       # Start Web dev server
+make dev-server    # Start backend service
+make build         # Build everything (Web + Server)
+make test          # Run all tests
+make docker-up     # Start with docker compose
+```
+
+### Frontend Development
+
+```bash
+cd web
 npm install
-npm run dev
+npm run dev          # Start dev server at http://localhost:5173
+npm run test:run     # Run tests
+npm run build        # Production build
+```
 
-# 后端
-cd palm-racer/server
-make
+### Backend Development
+
+```bash
+cd server
+cp .env.example .env         # Copy env template and fill in values (never commit real credentials)
+set -a && . ./.env && set +a # Load into current shell
+make                         # Build
+make test                    # Run tests
+make vet                     # Static analysis
 go run ./cmd/palm-racer/
 ```
 
----
+> **Config priority**: Environment variables > `conf/palm-racer.yaml`. Secret fields in the yaml are placeholders only — inject real values via environment variables.
+> The local `.env` file is git-ignored. **Do not** commit it.
 
-## 项目结构 / Project Structure
+### Docker Deployment
 
+```bash
+# At project root
+docker compose up -d                    # Full environment (server + mysql)
+
+# Or standalone
+docker build -t palm-racer .
+docker run -d -p 9090:9090 \
+  -e PALM_SECRET_ID=xxx \
+  -e PALM_SECRET_KEY=yyy \
+  palm-racer
 ```
-palm-applications/
-├── glasswiper/              # 🧹 体感擦玻璃（JavaScript + Canvas + MediaPipe）
-├── celina-PalmDestiny/      # 🔮 AI 掌纹算命（Python + FastAPI + LLM）
-├── palm-racer/              # 🏎️ 3D 体感赛车（Vue 3 + TypeScript + Babylon.js + Go）
-├── LICENSE                  # Apache 2.0 许可证
-├── THIRD_PARTY_NOTICES.md   # 第三方依赖声明
-├── CONTRIBUTING.md          # 贡献指南（本文件）
-├── README.md                # 中文文档
-└── README_en.md             # English documentation
+
+---
+
+## Code Formatting Tools
+
+Maintaining consistent code style is the foundation of collaborative development. Please run the following formatters before committing.
+
+### Go Backend
+
+```bash
+cd server
+
+# Auto-format code
+gofmt -w .
+goimports -w .
+
+# Static analysis
+golangci-lint run ./...
+
+# Shortcuts via Makefile
+make fmt           # gofmt + goimports
+make vet           # go vet
+make lint          # golangci-lint (must be installed)
+make test          # Run all tests
 ```
 
----
+**Installing golangci-lint**:
 
-## 如何贡献 / How to Contribute
+```bash
+# macOS / Linux
+curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
 
-### 贡献方式
+# Or via Go
+go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+```
 
-1. **报告 Bug** — 发现问题？请提交 Issue
-2. **功能建议** — 有好的想法？欢迎提出 Feature Request
-3. **代码贡献** — 修复 Bug 或实现新功能，提交 Pull Request
-4. **文档改进** — 修正错别字、补充说明、翻译文档
-5. **新项目** — 如果你有基于刷掌技术的新应用，欢迎提议加入合集
+### Frontend (TypeScript / Vue)
 
-### 贡献流程
+```bash
+cd web
 
-1. **Fork** 本仓库
-2. **Clone** 你的 Fork 到本地
-3. 创建新分支：`git checkout -b feat/your-feature`
-4. 进行修改并测试
-5. 提交代码（遵循提交规范）
-6. 推送到你的 Fork：`git push origin feat/your-feature`
-7. 创建 **Pull Request**
+# ESLint check
+npm run lint              # Check code style
+npm run lint -- --fix     # Auto-fix
 
----
+# Prettier format
+npm run format            # Format all files
+npm run format:check      # Check only (no modifications)
+```
 
-## 代码风格 / Code Style
+### Editor Integration
 
-### JavaScript（GlassWiper）
+The project root includes `.editorconfig`, which is automatically applied by most editors (VS Code, WebStorm, Vim, etc.) for consistent indentation, line endings, and encoding.
 
-- 使用 ES6+ 语法
-- 缩进：2 空格
-- 使用 `const` / `let`，避免 `var`
-- 函数和变量使用 camelCase 命名
-
-### Python（PalmDestiny）
-
-- 遵循 PEP 8 规范
-- 缩进：4 空格
-- 使用 type hints
-- 函数和变量使用 snake_case 命名
-
-### TypeScript / Vue（Palm Racer 前端）
-
-- 遵循项目 ESLint + Prettier 配置
-- 使用 Composition API（`<script setup>`）
-- 组件文件使用 PascalCase 命名
-
-### Go（Palm Racer 后端）
-
-- 遵循 `gofmt` + `go vet` 标准
-- 使用 `golangci-lint` 进行静态分析
-- 导出函数必须有注释
+**Recommended VS Code Extensions**:
+- [EditorConfig for VS Code](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig)
+- [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
+- [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+- [Go](https://marketplace.visualstudio.com/items?itemName=golang.Go) (integrates gofmt/goimports)
+- [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (Vue 3 support)
 
 ---
 
-## 提交规范 / Commit Convention
+## Code Style
 
-我们遵循 [Conventional Commits](https://www.conventionalcommits.org/) 规范。
+- **Go**: Follow `gofmt` + `go vet` + `golangci-lint` (see `server/.golangci.yml`)
+- **TypeScript/Vue**: Use project ESLint + Prettier config
+- **Protobuf**: snake_case naming, fields numbered sequentially from 1
+- **CSS**: Use BEM naming convention or scoped styles
 
-### 格式
+---
+
+## Testing Guide
+
+### Go Backend Tests
+
+We recommend **table-driven tests** for Go:
+
+```go
+func TestCalculateScore(t *testing.T) {
+    tests := []struct {
+        name     string
+        input    int
+        expected int
+    }{
+        {"zero input", 0, 0},
+        {"normal input", 100, 150},
+        {"max input", 9999, 14998},
+    }
+
+    for _, tt := range tests {
+        t.Run(tt.name, func(t *testing.T) {
+            got := CalculateScore(tt.input)
+            if got != tt.expected {
+                t.Errorf("CalculateScore(%d) = %d, want %d", tt.input, got, tt.expected)
+            }
+        })
+    }
+}
+```
+
+**Running tests**:
+
+```bash
+cd server
+make test                    # Run all tests
+go test ./pkg/... -v         # Run specific package tests (verbose)
+go test ./pkg/game/... -run TestCalculateScore  # Run a single test
+go test ./... -cover         # Check test coverage
+```
+
+### Frontend Tests
+
+Frontend uses [Vitest](https://vitest.dev/) as the test framework:
+
+```typescript
+import { describe, it, expect } from 'vitest'
+import { formatTime } from '@/utils/format'
+
+describe('formatTime', () => {
+  it('should format seconds to mm:ss', () => {
+    expect(formatTime(90)).toBe('01:30')
+  })
+
+  it('should handle zero', () => {
+    expect(formatTime(0)).toBe('00:00')
+  })
+
+  it('should handle large values', () => {
+    expect(formatTime(3661)).toBe('61:01')
+  })
+})
+```
+
+**Running tests**:
+
+```bash
+cd web
+npm run test:run              # Run all tests (single run)
+npm run test                  # Watch mode (for development)
+npm run test:run -- --coverage  # Check coverage
+```
+
+### Testing Principles
+
+1. **Every new feature should have corresponding tests**
+2. **Write a failing test first** when fixing a bug, then fix the code
+3. **Clear test naming**: Describe the input conditions and expected results
+4. **Keep tests independent**: Tests should not depend on each other
+
+---
+
+## Commit Message Convention
+
+We follow the [Conventional Commits](https://www.conventionalcommits.org/) specification.
+
+### Format
 
 ```
 <type>(<scope>): <subject>
+
+<body>
+
+<footer>
 ```
 
-### Type 类型
+### Type
 
-| 类型 | 说明 |
-|------|------|
-| `feat` | 新功能 |
-| `fix` | Bug 修复 |
-| `docs` | 文档变更 |
-| `style` | 代码格式（不影响逻辑） |
-| `refactor` | 重构（非新功能、非修复） |
-| `perf` | 性能优化 |
-| `test` | 测试相关 |
-| `chore` | 构建/工具/依赖变更 |
+| Type | Description |
+|------|-------------|
+| `feat` | New feature |
+| `fix` | Bug fix |
+| `docs` | Documentation changes |
+| `style` | Code formatting (no logic changes) |
+| `refactor` | Refactoring (neither new feature nor bug fix) |
+| `perf` | Performance improvement |
+| `test` | Test related |
+| `chore` | Build/tools/dependency changes |
+| `ci` | CI/CD configuration changes |
 
-### Scope 范围
+### Scope (optional)
 
-常用范围：`glasswiper`、`palmdestiny`、`palm-racer`、`docs`
+Common scopes: `web`, `server`, `android`, `deploy`, `docs`, `proto`
 
-### 示例
+### Examples
 
 ```bash
-feat(glasswiper): add new boss level with time challenge
-fix(palm-racer): correct hand detection on mobile browsers
-docs: update installation guide for PalmDestiny
-chore: update THIRD_PARTY_NOTICES
+# New feature
+feat(web): add leaderboard pagination
+feat(server): implement leaderboard pagination endpoint
+
+# Bug fix
+fix(web): correct hand detection sensitivity on mobile
+fix(server): handle nil pointer in score submission
+
+# Documentation
+docs: update deployment guide for Docker Compose v2
+
+# Refactoring
+refactor(web): extract game engine input handling into composable
+
+# Breaking change (mark in footer)
+feat(server)!: change score API response format
+
+BREAKING CHANGE: score field renamed from `total_score` to `score`.
 ```
 
 ---
 
-## 分支策略 / Branch Strategy
+## Branch Strategy
 
-| 分支 | 用途 |
-|------|------|
-| `main` | 稳定版本，保持可用状态 |
-| `feat/xxx` | 新功能开发 |
-| `fix/xxx` | Bug 修复 |
-| `docs/xxx` | 文档更新 |
-
-1. 从 `main` 创建功能分支
-2. 开发完成后提交 Pull Request
-3. 通过 CI 检查和代码审查后合并
+1. Create feature branches from `main`: `feat/xxx` or `fix/xxx`
+2. Submit a Pull Request when development is complete
+3. Ensure CI checks pass (build, test, lint)
+4. Merge after at least one reviewer approves
 
 ---
 
-## Pull Request 指南
+## Pull Request Guide
 
-### PR 要求
+- PR title should be concise (< 70 characters), describing the intent
+- Body should explain: what changed, why it changed, how to test
+- Link related Issues (if any): `Fixes #123` or `Closes #456`
+- Keep PRs small and single-purpose
+- Ensure all tests pass before requesting review
 
-- **标题简洁**（< 70 字符），描述变更意图
-- **正文说明**：改了什么、为什么改、如何测试
-- **关联 Issue**（如有）：`Fixes #123` 或 `Closes #456`
-- **保持小而专注**：每个 PR 只做一件事
-- **确保测试通过**：提交前在本地验证
+---
 
-### PR 模板
+## Project Structure
 
-```markdown
-## 变更说明
-简要描述本次变更的内容和目的。
-
-## 变更类型
-- [ ] Bug 修复
-- [ ] 新功能
-- [ ] 文档更新
-- [ ] 重构
-- [ ] 其他
-
-## 影响的子项目
-- [ ] GlassWiper
-- [ ] PalmDestiny
-- [ ] Palm Racer
-- [ ] 根目录文件
-
-## 测试方式
-描述如何验证本次变更。
-
-## 截图（如适用）
+```
+palm-racer/
+├── web/                # Vue 3 + Babylon.js frontend
+├── server/             # Go backend (gRPC + gRPC-Gateway)
+├── android/            # Android WebView shell
+├── scripts/            # Build and deployment scripts
+├── Makefile            # Root entry point (run `make help` for all commands)
+├── Dockerfile          # Docker multi-stage build (single container)
+└── docker-compose.yml  # One-click local setup (server + mysql)
 ```
 
 ---
 
-## 报告问题 / Reporting Issues
+## Reporting Issues
 
-提交 Issue 时，请包含以下信息：
+When submitting an Issue, please use the corresponding template and include:
 
-1. **问题描述** — 清晰描述遇到的问题
-2. **复现步骤** — 如何重现该问题
-3. **期望行为** — 你期望发生什么
-4. **实际行为** — 实际发生了什么
-5. **环境信息** — 浏览器 / 操作系统 / 设备 / 摄像头型号
-6. **截图或日志** — 如有，请附上
-
-### Issue 标签
-
-| 标签 | 说明 |
-|------|------|
-| `bug` | 确认的 Bug |
-| `enhancement` | 功能增强 |
-| `question` | 使用疑问 |
-| `glasswiper` | GlassWiper 相关 |
-| `palmdestiny` | PalmDestiny 相关 |
-| `palm-racer` | Palm Racer 相关 |
+1. Problem description
+2. Steps to reproduce
+3. Expected behavior vs. actual behavior
+4. Environment info (browser / OS / device / camera model)
+5. Screenshots or logs (if available)
 
 ---
 
-## 许可证 / License
+## Acknowledgments
 
-本项目基于 [Apache License 2.0](LICENSE) 开源。你提交的贡献将自动适用相同的许可证。
+Palm Racer would not be possible without these excellent open-source projects:
 
-This project is licensed under the [Apache License 2.0](LICENSE). Your contributions will be under the same license.
+- [Babylon.js](https://www.babylonjs.com/) — Powerful 3D game engine
+- [MediaPipe](https://mediapipe.dev/) — Google's gesture recognition framework
+- [Vue.js](https://vuejs.org/) — Progressive frontend framework
+- [gRPC](https://grpc.io/) — High-performance RPC framework
+
+Thanks to all contributors who have submitted Issues, PRs, and suggestions ❤️
 
 ---
 
-<p align="center">
-  感谢所有贡献者的付出 ❤️<br/>
-  Thanks to all contributors ❤️
-</p>
+## License
+
+This project is licensed under the MIT License. Your contributions will be under the same license.
