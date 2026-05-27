@@ -53,7 +53,7 @@ const RATE_LIMIT_PER_MINUTE = parseInt(process.env.RATE_LIMIT_PER_MINUTE || '30'
 const rateLimitMap = new Map(); // IP -> { count, resetTime }
 
 // 掌纹网关配置（Bearer Token 方式）
-const PALM_HOST = process.env.PALM_HOST || 'open.palmoa.youtu.qq.com';
+const PALM_HOST = process.env.PALM_HOST || 'your-palm-api-host.example.com';
 const PALM_BEARER_TOKEN = process.env.PALM_BEARER_TOKEN;
 const PALM_USER_ID = process.env.PALM_USER_ID;
 

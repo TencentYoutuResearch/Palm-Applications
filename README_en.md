@@ -264,3 +264,9 @@ A: Currently optimized for desktop browsers. Mobile support is planned for v3.0.
 **Happy Glass Cleaning!** 🧹✨
 
 For questions or suggestions, welcome to submit Issues or contact the developer.
+
+---
+
+## 📋 Privacy Statement
+
+This application uses the camera to locally capture hand positions and **does not store or collect any personal information**. All hand detection is performed locally in the browser, and camera footage is never uploaded to any server.

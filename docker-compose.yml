@@ -1,45 +1,24 @@
-# Palm Racer - Local Development / Quick Start
-# Usage: docker compose up -d
-# Access: http://localhost:9090
+version: '3.8'
 
 services:
-  palm-racer:
-    build: .
+  glasswiper:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: glasswiper-app
     ports:
-      - "9090:9090"
+      - "8000:3000"  # 主机端口:容器端口
     environment:
-      - TZ=Asia/Shanghai
-      - STATIC_ROOT=/app/web/dist
-      - PALM_APP_ID=${PALM_APP_ID:-0}
-      - PALM_SECRET_ID=${PALM_SECRET_ID:-}
-      - PALM_SECRET_KEY=${PALM_SECRET_KEY:-}
-      - DB_HOST=mysql
-      - DB_PORT=3306
-      - DB_USERNAME=palm
-      - DB_PASSWORD=palm123
-      - DB_NAME=palm_racer
-    depends_on:
-      mysql:
-        condition: service_healthy
+      - NODE_ENV=production
+      - PORT=3000
+      # 掌纹网关配置（根据需要取消注释并设置实际值）
+      # - PALM_HOST=your-palm-api-host.example.com
+      # - PALM_BEARER_TOKEN=your_bearer_token_here
+      # - PALM_USER_ID=your_user_id_here
     restart: unless-stopped
-
-  mysql:
-    image: mysql:8.0
-    environment:
-      MYSQL_ROOT_PASSWORD: root123
-      MYSQL_DATABASE: palm_racer
-      MYSQL_USER: palm
-      MYSQL_PASSWORD: palm123
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./server/script/palm-racer/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
-
-volumes:
-  mysql_data:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

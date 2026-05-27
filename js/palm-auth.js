@@ -20,57 +20,35 @@ class PalmAuth {
 
   /**
      * 调用掌纹 API（通用方法）
-     * 通过网关转发，使用 Bearer Token 认证
+     * 占位实现：请替换为你的刷掌识别算法服务调用
      * @param {string} action - API 动作名称（如 RegisterRgbPalm、CompareRgbPalm、SearchRgbPalm）
      * @param {object} body - 请求体
      */
   async _callPalmApi(action, body) {
-    const url = `${this.apiBase}/${action}`;
-    console.log(`[PalmAuth] 调用 ${action}...`);
+    console.log(`[PalmAuth] 🖐️ 你的刷掌识别算法 - ${action}（占位实现）`);
 
-    const headers = {
-      'Content-Type': 'application/json'
-    };
-    // 注入 API Key（由服务端 /api/frontend-config.js 提供）
-    if (window.__GLASSWIPER_API_KEY__) {
-      headers['X-API-Key'] = window.__GLASSWIPER_API_KEY__;
+    // ============================================================
+    // 占位实现：此处应替换为你的刷掌识别算法服务调用
+    // 示例：通过本地代理服务器转发到你的掌纹识别后台
+    //
+    // const url = `${this.apiBase}/${action}`;
+    // const response = await fetch(url, {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json', 'X-API-Key': '你的API Key' },
+    //   body: JSON.stringify(body)
+    // });
+    // return await response.json();
+    // ============================================================
+
+    // 模拟返回结果（不做实际网络请求）
+    if (action === 'RegisterRgbPalm') {
+      return { PalmId: 'placeholder_palm_id', code: 0, message: '🖐️ 你的刷掌识别算法（占位响应）' };
+    } else if (action === 'CompareRgbPalm') {
+      return { IsMatch: false, Score: 0, code: 0, message: '🖐️ 你的刷掌识别算法（占位响应）' };
+    } else if (action === 'SearchRgbPalm') {
+      return { UserId: null, Score: 0, code: 0, message: '🖐️ 你的刷掌识别算法（占位响应）' };
     }
-
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify(body)
-    });
-
-    const data = await response.json();
-    console.log(`[PalmAuth] ${action} 原始响应:`, JSON.stringify(data));
-
-    // 新接口响应格式: {"code": 0, "message": "xxx", "data": {}}
-    // 兼容旧格式: {"Response": {"PalmId": "..."}}
-    let result;
-
-    if (data.code !== undefined) {
-      // 新格式: {"code": 0, "message": "xxx", "data": {...}}
-      if (data.code !== 0 && data.code !== 200) {
-        console.warn(`[PalmAuth] ${action} 失败: code=${data.code}, message=${data.message}`);
-        throw new PalmApiError(String(data.code), data.message || '未知错误');
-      }
-      result = data.data || data;
-    } else if (data.Response) {
-      // 旧标准格式
-      if (data.Response.Error) {
-        const err = data.Response.Error;
-        console.warn(`[PalmAuth] ${action} 失败:`, err.Code, err.Message);
-        throw new PalmApiError(err.Code, err.Message);
-      }
-      result = data.Response;
-    } else {
-      // 其他格式，直接返回
-      result = data;
-    }
-
-    console.log(`[PalmAuth] ${action} 成功, 解析结果:`, JSON.stringify(result));
-    return result;
+    return { code: 0, message: '🖐️ 你的刷掌识别算法（占位响应）', data: {} };
   }
 
   /**

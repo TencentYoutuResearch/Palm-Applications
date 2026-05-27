@@ -41,7 +41,7 @@ docker run -d \
 
 ```bash
 # 创建环境变量文件
-echo "PALM_HOST=open.palmoa.youtu.qq.com" > .env
+echo "PALM_HOST=your-palm-api-host.example.com" > .env
 echo "PALM_BEARER_TOKEN=your_actual_token" >> .env
 echo "PALM_USER_ID=your_user_id" >> .env
 
