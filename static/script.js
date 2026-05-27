@@ -576,15 +576,18 @@ async function callIdentifyApi() {
   authSection.style.display = 'none';
 
   try {
-    const formData = new FormData();
-    formData.append('file', capturedImageBlob, 'palm.jpg');
-    const response = await fetch(`${API_BASE}/palm-detect`, { method: 'POST', body: formData });
-
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const result = await response.json();
+    // ============================================================
+    // 🖐️ 你的刷掌识别算法（占位实现）
+    // 此处应替换为你的掌纹检测服务调用，示例：
+    // const formData = new FormData();
+    // formData.append('file', capturedImageBlob, 'palm.jpg');
+    // const response = await fetch(`${API_BASE}/palm-detect`, { method: 'POST', body: formData });
+    // const result = await response.json();
+    // ============================================================
+    const result = { detected: true, message: '🖐️ 你的刷掌识别算法（占位响应）' };
 
     if (result.detected) {
-      // 照片采集成功（不对"是否真的伸手"做强判定，避免误导）
+      // 照片采集成功（不对      // 照片采集成功（不对"是否真的伸手"做强判定，避免误导）
       identifyIcon.innerHTML = '<i class="fas fa-camera"></i>';
       identifyIcon.className = 'identify-icon success';
       identifyTitle.textContent = '拍摄成功';
@@ -644,12 +647,15 @@ async function callPalmIdentify() {
   authDetails.style.display = 'none';
 
   try {
-    const formData = new FormData();
-    formData.append('file', capturedImageBlob, 'palm.jpg');
-    const response = await fetch(`${API_BASE}/palm-identify`, { method: 'POST', body: formData });
-
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const result = await response.json();
+    // ============================================================
+    // 🖐️ 你的刷掌识别算法（占位实现）
+    // 此处应替换为你的掌纹1:N检索服务调用，示例：
+    // const formData = new FormData();
+    // formData.append('file', capturedImageBlob, 'palm.jpg');
+    // const response = await fetch(`${API_BASE}/palm-identify`, { method: 'POST', body: formData });
+    // const result = await response.json();
+    // ============================================================
+    const result = { identified: false, user_id: null, person_name: null, confidence: 0, message: '🖐️ 你的刷掌识别算法（占位响应）' };
 
     if (result.identified) {
       // 掌纹库中找到匹配用户

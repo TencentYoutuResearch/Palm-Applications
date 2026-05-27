@@ -60,14 +60,14 @@ class Settings(BaseSettings):
     MAX_FILE_SIZE: int = 10 * 1024 * 1024  # 10MB
 
     # CORS
-    CORS_ORIGINS: list[str] = ["https://open.palmoa.youtu.qq.com"]
+    CORS_ORIGINS: list[str] = ["http://localhost:8000"]
 
-    # ---- 掌纹开放平台 1:N 接口配置（新协议：Bearer Token） ----
-    # 调用流程：直接 POST 业务接口，Authorization: Bearer <ak_xxx>
-    PALM_API_BASE_URL: str = "https://open.palmoa.youtu.qq.com"
+    # ---- 掌纹识别服务 1:N 接口配置（Bearer Token 鉴权） ----
+    # 替换为你的刷掌算法服务网址和路径
+    PALM_API_BASE_URL: str = "https://your-palm-api-host.example.com"
     PALM_API_BEARER_TOKEN: str = ""
-    PALM_REGISTER_PATH: str = "/palm/openai/register_rgb_palm"
-    PALM_SEARCH_PATH: str = "/palm/openai/search_rgb_palm"
+    PALM_REGISTER_PATH: str = "/your-palm-register-api-path"
+    PALM_SEARCH_PATH: str = "/your-palm-search-api-path"
     PALM_API_TIMEOUT: int = 15
 
     # ---- 旧协议字段（已废弃，保留仅为向后兼容） ----

@@ -278,7 +278,6 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://open.palmoa.youtu.qq.com",
         "http://localhost:3000",  # 本地开发
         "http://localhost:8000",  # 本地开发
     ],

@@ -2,12 +2,12 @@
 单元测试：验证 palm_recognize_client.py 在【新协议（Bearer Token）】下的契约。
 
 新协议要点（验证目标）：
-  POST {BASE}/palm/openai/register_rgb_palm
-  POST {BASE}/palm/openai/search_rgb_palm
+  POST {BASE}{PALM_REGISTER_PATH}
+  POST {BASE}{PALM_SEARCH_PATH}
   Headers:
-    Host:           open.palmoa.youtu.qq.com
+    Host:           你的刷掌算法服务域名
     Content-Type:   application/json
-    Authorization:  Bearer <ak_xxx>
+    Authorization:  Bearer <你的刷掌算法Token>
     X-TraceId:      <32位小写hex>
   Register Body:
     { "RgbImage": {"Data": "<b64>", "ImageType": 1},
@@ -132,7 +132,7 @@ class PalmRecognizeClientNewProtocolTests(unittest.IsolatedAsyncioTestCase):
     @classmethod
     def setUpClass(cls):
         # 在 import 客户端模块之前，先把环境变量注好（模块级常量在 import 时读取）
-        os.environ["PALM_API_BASE_URL"] = "https://open.palmoa.youtu.qq.com"
+        os.environ["PALM_API_BASE_URL"] = "https://test.example.com"
         os.environ["PALM_API_BEARER_TOKEN"] = os.getenv("PALM_API_BEARER_TOKEN", "ak_test_fake_token_for_unit_test")
         os.environ.pop("PALM_REGISTER_PATH", None)
         os.environ.pop("PALM_SEARCH_PATH", None)
@@ -188,7 +188,7 @@ class PalmRecognizeClientNewProtocolTests(unittest.IsolatedAsyncioTestCase):
         # 2) URL 路径正确
         self.assertEqual(
             call["url"],
-            "https://open.palmoa.youtu.qq.com/palm/openai/register_rgb_palm",
+            "https://test.example.com/your-palm-register-api-path",
         )
 
         # 3) 鉴权 Header
@@ -198,7 +198,7 @@ class PalmRecognizeClientNewProtocolTests(unittest.IsolatedAsyncioTestCase):
             headers.get("Authorization"),
             f"Bearer {os.getenv('PALM_API_BEARER_TOKEN', 'ak_test_fake_token_for_unit_test')}",
         )
-        self.assertEqual(headers.get("Host"), "open.palmoa.youtu.qq.com")
+        self.assertEqual(headers.get("Host"), "test.example.com")
 
         # 4) X-TraceId 必须存在且为 32 位小写 hex
         trace_id = headers.get("X-TraceId", "")
@@ -255,7 +255,7 @@ class PalmRecognizeClientNewProtocolTests(unittest.IsolatedAsyncioTestCase):
         # URL：1:N 检索路径
         self.assertEqual(
             call["url"],
-            "https://open.palmoa.youtu.qq.com/palm/openai/search_rgb_palm",
+            "https://test.example.com/your-palm-search-api-path",
         )
 
         # 鉴权

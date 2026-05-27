@@ -189,33 +189,24 @@
     showStatus('loading', '正在上传并注册掌纹，请稍候...');
 
     try {
-      var fd = new FormData();
-      fd.append('user_id', currentUserId);
-      fd.append('file', capturedBlob, 'palm_register.jpg');
-      fd.append('is_force', 'true');
+      // ============================================================
+      // 🖐️ 你的刷掌识别算法（占位实现）
+      // 此处应替换为你的掌纹注册服务调用，示例：
+      // var fd = new FormData();
+      // fd.append('user_id', currentUserId);
+      // fd.append('file', capturedBlob, 'palm_register.jpg');
+      // fd.append('is_force', 'true');
+      // var resp = await fetch(getApiBase() + '/palm-register', {
+      //   method: 'POST',
+      //   body: fd
+      // });
+      // var data = await resp.json();
+      // ============================================================
 
-      var resp = await fetch(getApiBase() + '/palm-register', {
-        method: 'POST',
-        body: fd
-      });
-
-      var data = null;
-      try { data = await resp.json(); } catch (_) {}
-
-      if (!resp.ok) {
-        var detail = (data && (data.detail || data.message)) || ('HTTP ' + resp.status);
-        showStatus('error', '注册失败：' + detail);
-        return;
-      }
-
-      if (data && data.success) {
-        showStatus('success', '🎉 掌纹注册成功！用户ID：' + (data.user_id || currentUserId) + '，下次刷掌可自动识别。');
-        try { localStorage.setItem('palmRegisteredUserId', data.user_id || currentUserId); } catch (_) {}
-        // 2 秒后自动关闭
-        setTimeout(function () { closeModal(); }, 2200);
-      } else {
-        showStatus('error', '注册未成功：' + ((data && data.message) || '未知错误'));
-      }
+      // 占位响应：不做实际网络请求
+      console.log('[palm-register] 🖐️ 你的刷掌识别算法（占位实现）');
+      showStatus('success', '🖐️ 你的刷掌识别算法（占位响应）- 请替换为你的掌纹注册服务');
+      setTimeout(function () { closeModal(); }, 2200);
     } catch (err) {
       console.error('palm-register error:', err);
       showStatus('error', '网络异常，请稍后重试');

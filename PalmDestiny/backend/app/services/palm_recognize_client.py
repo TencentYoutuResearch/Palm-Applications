@@ -1,14 +1,14 @@
 """
-腾讯刷掌开放平台 1:N 接口客户端 (open.palmoa.youtu.qq.com)
-==========================================================
+刷掌识别服务 1:N 接口客户端
+============================
 
-新协议（Bearer Token）：
+协议（Bearer Token）：
 
-    POST {PALM_API_BASE_URL}/palm/openai/register_rgb_palm
-    POST {PALM_API_BASE_URL}/palm/openai/search_rgb_palm
-    Host:           open.palmoa.youtu.qq.com
+    POST {PALM_API_BASE_URL}{PALM_REGISTER_PATH}
+    POST {PALM_API_BASE_URL}{PALM_SEARCH_PATH}
+    Host:           你的刷掌算法服务域名
     Content-Type:   application/json
-    Authorization:  Bearer <ak_xxx>
+    Authorization:  Bearer <你的刷掌算法Token>
     X-TraceId:      <32位小写hex，每次请求新生成>
 
 注册请求体:
@@ -47,7 +47,7 @@ from loguru import logger
 
 # ====================== 配置（模块级常量，import 时一次性读取） ======================
 PALM_API_BASE_URL = os.getenv(
-    "PALM_API_BASE_URL", "https://open.palmoa.youtu.qq.com"
+    "PALM_API_BASE_URL", "https://your-palm-api-host.example.com"
 ).rstrip("/")
 # 新协议唯一鉴权凭据：access key（Bearer Token）。可以是 "ak_xxx" 或 "Bearer ak_xxx"，
 # 模块内会自动归一化到 "Bearer ak_xxx" 一种形式。
@@ -55,10 +55,10 @@ PALM_API_BEARER_TOKEN = os.getenv("PALM_API_BEARER_TOKEN", "").strip()
 
 # 接口路径可配置（社区/正式路径若再变，仅改 .env 即可，无需改代码）
 PALM_REGISTER_PATH = os.getenv(
-    "PALM_REGISTER_PATH", "/palm/openai/register_rgb_palm"
+    "PALM_REGISTER_PATH", "/your-palm-register-api-path"
 )
 PALM_SEARCH_PATH = os.getenv(
-    "PALM_SEARCH_PATH", "/palm/openai/search_rgb_palm"
+    "PALM_SEARCH_PATH", "/your-palm-search-api-path"
 )
 
 PALM_API_TIMEOUT = float(os.getenv("PALM_API_TIMEOUT", "15"))
@@ -68,9 +68,9 @@ def _api_host() -> str:
     """从 PALM_API_BASE_URL 中提取 Host。"""
     try:
         h = urlparse(PALM_API_BASE_URL).netloc
-        return h or "open.palmoa.youtu.qq.com"
+        return h or "your-palm-api-host.example.com"
     except Exception:
-        return "open.palmoa.youtu.qq.com"
+        return "your-palm-api-host.example.com"
 
 
 def _gen_trace_id() -> str:

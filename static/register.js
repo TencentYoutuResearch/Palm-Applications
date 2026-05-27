@@ -304,46 +304,26 @@
     showStatus('loading', '正在上传并注册掌纹，请稍候...');
 
     try {
-      var fd = new FormData();
-      fd.append('user_id', currentUserId);
-      fd.append('file', capturedBlob, 'palm_register.jpg');
-      fd.append('is_force', 'true');
+      // ============================================================
+      // 🖐️ 你的刷掌识别算法（占位实现）
+      // 此处应替换为你的掌纹注册服务调用，示例：
+      // var fd = new FormData();
+      // fd.append('user_id', currentUserId);
+      // fd.append('file', capturedBlob, 'palm_register.jpg');
+      // fd.append('is_force', 'true');
+      // var resp = await fetch(getApiBase() + '/palm-register', {
+      //   method: 'POST',
+      //   body: fd
+      // });
+      // var data = await resp.json();
+      // ============================================================
 
-      var resp = await fetch(getApiBase() + '/palm-register', {
-        method: 'POST',
-        body: fd
-      });
-
-      var data = null;
-      try { data = await resp.json(); } catch (_) {}
-
-      // ---- 成功路径：HTTP 200 且 success=true ----
-      if (resp.ok && data && data.success) {
-        try { localStorage.setItem('palmRegisteredUserId', data.user_id || currentUserId); } catch (_) {}
-        var okMsg = (data && data.message) ? data.message : '掌纹注册成功';
-        hideStatus();
-        gotoDoneStep('success', {
-          userId: data.user_id || currentUserId,
-          message: okMsg
-        });
-        return;
-      }
-
-      // ---- 失败路径：HTTP 非 2xx 或 success=false ----
-      var failMsg, failCode;
-      if (!resp.ok) {
-        failMsg = (data && (data.message || data.detail)) || ('HTTP ' + resp.status);
-        failCode = (data && data.code !== undefined && data.code !== 0) ? data.code : resp.status;
-      } else {
-        failMsg = (data && data.message) || '后端未返回错误描述';
-        failCode = (data && data.code !== undefined) ? data.code : '';
-      }
+      // 占位响应：不做实际网络请求
+      console.log('[register] 🖐️ 你的刷掌识别算法（占位实现）');
       hideStatus();
-      gotoDoneStep('fail', {
+      gotoDoneStep('success', {
         userId: currentUserId,
-        message: failMsg,
-        code: failCode,
-        traceId: data && data.trace_id
+        message: '🖐️ 你的刷掌识别算法（占位响应）- 请替换为你的掌纹注册服务'
       });
     } catch (err) {
       console.error('palm-register error:', err);
