@@ -1,37 +1,28 @@
-# Version control
-.git
-.gitignore
-.gitattributes
-
-# Environment / secrets
+# 敏感文件 - 绝对不能打入镜像
 .env
 .env.*
-!.env.example
 
-# Documentation
-README.md
-README_en.md
-DESIGN.md
-THIRD_PARTY_NOTICES.md
-LICENSE
+# 数据库文件
+*.db
+*.db-shm
+*.db-wal
 
-# IDE / OS
-.vscode
-.idea
-*.swp
-.DS_Store
-Thumbs.db
+# 日志
+logs/
 
-# Logs / temp
-logs
-*.log
-tmp
-temp
-.cache
+# 上传文件
+static/uploads/
 
-# CI/CD
-.github
-.gitlab-ci.yml
+# Python 缓存
+__pycache__/
+*.pyc
+*.pyo
 
-# Internal deploy folder
-.with
+# Git
+.git/
+.gitignore
+
+# 开发/测试文件
+run_tests_server.py
+docs/
+*.md
