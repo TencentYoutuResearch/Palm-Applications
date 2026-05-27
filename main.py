@@ -1650,5 +1650,21 @@ def _build_yiji_special_note(wuxing_day: str, zodiac_name: str) -> str:
     return f"今日{wuxing_day}行当令，{zodiac_part}宜多关注{focus}方面的调养。"
 
 
-# ===== 挂载前端静态文件（必须放在最后） =====
-app.mount("/static", StaticFiles(directory=str(STATIC_DIR), html=True), name="static")
+# ===== 前端静态文件路由（替代 app.mount，避免 BaseHTTPMiddleware 与 mount 的兼容性问题） =====
+from starlette.responses import FileResponse as StarletteFileResponse
+
+
+@app.get("/static/{file_path:path}")
+async def serve_static(file_path: str):
+    """手动提供静态文件服务，解决 BaseHTTPMiddleware 导致 mount 子应用 404 的问题"""
+    if not file_path:
+        file_path = "index.html"
+    full_path = STATIC_DIR / file_path
+    # 安全检查：防止路径穿越
+    try:
+        full_path.resolve().relative_to(STATIC_DIR.resolve())
+    except ValueError:
+        return JSONResponse(status_code=403, content={"detail": "Forbidden"})
+    if full_path.is_file():
+        return StarletteFileResponse(str(full_path))
+    return JSONResponse(status_code=404, content={"detail": "Not Found"})
