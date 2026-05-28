@@ -9,6 +9,10 @@
   <a href="https://palm.tencent.com"><img src="https://img.shields.io/badge/腾讯刷掌开放平台-推荐集成-orange" alt="Tencent Palm Platform"></a>
 </p>
 
+<p align="center">
+  中文 | <a href="README_en.md">English</a>
+</p>
+
 ---
 
 ## 📖 简介
@@ -83,11 +87,13 @@
 
 ```
 palm-applications/
-├── glasswiper/          # 🧹 体感擦玻璃小游戏（JavaScript + Canvas）
-├── celina-PalmDestiny/  # 🔮 AI 掌纹算命（Python + FastAPI）
-├── palm-racer/          # 🏎️ 3D 体感赛车（Vue 3 + Go）
-├── LICENSE              # Apache 2.0 许可证
-└── README.md            # 本文件
+├── glasswiper/              # 🧹 体感擦玻璃小游戏（JavaScript + Canvas）
+├── celina-PalmDestiny/      # 🔮 AI 掌纹算命（Python + FastAPI）
+├── palm-racer/              # 🏎️ 3D 体感赛车（Vue 3 + Go）
+├── LICENSE                  # Apache 2.0 许可证
+├── THIRD_PARTY_NOTICES.md   # 第三方依赖声明
+├── README.md                # 中文文档
+└── README_en.md             # English documentation
 ```
 
 ---
