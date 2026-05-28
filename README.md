@@ -1,231 +1,166 @@
-<p align="center">
-  <img src="images/palm-racer-banner.png" alt="Palm Racer" width="480">
-</p>
+# 🧹 GlassWiper — 体感擦玻璃小游戏
 
-<h1 align="center">Palm Racer 🏎️ 掌上赛车</h1>
+[English](./README_en.md) | 中文
 
-<p align="center">
-  <strong>基于手掌识别的体感竞速游戏 | Palm-gesture controlled racing game</strong>
-</p>
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow.svg)](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript)
+[![HTML5](https://img.shields.io/badge/HTML5-E34F26.svg)](https://developer.mozilla.org/zh-CN/docs/Web/HTML)
+[![CSS3](https://img.shields.io/badge/CSS3-1572B6.svg)](https://developer.mozilla.org/zh-CN/docs/Web/CSS)
 
-<p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License: Apache 2.0"></a>
-  <a href="server/"><img src="https://img.shields.io/badge/Go-1.25+-00ADD8?logo=go&logoColor=white" alt="Go"></a>
-  <a href="web/"><img src="https://img.shields.io/badge/Node.js-18+-339933?logo=node.js&logoColor=white" alt="Node.js"></a>
-  <a href="web/"><img src="https://img.shields.io/badge/Vue-3-4FC08D?logo=vue.js&logoColor=white" alt="Vue 3"></a>
-  <a href="web/"><img src="https://img.shields.io/badge/Babylon.js-7-BB464B?logoColor=white" alt="Babylon.js"></a>
-  <a href="CODE_OF_CONDUCT.md"><img src="https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg" alt="Code of Conduct"></a>
-</p>
+**GlassWiper** 是一个开源的 Web 体感交互游戏，通过实时手部关键点检测，结合 HTML5 Canvas 多层渲染技术实现逼真的玻璃擦除效果。玩家通过摄像头用真实手势操控游戏，**无需任何外设**，张开手掌即可开始擦玻璃。
 
-<p align="center">
-  <a href="#quick-start">快速开始</a> •
-  <a href="#features">特性</a> •
-  <a href="#documentation">文档</a> •
-  <a href="#contributing">贡献</a> •
-  <a href="README.en.md">English</a>
-</p>
+> **一句话介绍：** 打开浏览器 + 摄像头，用手掌隔空擦玻璃、打 Boss、冲排行榜的体感小游戏，可搭配腾讯刷掌开放平台进行身份验证。
 
-> **Palm Racer** 是一个开源 3D 体感赛车游戏，通过 MediaPipe 手掌追踪实现纯手势控制——无需手柄或键盘。支持对接掌纹身份认证平台（推荐[腾讯刷掌开放平台](https://palm.tencent.com)），实现刷掌注册、刷掌登录和防作弊检测。
+![Gameplay Demo](https://img.shields.io/badge/Demo-Live_Play-blue?style=for-the-badge)
 
----
+## 什么是 GlassWiper？
 
-## 📖 简介 | Introduction
+GlassWiper 是一款**零外设、纯浏览器**的体感游戏。它通过 Web 摄像头捕获画面，利用手部检测模型实时追踪手掌关键点坐标，判断手势状态（张开/握拳），并将手掌位置映射到 Canvas 画布上实现「擦玻璃」的交互效果。同时推荐搭配[腾讯刷掌开放平台](https://palm.tencent.com)，通过手掌生物特征实现玩家身份验证与排行榜绑定。
 
-**Palm Racer（掌上赛车）** 是一个基于手掌手势控制的体感竞速游戏。通过摄像头实时捕捉手掌姿态，控制 3D 赛车的转向、加速和刹车——所有手势追踪均在本地运行。项目支持对接掌纹身份认证平台（推荐[腾讯刷掌开放平台](https://palm.tencent.com)），可选启用掌纹注册、掌纹登录和活体防作弊检测，支持 Web 浏览器与 Android 平台。
+**核心技术指标：**
+- 手部检测帧率：30 FPS（Chrome 桌面端）
+- 手势识别延迟：< 50ms
+- 支持浏览器：Chrome 90+、Firefox 88+、Safari 15+、Edge 90+
+- 纯前端实现，代码量约 5000 行，零后端依赖
 
-**Palm Racer** is a gesture-controlled racing game that captures your hand posture through the camera to control a 3D racing car — steering, accelerating, and braking. All hand tracking runs locally in the browser. The project supports integration with palm recognition platforms (recommended: [Tencent Palm Recognition Open Platform](https://palm.tencent.com)) for optional palm registration, palm login, and liveness-based anti-cheat detection. Available on Web browsers and Android.
+## ✨ 特色功能
 
----
+### 🎮 核心玩法
+- **实时手部检测**: 基于关键点追踪，精准识别手掌位置和手势状态
+- **体感交互**: 张开手掌擦拭，握拳暂停——真正的手势控制，无需触摸屏或手柄
+- **多层 Canvas 渲染**: 污渍层 + 图片层 + UI 层分离，实现逼真的玻璃擦除效果
+- **Boss 战模式**: 用手掌打击 Boss 获得额外分数，含血条和特效系统
 
-## 🎮 演示 | Demo
+### 🔐 刷掌身份验证
+- **刷掌识别**: 推荐使用[腾讯刷掌开放平台](https://palm.tencent.com)，玩家可通过手掌纹路进行身份验证，也可接入自己的刷掌服务
+- **安全登录**: 基于手掌生物特征的免密登录体验，无需输入账号密码
+- **排行榜绑定**: 刷掌验证后的成绩自动关联个人身份，防止作弊
 
-<p align="center">
-  <img src="images/demo.gif" alt="Palm Racer Demo" width="640">
-</p>
+### 🏆 游戏系统
+- **多关卡设计**: 6+ 个难度递增的关卡，每关有独特的污渍分布和时间挑战
+- **计分机制**: 基础分 + 时间奖励 + 连击倍率 + 完美奖励（100% 擦除）
+- **连击系统**: 连续快速擦拭触发连击，最高 3 倍分数加成
+- **进度保存**: 使用 localStorage 本地存储最高分和游戏历史
 
----
+### 🎨 视觉效果
+- **现代化 UI**: 毛玻璃风格设计，流畅的 CSS3 过渡动画
+- **真实反馈**: 擦除时的水痕粒子效果和音效反馈
+- **响应式布局**: 自动适配桌面和平板屏幕尺寸
+- **Boss 特效**: Boss 战专属 UI、血条系统和打击特效
 
-<a id="features"></a>
+## 🚀 快速开始
 
-## ✨ 特性 | Features
+### 环境要求
+- 现代浏览器（Chrome 90+、Firefox 88+、Safari 15+、Edge 90+）
+- 支持摄像头的设备（内置或外接 USB 摄像头）
+- 网络连接（首次加载手部检测模型约 5MB，后续有缓存）
 
-- 🖐️ **手掌体感控制 | Palm Gesture Control** — 基于 MediaPipe Hands 实时手掌追踪，纯本地运行，无需手柄或键盘
-- 🔐 **掌纹身份认证（可选）| Palm Authentication (Optional)** — 支持对接掌纹身份认证平台（推荐[腾讯刷掌开放平台](https://palm.tencent.com)），可选启用刷掌注册、刷掌登录和活体防作弊检测
-- 🏎️ **3D 赛车引擎 | 3D Racing Engine** — Babylon.js 驱动的 3D 赛道、车辆物理和粒子特效
-- 🌐 **跨平台 | Cross-Platform** — 一套 Web 代码同时运行于浏览器和 Android WebView
-- 🔊 **程序化音效 | Procedural Audio** — Web Audio API 实时合成引擎声浪和环境音效
-- 📊 **排行榜 | Leaderboard** — Go 后端服务支持分数记录与全局排行
-
----
-
-## 📱 平台支持 | Platform Support
-
-| 平台 Platform | 状态 Status | 说明 Notes |
-|:---:|:---:|:---|
-| 🌐 Web (Chrome/Edge/Safari) | ✅ 支持 | 推荐 Chrome 90+，需要摄像头权限 |
-| 📱 Android | ✅ 支持 | Android 8.0+，原生壳 + WebView |
-| 🍎 iOS | ❌ 暂不支持 | 尚未适配 |
-
----
-
-## 🕹️ 操控指南 | Controls
-
-| 手势 Gesture | 操作 Action |
-|:---:|:---|
-| 🖐️ 伸出手掌 | 自动加速 Auto Accelerate |
-| 🖐️ ↔️ 手掌左右移动 | 转向 Steering |
-| ✊ 握拳 | 刹车 Brake |
-
----
-
-<a id="quick-start"></a>
-
-## 🚀 快速开始 | Quick Start
-
-项目提供根目录 `Makefile` 作为统一入口，运行 `make help` 查看所有可用命令：
-
+### 安装运行
 ```bash
-make help          # 查看所有命令
-make build-web     # 编译 Web 前端
-make dev-server    # 启动后端服务（开发模式）
-make build         # 构建全部（Web + Server）
-make build-server  # 编译后端二进制
-make test          # 运行全部测试
-make docker-up     # docker compose 一键启动
-make docker-down   # 停止 docker compose
-make clean         # 清理构建产物
+# 克隆本项目
+git clone <本项目地址>
+
+# 进入项目目录
+cd glasswiper
+
+# 使用本地服务器运行（推荐，摄像头需要 HTTPS 或 localhost）
+python -m http.server 8000
+# 或
+npx http-server
+
+# 在浏览器中访问 http://localhost:8000
 ```
 
-### 后端服务
+> **提示：** 摄像头 API 要求页面运行在 `localhost` 或 `HTTPS` 环境下，直接双击打开 HTML 文件可能无法调用摄像头。
 
-编辑配置文件 `server/conf/palm-racer.yaml`，填写刷掌平台凭据和数据库连接信息：
+## 🎯 操作指南
 
-```bash
-$EDITOR server/conf/palm-racer.yaml
+1. **摄像头授权**: 首次游戏需要允许摄像头访问权限
+2. **手势控制**: 
+   - ✋ 张开手掌 - 开始擦拭玻璃
+   - ✊ 握紧拳头 - 暂停擦拭
+   - 👋 移动手掌 - 控制擦除位置
+3. **游戏目标**: 在时间限制内擦除至少 85% 的污渍
+4. **Boss 战**: 在特定关卡触发，用手掌打击 Boss 获得额外分数
+
+## 🛠️ 技术栈
+
+### 前端技术
+| 技术 | 用途 | 说明 |
+|------|------|------|
+| HTML5 | 页面结构 | 语义化标签，可访问性优化 |
+| CSS3 | 样式和动画 | 毛玻璃效果、过渡动画、响应式布局 |
+| JavaScript ES6+ | 游戏逻辑 | 模块化架构，无框架依赖 |
+| Canvas API | 图形渲染 | 多层画布实现擦除和粒子效果 |
+| 手部检测模型 | 手部检测 | 关键点实时追踪 |
+| [腾讯刷掌开放平台](https://palm.tencent.com) | 身份验证（推荐） | 手掌生物特征识别，免密登录，也可使用自己的刷掌服务 |
+
+### 技术原理
+
+#### 手部检测如何工作？
+GlassWiper 通过摄像头每帧图像检测手掌的**关键点**（指尖、指关节、手腕等），然后通过计算指尖到手掌根部的距离判断手势状态：
+- **张开手掌**：5 根手指指尖远离手心 → 激活擦拭
+- **握紧拳头**：指尖靠近手心 → 暂停擦拭
+
+#### Canvas 多层渲染架构
+```
+┌─────────────────────────────┐
+│        UI 层（HUD）          │  ← 分数、时间、连击提示
+├─────────────────────────────┤
+│      污渍层（Dirt Layer）     │  ← 可被擦除的灰色遮罩
+├─────────────────────────────┤
+│      图片层（Image Layer）    │  ← 隐藏的关卡图片
+└─────────────────────────────┘
+```
+手掌经过时，通过 `globalCompositeOperation = 'destination-out'` 擦除污渍层对应区域，露出底层图片。
+
+### 核心模块
+```
+js/
+├── main.js          # 游戏主入口：初始化摄像头、手部检测、游戏循环
+├── game.js          # 游戏核心：状态机、关卡加载、胜负判定
+├── hand.js          # 手部检测：检测回调、手势识别、坐标映射
+├── glass.js         # 玻璃渲染：污渍生成、擦除计算、进度统计
+├── score.js         # 计分系统：分数计算、连击倍率、奖励逻辑
+├── boss.js          # Boss 战：Boss AI、碰撞检测、血条管理
+├── scene.js         # 场景管理：关卡切换、过场动画
+├── ui.js            # 界面管理：HUD、菜单、音效控制
+├── i18n.js          # 国际化：中英文切换
+└── leaderboard.js   # 排行榜：分数记录、排名展示
 ```
 
-编译并启动后端服务：
+## 🔐 腾讯刷掌平台 API 集成 | Tencent Palm Platform API
 
-```bash
-make dev-server
-```
+GlassWiper 推荐使用[腾讯刷掌开放平台](https://palm.tencent.com)进行玩家身份验证，实现刷掌登录和排行榜绑定。当然，你也可以接入自己的刷掌识别服务，只需实现相同的接口协议即可。
 
-### Web 前端
-
-编译前端静态资源：
-
-```bash
-make build-web
-```
-
-编译完成后，后端服务会自动托管前端页面，浏览器访问 `http://localhost:9090`，允许摄像头权限即可开始游戏。
-
-### Android 构建
-
-```bash
-make build-android
-```
-
-### Docker 一键部署（推荐）
-
-```bash
-make docker-up
-```
-
-这将通过 docker compose 启动完整环境（server + mysql）。访问 `http://localhost:9090` 即可开始游戏。
-
-停止服务：
-
-```bash
-make docker-down
-```
-
----
-
-## 🏗️ 技术栈 | Tech Stack
-
-| 层 Layer | 技术 Technology |
-|:---|:---|
-| 掌纹身份认证 Palm Auth（可选） | [腾讯刷掌开放平台](https://palm.tencent.com)（注册/登录/活体防作弊） |
-| Web 前端 Frontend | Vue 3 + TypeScript + Vite + Babylon.js |
-| 手掌追踪 Palm Tracking | MediaPipe Hands (WASM) |
-| Android 客户端 | Java + WebView + JSBridge |
-| 后端服务 Backend | Go (gRPC + gRPC-Gateway + Gin) |
-| 数据库 Database | MySQL |
-
----
-
-## 🏛️ 架构概览 | Architecture
-
-```mermaid
-graph TB
-    subgraph Clients["客户端 Clients"]
-        Browser["🌐 浏览器 Browser"]
-        AndroidApp["📱 Android<br/>WebView + JSBridge"]
-    end
-
-    subgraph WebCore["Web 核心层 Web Core"]
-        Vue["Vue 3 SPA<br/>路由 / 状态 / 页面"]
-        Engine["Babylon.js 3D<br/>赛车 / 道路 / 粒子"]
-        Tracking["MediaPipe Hands<br/>手掌追踪 + 手势识别"]
-        Audio["Web Audio API<br/>程序化音效"]
-    end
-
-subgraph Backend["后端服务 Backend · Go"]
-        Gateway["gRPC-Gateway<br/>HTTP/gRPC 双协议"]
-        Score["分数 / 排行榜<br/>Score / Leaderboard"]
-        PalmProxy["腾讯刷掌平台代理<br/>Tencent Palm Platform Proxy"]
-        MySQL[("MySQL")]
-    end
-
-    Browser --> WebCore
-    AndroidApp --> WebCore
-    WebCore --> Backend
-    Gateway --> Score
-    Gateway --> PalmProxy
-    Score --> MySQL
-```
-
----
-
-## 🔐 腾讯刷掌平台 API 集成（可选）| Tencent Palm Platform API (Optional)
-
-Palm Racer 支持通过后端代理对接[腾讯刷掌开放平台](https://palm.tencent.com)，提供以下可选的掌纹身份认证能力（如不需要掌纹认证功能，可使用游客模式直接体验游戏）：
+### 集成的核心 API 能力
 
 | API | 功能 | 说明 |
 |:---|:---|:---|
-| `RegisterRgbPalm` | RGB 手掌注册 | 上传手掌 RGB 图片，完成掌纹特征注册，绑定用户身份 |
-| `SearchRgbPalm` | RGB 手掌搜索识别 | 上传手掌 RGB 图片，进行 1:N 掌纹搜索匹配，返回用户身份 |
+| `RegisterRgbPalm` | RGB 手掌注册 | 上传手掌 RGB 图片，完成掌纹特征注册，绑定玩家身份 |
+| `SearchRgbPalm` | RGB 手掌搜索识别 | 上传手掌 RGB 图片，进行 1:N 掌纹搜索匹配，返回玩家身份 |
 
 ### 调用流程
 
 ```mermaid
 sequenceDiagram
-    participant Client as 前端 Web / Android App
-    participant Server as Go 后端
-    participant Palm as 腾讯刷掌平台
+    participant Client as 前端浏览器
+    participant Server as 后端服务
+    participant Palm as 腾讯刷掌平台（或你的刷掌服务）
 
     Note over Client,Palm: 1. 刷掌注册流程
     Client->>Client: 摄像头采集手掌图片
-    Client->>Server: POST /api/palm/register_rgb_palm (base64 图片 + userId)
+    Client->>Server: POST /api/palm/register (base64 图片 + userId)
     Server->>Palm: RegisterRgbPalm (Bearer Token 鉴权)
     Palm-->>Server: 注册成功 (palmId)
     Server-->>Client: 注册完成
 
     Note over Client,Palm: 2. 刷掌登录流程
     Client->>Client: 摄像头采集手掌图片
-    Client->>Server: POST /api/palm/search_rgb_palm (base64 图片)
+    Client->>Server: POST /api/palm/search (base64 图片)
     Server->>Palm: SearchRgbPalm (Bearer Token 鉴权)
     Palm-->>Server: 匹配结果 (userId + score)
-    Server-->>Client: 登录成功 + 用户信息
-
-    Note over Client,Palm: 3. 游戏中作弊检测
-    Client->>Client: 游戏过程中定期采集手掌图片
-    Client->>Server: POST /api/palm/search_rgb_palm (base64 图片)
-    Server->>Palm: SearchRgbPalm (Bearer Token 鉴权 + 活体检测)
-    Palm-->>Server: 匹配结果 (userId + 活体检测结果)
-    Server->>Server: 比对 userId 是否与登录用户一致
-    Server-->>Client: 检测通过 / 作弊告警
+    Server-->>Client: 登录成功 + 玩家信息
 ```
 
 ### 鉴权与安全机制
@@ -233,152 +168,160 @@ sequenceDiagram
 - **Bearer Token 鉴权** — 后端使用配置文件中的 API Token 通过 Bearer 方式鉴权，前端无需感知凭证细节
 - **HTTPS 传输加密** — 所有请求通过 HTTPS 加密通道传输，保护生物特征数据安全
 - **活体防作弊检测** — 平台内置活体检测能力，防止照片/视频/模型等攻击手段
-- **请求追踪** — 每次请求自动生成 X-TraceId，便于全链路问题排查
 
----
+### 使用自己的刷掌服务
 
-## 📂 项目结构 | Project Structure
+如果你不使用腾讯刷掌平台，也可以接入自己的刷掌识别服务。只需在 `.env` 中配置你的服务地址和鉴权信息：
 
-```
-palm-racer/
-├── web/                # Vue 3 + Babylon.js 前端工程（核心）
-│   ├── public/
-│   │   ├── mediapipe/  #   MediaPipe WASM 模型
-│   │   └── models/     #   3D 赛车模型 (.glb)
-│   └── src/
-│       ├── engine/     #   Babylon.js 3D 引擎
-│       ├── tracking/   #   手掌追踪 + 手势识别
-│       └── ...
-├── server/             # Go 后端服务
-├── android/            # Android 原生壳
-├── scripts/            # 构建与部署脚本
-├── Makefile            # 根目录统一入口（make help 查看所有命令）
-├── Dockerfile          # Docker 多阶段构建（单容器部署）
-└── docker-compose.yml  # 一键启动完整环境（server + mysql）
+```env
+PALM_API_BASE_URL=你的刷掌算法服务网址
+PALM_API_BEARER_TOKEN=你的刷掌算法Token
+PALM_API_GATEWAY_PATH=你的网关路径
 ```
 
----
+确保你的服务实现了兼容的注册和搜索接口即可无缝替换。
 
 ---
 
-## 🖼️ Showcase
+## 📁 项目结构
 
-<table>
-  <tr>
-    <td align="center"><b>游戏主界面</b><br/><img src="images/screenshot-game.png" height="260"/></td>
-    <td align="center"><b>历史成绩</b><br/><img src="images/screenshot-history.png" height="260"/></td>
-    <td align="center"><b>排行榜</b><br/><img src="images/screenshot-leaderboard.png" height="260"/></td>
-  </tr>
-</table>
+```
+glasswiper/
+├── index.html          # 主页面
+├── README.md           # 项目说明文档
+├── DESIGN.md           # 设计文档和规划
+├── css/
+│   └── style.css       # 样式文件
+├── js/
+│   ├── main.js         # 游戏主入口
+│   ├── game.js         # 游戏核心逻辑
+│   ├── hand.js         # 手部检测模块
+│   ├── glass.js        # 玻璃污渍渲染
+│   ├── score.js        # 计分系统
+│   ├── boss.js         # Boss 战模块
+│   └── ui.js           # UI 管理
+├── assets/
+│   ├── images/         # 隐藏图片资源
+│   ├── textures/       # 污渍纹理
+│   └── sounds/         # 音效文件
+└── LICENSE             # MIT 许可证
+```
+
+## 🎮 游戏玩法详解
+
+### 基础模式
+- **关卡挑战**: 每关有时间限制和不同的污渍难度
+- **擦除机制**: 手掌经过的区域污渍被清除，露出底层图片
+- **评分标准**: 擦除面积 + 剩余时间 + 连击倍率
+
+### Boss 战模式
+- **触发条件**: 完成特定关卡后触发
+- **战斗方式**: 用手掌打击屏幕上的 Boss
+- **奖励机制**: 根据打击次数和连击获得额外分数
+- **血条系统**: Boss 有生命值，需要多次打击才能击败
+
+### 连击系统
+- **连击触发**: 快速连续擦拭同一区域
+- **倍率等级**: x1.5 → x2 → x3 倍分数加成
+- **连击保持**: 停止擦拭或移动过慢会中断连击
+
+## 🗺️ 开发路线图 (Roadmap)
+
+### ✅ 已实现 (v1.0)
+- [x] 基础手部检测和擦除功能
+- [x] 多关卡进度系统
+- [x] 计分和连击机制
+- [x] Boss 战模式
+- [x] 响应式 UI 设计
+- [x] 本地存储最高分
+
+### 🔄 计划中 (v2.0)
+- [ ] 节奏模式：音乐节拍擦拭玩法
+- [ ] 双人对战： split-screen 竞争模式
+- [ ] 道具系统：超级抹布、清洁剂等道具
+- [ ] 天气事件：下雨、起雾等动态效果
+- [ ] 成就系统：收集勋章和挑战任务
+- [ ] 图片图鉴：收集解锁隐藏图片
+
+### 🎯 未来展望 (v3.0)
+- [ ] 移动端适配
+- [ ] 社交媒体分享
+- [ ] 在线排行榜
+- [ ] 自定义图片上传
+- [ ] AR 增强现实模式
+
+## 🤝 参与贡献
+
+欢迎提交 Issue 和 Pull Request！贡献指南：
+
+1. Fork 本项目
+2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 开启 Pull Request
+
+## 📄 许可证
+
+本项目采用 **MIT 许可证** - 查看 [LICENSE](LICENSE) 文件了解详情。
+
+### 第三方资源
+- **Noto Sans SC**：SIL Open Font License 1.1（Google Fonts）
+- **游戏素材图片**：由 AI 图像生成
+
+完整的第三方资源说明请查看 [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md)。
+
+## 🙋‍♂️ 常见问题
+
+### 如何用 Web 摄像头做体感游戏？
+GlassWiper 展示了完整的实现方案：通过 `navigator.mediaDevices.getUserMedia()` 获取摄像头视频流，将每帧送入手部检测模型进行关键点检测，再将检测结果映射到 Canvas 坐标系实现交互。核心代码在 `js/hand.js` 中。
+
+### 手部检测怎么用？
+1. 引入手部检测库脚本
+2. 创建检测实例并配置参数（最大手数、检测置信度）
+3. 注册回调接收关键点坐标
+4. 将摄像头帧送入模型进行检测
+
+### Canvas 擦除效果怎么实现？
+使用双层 Canvas：底层放隐藏图片，顶层绘制污渍遮罩。当手掌经过时，在顶层用 `globalCompositeOperation = 'destination-out'` 绘制圆形，即可"擦除"该区域的遮罩，露出底层图片。
+
+### Q: 摄像头无法正常工作？
+A: 确保使用 `localhost` 或 HTTPS 访问页面（浏览器安全策略要求），检查浏览器是否授予了摄像头权限，尝试刷新页面。
+
+### Q: 手部检测不准确？
+A: 确保光线充足，避免逆光；手掌完全张开正对摄像头；背景尽量简洁，避免与肤色相近的物体。
+
+### Q: 游戏性能卡顿？
+A: 关闭其他占用摄像头的应用；使用 Chrome 浏览器获得最佳体验；确保设备 GPU 加速已开启。
+
+### Q: 支持手机和平板吗？
+A: 目前主要针对桌面浏览器优化，移动端适配在 v3.0 路线图中。部分平板（如 iPad）可尝试使用。
+
+## 🎉 致谢
+
+- 感谢 [腾讯刷掌开放平台](https://palm.tencent.com) 提供的手掌生物特征识别 API 服务
+- 感谢 [Google MediaPipe](https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker) 团队提供的开源手部检测技术（Apache-2.0）
+- 感谢 [Google Fonts](https://fonts.google.com/noto/specimen/Noto+Sans+SC) 提供的 Noto Sans SC 中文字体（SIL OFL 1.1）
+- 游戏关卡及 Boss 图片素材由 AI 图像生成
+- 感谢所有测试玩家提供的宝贵反馈
+- 感谢开源社区的支持和贡献
+
+> 📋 完整的第三方资源与授权声明：[THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md)
 
 ---
 
-<a id="contributing"></a>
+## 相关资源
 
-## 🤝 贡献 | Contributing
-
-我们欢迎任何形式的贡献！请阅读 [**CONTRIBUTING.md**](CONTRIBUTING.md) 了解：
-
-- 开发环境搭建
-- 代码风格规范
-- 提交 PR 的流程
-- Commit Message 规范
-
-> 参见 [行为准则 Code of Conduct](CODE_OF_CONDUCT.md) · [安全政策 Security Policy](SECURITY.md)
+- [Canvas API MDN 教程](https://developer.mozilla.org/zh-CN/docs/Web/API/Canvas_API)
+- [WebRTC 摄像头接入指南](https://developer.mozilla.org/zh-CN/docs/Web/API/MediaDevices/getUserMedia)
 
 ---
 
-<a id="faq"></a>
+**快乐擦玻璃！** 🧹✨
 
-## ❓ 常见问题 | FAQ
-
-### Palm Racer 是什么？
-
-Palm Racer（掌上赛车）是一个开源的手势控制赛车游戏。通过摄像头和 MediaPipe 手掌追踪技术，你可以用手掌控制 3D 赛车的转向、加速和刹车——无需任何手柄或键盘。
-
-### 手掌体感控制是如何工作的？
-
-Palm Racer 使用 Google 的 MediaPipe Hands（以 WASM 形式运行在浏览器中）实时检测手掌的 21 个关键点。手掌的水平位置映射为转向，张开手掌表示加速，握拳表示刹车。
-
-### 使用了哪些技术？
-
-- **前端**: Vue 3 + TypeScript + Babylon.js (3D 引擎)
-- **手掌追踪**: MediaPipe Hands (WASM，本地运行)
-- **Android 客户端**: Java + WebView + JSBridge
-- **后端**: Go (gRPC-Gateway)
-- **平台**: Web 浏览器、Android
-
-### 刷掌平台集成了哪些能力？
-
-Palm Racer 支持对接腾讯刷掌开放平台，提供以下可选的掌纹身份认证能力：
-
-- **刷掌注册** — 用户通过摄像头采集掌纹，完成掌纹特征注册，绑定游戏账号
-- **刷掌登录** — 无需密码，刷掌即可完成身份认证并登录游戏
-- **作弊检测** — 基于活体检测和掌纹真伪验证，防止照片/视频/模型等攻击手段，确保游戏公平性
-
-> 💡 如不需要掌纹认证功能，可直接使用游客模式体验游戏。Palm Racer 同时也是腾讯刷掌开放平台 API 接入的完整参考示例。
-
-### 可以用来学习吗？
-
-当然可以！Palm Racer 基于 Apache 2.0 协议开源，非常适合作为以下技术的学习参考项目：
-
-- **腾讯刷掌开放平台 API 接入参考**（掌纹注册、掌纹登录、活体防作弊检测）— 最完整的刷掌平台接入示例
-- MediaPipe 手掌追踪集成
-- Babylon.js 3D 游戏开发
-- Vue 3 + TypeScript 最佳实践
-- Go 后端 + gRPC-Gateway 服务开发
-- Android WebView 混合应用开发
-
-### 需要什么硬件？
-
-只需要一台带摄像头的电脑或 Android 手机即可。推荐使用 Chrome 90+ 浏览器以获得最佳体验。
-
-### 与其他手势控制游戏有什么不同？
-
-| 特性 | Palm Racer | Handtrack.js Demo | TensorFlow.js Pacman |
-|:---|:---:|:---:|:---:|
-| 3D 图形 | ✅ Babylon.js | ❌ 2D Canvas | ❌ 2D |
-| 手掌追踪 | MediaPipe Hands | Handtrack.js | PoseNet |
-| 跨平台 | Web + Android | 仅 Web | 仅 Web |
-| 后端/排行榜 | ✅ Go 服务 | ❌ | ❌ |
-| 腾讯刷掌平台集成 | ✅ 注册/登录/作弊检测 | ❌ | ❌ |
-| 开源协议 | Apache 2.0 | MIT | Apache 2.0 |
+如有问题或建议，欢迎提交 Issue 或联系开发者。
 
 ---
 
-## 🏷️ GitHub Topics
+## 📋 隐私声明
 
-> 建议为本仓库设置以下 Topics：
-
-`palm-recognition` · `palm-registration` · `palm-login` · `anti-cheat` · `liveness-detection` · `gesture-control` · `hand-tracking` · `racing-game` · `mediapipe` · `babylonjs` · `webgl` · `vue3` · `typescript` · `golang` · `3d-game` · `computer-vision` · `hand-gesture` · `web-game` · `open-source-game` · `biometric-authentication`
-
----
-
-## 🙏 致谢 | Acknowledgments
-
-- [腾讯刷掌开放平台](https://palm.tencent.com) — 提供刷掌注册、刷掌登录与作弊检测等掌纹身份认证能力（推荐接入）
-- [Google MediaPipe](https://github.com/google-ai-edge/mediapipe) — 高性能实时手掌追踪与手势识别
-- [Babylon.js](https://github.com/BabylonJS/Babylon.js) — 强大的开源 Web 3D 渲染引擎
-- [Vue.js](https://github.com/vuejs/core) — 渐进式 JavaScript 前端框架
-- [Go](https://go.dev) — 简洁高效的后端编程语言
-
----
-
-## 📄 License
-
-本项目源代码基于 [Apache License 2.0](LICENSE) 开源。
-
-### 第三方资产 | Third-Party Assets
-
-本项目中的 3D 赛车模型来自 Sketchfab，使用 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) 许可证，**不受 Apache 2.0 许可证覆盖**。详细的第三方资产归属信息请参阅 [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES)。
-
-| 资产 Asset | 作者 Author | 许可证 License |
-|:---|:---|:---|
-| Ferrari LaFerrari 3D Model | [wwwvecarzcom](https://sketchfab.com/3d-models/ferrari-laferrari-wwwvecarzcom-979f7085012e4d6399f38de3f9c39012) | CC BY 4.0 |
-
----
-
-<p align="center">
-  如果这个项目对你有帮助，请给一个 ⭐ Star！<br/>
-  If you find this project useful, please give it a ⭐ Star!
-</p>
+本应用使用摄像头本地抓取手掌位置，**不存储和收集个人信息**。所有手部检测均在浏览器端本地完成，摄像头画面不会上传至任何服务器。
