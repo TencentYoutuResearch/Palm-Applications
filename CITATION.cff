@@ -26,5 +26,5 @@ keywords:
   - hand-tracking
   - vue3
   - golang
-license: MIT
+license: Apache-2.0
 repository-code: "https://github.com/EdgeSenseAI/palm-racer"

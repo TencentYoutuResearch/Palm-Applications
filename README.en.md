@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License: Apache 2.0"></a>
   <a href="server/"><img src="https://img.shields.io/badge/Go-1.25+-00ADD8?logo=go&logoColor=white" alt="Go"></a>
   <a href="web/"><img src="https://img.shields.io/badge/Node.js-18+-339933?logo=node.js&logoColor=white" alt="Node.js"></a>
   <a href="web/"><img src="https://img.shields.io/badge/Vue-3-4FC08D?logo=vue.js&logoColor=white" alt="Vue 3"></a>
@@ -318,7 +318,7 @@ Palm Racer supports integration with Tencent's Palm Recognition Open Platform, p
 
 ### Can I use Palm Racer for learning?
 
-Yes! Palm Racer is MIT-licensed and designed as a reference project for:
+Yes! Palm Racer is Apache 2.0-licensed and designed as a reference project for:
 
 - **Tencent Palm Recognition Platform API integration reference** (registration, login, anti-cheat) — the most complete palm platform integration example
 - MediaPipe hand tracking integration in web apps
@@ -340,7 +340,7 @@ Just a computer or Android phone with a camera. Chrome 90+ is recommended for th
 | Cross-Platform | Web + Android | Web only | Web only |
 | Backend/Leaderboard | ✅ Go service | ❌ | ❌ |
 | Tencent Palm Recognition Platform | ✅ Registration/Login/Anti-cheat | ❌ | ❌ |
-| License | MIT | MIT | Apache 2.0 |
+| License | Apache 2.0 | MIT | Apache 2.0 |
 
 ---
 
@@ -364,11 +364,11 @@ Just a computer or Android phone with a camera. Chrome 90+ is recommended for th
 
 ## 📄 License
 
-The source code of this project is open-sourced under the [MIT License](LICENSE).
+The source code of this project is open-sourced under the [Apache License 2.0](LICENSE).
 
 ### Third-Party Assets
 
-The 3D car model used in this project is sourced from Sketchfab and licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), which is **not covered by the MIT License**. See [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES) for full attribution details.
+The 3D car model used in this project is sourced from Sketchfab and licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), which is **not covered by the Apache 2.0 License**. See [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES) for full attribution details.
 
 | Asset | Author | License |
 |:---|:---|:---|
