@@ -92,6 +92,7 @@ palm-applications/
 ├── palm-racer/              # 🏎️ 3D 体感赛车（Vue 3 + Go）
 ├── LICENSE                  # Apache 2.0 许可证
 ├── THIRD_PARTY_NOTICES.md   # 第三方依赖声明
+├── CONTRIBUTING.md          # 贡献指南
 ├── README.md                # 中文文档
 └── README_en.md             # English documentation
 ```

@@ -91,6 +91,8 @@ palm-applications/
 ├── celina-PalmDestiny/  # 🔮 AI palm reading (Python + FastAPI)
 ├── palm-racer/          # 🏎️ 3D gesture racing (Vue 3 + Go)
 ├── LICENSE              # Apache 2.0 License
+├── THIRD_PARTY_NOTICES.md  # Third-party notices
+├── CONTRIBUTING.md      # Contribution guidelines
 └── README.md            # Documentation
 ```
 
