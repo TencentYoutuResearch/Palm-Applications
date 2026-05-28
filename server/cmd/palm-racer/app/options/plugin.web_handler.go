@@ -52,13 +52,6 @@ func (s *CompletedServerRunOptions) installWebHandlerOrDie(ws *webserver_.Generi
 			Host:     palmProto.GetHost(),
 			APIToken: palmProto.GetSecretKey(), // secret_key field holds Bearer token
 		}
-		// 注入 debug dump 配置
-		if dbg := fullConfig.GetDebug(); dbg != nil {
-			if dump := dbg.GetDump(); dump != nil {
-				palmCfg.DumpEnabled = dump.GetEnabled()
-				palmCfg.DumpDir = dump.GetDumpDir()
-			}
-		}
 		var palmSvc palmdomain.PalmService = palminfra.NewPalmService(palmCfg)
 		palmHandler = application.NewPalmHandler(palmSvc, palmRegRepo)
 		logrus.Infof("[WebHandler] PalmHandler initialized, host: %s", palmCfg.Host)

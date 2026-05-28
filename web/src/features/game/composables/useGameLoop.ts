@@ -97,7 +97,7 @@ export function useGameLoop(options: UseGameLoopOptions) {
   const frameCollector = new BestFrameCollector(1000, 5);
 
   function startAntiCheat(): void {
-    if (!userStore.isLoggedIn) return;
+    if (!userStore.isLoggedIn || userStore.isGuest) return;
     userStore.cheatCount = 0;
 
     // 初始化帧采集器：将 HandTracker 和摄像头作为帧源

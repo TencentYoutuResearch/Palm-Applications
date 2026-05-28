@@ -25,13 +25,13 @@
   <a href="README.md">中文</a>
 </p>
 
-> **Palm Racer** is an open-source 3D racing game integrating Tencent Palm Recognition Platform for palm registration, palm login, and anti-cheat detection — controlled entirely by hand gestures via MediaPipe, no controller needed.
+> **Palm Racer** is an open-source 3D racing game controlled entirely by hand gestures via MediaPipe — no controller needed. It supports optional integration with palm recognition platforms (recommended: [Tencent Palm Recognition Open Platform](https://palm.tencent.com)) for palm registration, palm login, and anti-cheat detection.
 
 ---
 
 ## 📖 Introduction
 
-**Palm Racer** is a gesture-controlled racing game integrated with [Tencent Palm Recognition Open Platform](https://palm.tencent.com). It captures your hand posture through the camera to control a 3D racing car — steering, accelerating, and braking — while leveraging Tencent's palm platform for palm registration, palm login, and liveness-based anti-cheat detection. Available on Web browsers and Android.
+**Palm Racer** is a gesture-controlled racing game that captures your hand posture through the camera to control a 3D racing car — steering, accelerating, and braking. All hand tracking runs locally in the browser. The project supports integration with palm recognition platforms (recommended: [Tencent Palm Recognition Open Platform](https://palm.tencent.com)) for optional palm registration, palm login, and liveness-based anti-cheat detection. Available on Web browsers and Android.
 
 ---
 
@@ -47,8 +47,8 @@
 
 ## ✨ Features
 
-- 🔐 **Tencent Palm Platform Integration** — Integrated with [Tencent Palm Recognition Open Platform](https://palm.tencent.com) for palm registration, palm login, and liveness-based anti-cheat detection, enabling secure biometric identity authentication
-- 🖐️ **Palm Gesture Control** — Real-time hand tracking via MediaPipe Hands, no controller or keyboard needed
+- 🖐️ **Palm Gesture Control** — Real-time hand tracking via MediaPipe Hands, runs entirely locally, no controller or keyboard needed
+- 🔐 **Palm Authentication (Optional)** — Supports integration with palm recognition platforms (recommended: [Tencent Palm Recognition Open Platform](https://palm.tencent.com)) for optional palm registration, palm login, and liveness-based anti-cheat detection
 - 🏎️ **3D Racing Engine** — Babylon.js powered 3D track, vehicle physics, and particle effects
 - 🌐 **Cross-Platform** — Single Web codebase runs on both browsers and Android WebView
 - 🔊 **Procedural Audio** — Real-time engine sounds and ambient audio via Web Audio API
@@ -144,7 +144,7 @@ make docker-down
 
 | Layer | Technology |
 |:---|:---|
-| Palm Authentication | [Tencent Palm Recognition Open Platform](https://palm.tencent.com) (Registration/Login/Liveness Anti-cheat) |
+| Palm Authentication (Optional) | [Tencent Palm Recognition Open Platform](https://palm.tencent.com) (Registration/Login/Liveness Anti-cheat) |
 | Web Frontend | Vue 3 + TypeScript + Vite + Babylon.js |
 | Palm Tracking | MediaPipe Hands (WASM) |
 | Android Client | Java + WebView + JSBridge |
@@ -186,9 +186,9 @@ subgraph Backend["Backend ﾂｷ Go"]
 
 ---
 
-## 🔐 Tencent Palm Platform API Integration
+## 🔐 Tencent Palm Platform API Integration (Optional)
 
-Palm Racer integrates with [Tencent Palm Recognition Open Platform](https://palm.tencent.com) through a backend proxy, providing the following core API capabilities:
+Palm Racer supports integration with [Tencent Palm Recognition Open Platform](https://palm.tencent.com) through a backend proxy, providing the following optional palm authentication capabilities (if you don't need palm authentication, you can use Guest Mode to experience the game directly):
 
 | API | Function | Description |
 |:---|:---|:---|
@@ -308,19 +308,19 @@ Palm Racer uses Google's MediaPipe Hands (running in WASM) to detect 21 hand lan
 
 ### What Tencent Palm Platform capabilities are integrated?
 
-Palm Racer integrates with Tencent's Palm Recognition Open Platform, providing three core capabilities:
+Palm Racer supports integration with Tencent's Palm Recognition Open Platform, providing the following optional palm authentication capabilities:
 
 - **Palm Registration** — Users register their palm prints via camera, binding biometric identity to their game account
 - **Palm Login** — Password-free authentication by simply scanning your palm to log in
 - **Anti-Cheat Detection** — Liveness detection and palm print authenticity verification to prevent photo/video/model-based attacks, ensuring fair gameplay
 
-This makes Palm Racer not just a gesture-controlled game, but a complete integration example of the Palm Recognition Platform's capabilities.
+> 💡 If you don't need palm authentication, you can use Guest Mode to experience the game directly. Palm Racer also serves as a complete reference example for integrating the Tencent Palm Recognition Platform API.
 
 ### Can I use Palm Racer for learning?
 
 Yes! Palm Racer is MIT-licensed and designed as a reference project for:
 
-- **Tencent Palm Recognition Platform API integration** (registration, login, anti-cheat) — the most complete palm platform integration example
+- **Tencent Palm Recognition Platform API integration reference** (registration, login, anti-cheat) — the most complete palm platform integration example
 - MediaPipe hand tracking integration in web apps
 - Babylon.js 3D game development
 - Vue 3 + TypeScript best practices
@@ -354,7 +354,7 @@ Just a computer or Android phone with a camera. Chrome 90+ is recommended for th
 
 ## 🙏 Acknowledgments
 
-- [Tencent Palm Recognition Open Platform](https://palm.tencent.com) — Core palm print authentication capabilities including registration, login, and anti-cheat detection
+- [Tencent Palm Recognition Open Platform](https://palm.tencent.com) — Palm print authentication capabilities including registration, login, and anti-cheat detection (recommended integration)
 - [Google MediaPipe](https://github.com/google-ai-edge/mediapipe) — High-performance real-time hand tracking and gesture recognition
 - [Babylon.js](https://github.com/BabylonJS/Babylon.js) — Powerful open-source Web 3D rendering engine
 - [Vue.js](https://github.com/vuejs/core) — Progressive JavaScript frontend framework
@@ -364,7 +364,15 @@ Just a computer or Android phone with a camera. Chrome 90+ is recommended for th
 
 ## 📄 License
 
-This project is open-sourced under the [MIT License](LICENSE).
+The source code of this project is open-sourced under the [MIT License](LICENSE).
+
+### Third-Party Assets
+
+The 3D car model used in this project is sourced from Sketchfab and licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), which is **not covered by the MIT License**. See [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES) for full attribution details.
+
+| Asset | Author | License |
+|:---|:---|:---|
+| Ferrari LaFerrari 3D Model | [wwwvecarzcom](https://sketchfab.com/3d-models/ferrari-laferrari-wwwvecarzcom-979f7085012e4d6399f38de3f9c39012) | CC BY 4.0 |
 
 ---
 

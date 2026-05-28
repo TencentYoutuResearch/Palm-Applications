@@ -27,6 +27,9 @@
       <button class="btn-palm" @click="handlePalmLogin" :disabled="isLoggingIn">
         {{ isLoggingIn ? t('login.palmLoginLoading') : '🖐️ ' + t('login.palmLogin') }}
       </button>
+      <button class="btn-guest" @click="handleGuestLogin">
+        🎮 {{ t('login.guestLogin') }}
+      </button>
       <p v-if="loginError" class="login-error">{{ loginError }}</p>
       <!-- APK 下载功能暂时屏蔽，待 COS/CDN 托管方案就绪后恢复
       <router-link to="/download" class="link-download-app">
@@ -240,6 +243,11 @@ function retryScan(): void {
   setTimeout(() => handlePalmLogin(), 300);
 }
 
+function handleGuestLogin(): void {
+  userStore.guestLogin();
+  router.push('/menu');
+}
+
 
 
 </script>
@@ -421,6 +429,27 @@ function retryScan(): void {
 
   &:hover {
     box-shadow: 0 4px 20px rgba(0, 212, 255, 0.35);
+  }
+  &:active { transform: scale(0.97); }
+}
+
+.btn-guest {
+  width: 100%;
+  padding: 10px 28px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: transform 0.15s, box-shadow 0.2s, background 0.2s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(255, 255, 255, 0.1);
   }
   &:active { transform: scale(0.97); }
 }

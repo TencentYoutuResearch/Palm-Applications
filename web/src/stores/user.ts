@@ -24,8 +24,9 @@ export const useUserStore = defineStore('user', () => {
   const userName = ref(saved.userName);
   const tenantName = ref(saved.tenantName);
   const cheatCount = ref(0);
+  const isGuest = ref(false);
 
-  const isLoggedIn = computed(() => !!userId.value);
+  const isLoggedIn = computed(() => !!userId.value || isGuest.value);
 
   // Persist to localStorage on change
   function persist(): void {
@@ -43,6 +44,16 @@ export const useUserStore = defineStore('user', () => {
     userName.value = user.userName;
     tenantName.value = user.tenantName ?? '';
     cheatCount.value = 0;
+    isGuest.value = false;
+  }
+
+  /** 游客模式登录，不需要注册和刷掌 */
+  function guestLogin(): void {
+    userId.value = '';
+    userName.value = '游客';
+    tenantName.value = '';
+    cheatCount.value = 0;
+    isGuest.value = true;
   }
 
   function logout(): void {
@@ -50,6 +61,7 @@ export const useUserStore = defineStore('user', () => {
     userName.value = '';
     tenantName.value = '';
     cheatCount.value = 0;
+    isGuest.value = false;
     localStorage.removeItem(STORAGE_KEY);
   }
 
@@ -62,8 +74,10 @@ export const useUserStore = defineStore('user', () => {
     userName,
     tenantName,
     cheatCount,
+    isGuest,
     isLoggedIn,
     login,
+    guestLogin,
     logout,
     incrementCheat,
   };

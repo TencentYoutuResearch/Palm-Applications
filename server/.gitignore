@@ -73,3 +73,6 @@ target/
 
 # Other
 .DS_Store
+
+# Debug dump directory (removed feature, ensure never tracked)
+debug/

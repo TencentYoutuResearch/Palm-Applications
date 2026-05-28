@@ -3,7 +3,7 @@
     <div class="menu-header">
       <h1 class="title">🏎️ PalmRacer <span class="badge-3d">3D</span></h1>
       <p class="subtitle">{{ t('menu.subtitle') }}</p>
-      <p class="welcome">{{ t('menu.welcome', { name: userStore.userName }) }}</p>
+      <p class="welcome">{{ userStore.isGuest ? t('menu.guestMode') : t('menu.welcome', { name: userStore.userName }) }}</p>
     </div>
 
     <div class="controls-guide">
@@ -42,13 +42,14 @@
         🏁 {{ t('menu.start') }}
       </button>
       <div class="menu-row">
-        <button class="btn-secondary" @click="router.push('/leaderboard')">
+        <button v-if="!userStore.isGuest" class="btn-secondary" @click="router.push('/leaderboard')">
           🏆 {{ t('menu.leaderboard') }}
         </button>
         <button class="btn-secondary" @click="router.push('/settings')">
           ⚙️ {{ t('menu.settings') }}
         </button>
       </div>
+      <p v-if="userStore.isGuest" class="guest-hint">{{ t('menu.guestHint') }}</p>
       <button class="logout-btn" @click="handleLogout">
         🚪 {{ t('menu.logout') }}
       </button>
@@ -236,5 +237,12 @@ function handleLogout(): void {
   opacity: 0.7;
 
   &:active { opacity: 1; }
+}
+
+.guest-hint {
+  font-size: clamp(10px, 1.3vh, 12px);
+  color: rgba(255, 255, 255, 0.4);
+  text-align: center;
+  margin-top: -4px;
 }
 </style>

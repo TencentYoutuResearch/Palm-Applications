@@ -36,10 +36,8 @@ web:
       max_concurrency: 0
       method_qps: []
 
-# 腾讯刷掌开放平台 API 配置
-# 请前往 https://palm.tencent.com 申请凭据后填写
 palm:
-  host: "open.palmoa.youtu.qq.com"   # 刷掌平台 API 域名
+  host: ""   # 刷掌平台 API 域名
   secret_key: ""  # API Token (Bearer)
 
 # 数据库配置（排行榜等功能需要）

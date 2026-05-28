@@ -51,6 +51,10 @@
     "settings": "Settings",
     "logout": "Logout",
     "welcome": "Welcome, {name}",
+    "guestMode": "Guest Mode (scores not saved to leaderboard)",
+    "guestHint": "💡 Scores are not saved in guest mode. Login with palm scan to unlock full features",
+    "guestMode": "Guest Mode (scores not saved to leaderboard)",
+    "guestHint": "💡 Scores are not saved in guest mode. Login with palm scan to unlock full features",
     "subtitle": "Palm Racing · Gesture-Controlled Racing",
     "controlsGuide": "🎮 Controls Guide",
     "controlOpen": "Open Palm = Auto Accelerate",
@@ -150,7 +154,8 @@
     "time": "Survive Time",
     "retry": "Play Again",
     "menu": "Back to Menu",
-    "leaderboard": "Leaderboard"
+    "leaderboard": "Leaderboard",
+    "guestNotice": "Guest Mode: Score not saved to leaderboard"
   },
   "leaderboard": {
     "title": "Leaderboard",

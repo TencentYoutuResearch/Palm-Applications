@@ -8,6 +8,7 @@
     "scanning": "请将手掌对准摄像头...",
     "hint": "请通过刷掌登录开始游戏",
     "palmRegister": "🖐️ 刷掌注册",
+    "guestLogin": "游客模式",
     "downloadApp": "📱 下载安卓 App",
     "loginFailed": "登录失败，请重试",
     "networkError": "网络连接失败",
@@ -51,6 +52,8 @@
     "settings": "设置",
     "logout": "退出登录",
     "welcome": "欢迎, {name}",
+    "guestMode": "游客模式（成绩不计入排行榜）",
+    "guestHint": "💡 游客模式下成绩不计入排行榜，刷掌登录后可解锁完整功能",
     "subtitle": "掌上赛车 · 手掌体感竞速",
     "controlsGuide": "🎮 操控指南",
     "controlOpen": "伸出手掌 = 自动加速",
@@ -150,7 +153,8 @@
     "time": "存活时间",
     "retry": "再来一局",
     "menu": "返回菜单",
-    "leaderboard": "排行榜"
+    "leaderboard": "排行榜",
+    "guestNotice": "游客模式：成绩未保存到排行榜"
   },
   "leaderboard": {
     "title": "排行榜",

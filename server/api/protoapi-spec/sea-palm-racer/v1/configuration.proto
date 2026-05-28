@@ -13,9 +13,6 @@ message Configuration {
   // App 版本管理配置
   AppVersion app_version = 2;
 
-  // 调试配置
-  Debug debug = 20;
-
   message Palm {
     int32 app_id = 1;
     string secret_id = 2;
@@ -35,13 +32,5 @@ message Configuration {
     bool force_update = 4;
     // 更新日志
     string changelog = 5;
-  }
-
-  message Debug {
-    Dump dump = 1;
-    message Dump {
-      bool enabled = 1;
-      string dump_dir = 2;
-    }
   }
 }

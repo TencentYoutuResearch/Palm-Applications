@@ -51,6 +51,8 @@
     "settings": "設定",
     "logout": "ログアウト",
     "welcome": "ようこそ、{name}",
+    "guestMode": "ゲストモード（スコアはランキングに保存されません）",
+    "guestHint": "💡 ゲストモードではスコアが保存されません。パーム認証でログインすると全機能が解除されます",
     "subtitle": "パームレーシング · ジェスチャーコントロール",
     "controlsGuide": "🎮 操作ガイド",
     "controlOpen": "手のひらを開く = 自動加速",
@@ -150,7 +152,8 @@
     "time": "生存時間",
     "retry": "もう一度",
     "menu": "メニューに戻る",
-    "leaderboard": "ランキング"
+    "leaderboard": "ランキング",
+    "guestNotice": "ゲストモード：スコアはランキングに保存されません"
   },
   "leaderboard": {
     "title": "ランキング",

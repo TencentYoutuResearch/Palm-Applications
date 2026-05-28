@@ -6,6 +6,10 @@
       {{ t('gameover.newRecord') }}
     </div>
 
+    <div v-if="userStore.isGuest" class="guest-notice">
+      {{ t('gameover.guestNotice') }}
+    </div>
+
     <div class="stats-grid">
       <div class="stat card">
         <span class="stat-label">{{ t('gameover.score') }}</span>
@@ -31,7 +35,7 @@
       <button class="btn-primary" @click="retry">{{ t('gameover.retry') }}</button>
       <div class="actions-row">
         <button class="btn-secondary" @click="router.push('/menu')">{{ t('gameover.menu') }}</button>
-        <button class="btn-secondary" @click="router.push('/leaderboard')">{{ t('gameover.leaderboard') }}</button>
+        <button v-if="!userStore.isGuest" class="btn-secondary" @click="router.push('/leaderboard')">{{ t('gameover.leaderboard') }}</button>
       </div>
     </div>
   </div>
@@ -81,7 +85,7 @@ function retry(): void {
 
 /** Auto-submit score on entering the page (logged-in non-guest only, score > 0). */
 onMounted(async () => {
-  if (!userStore.userId || stats.value.score <= 0) {
+  if (!userStore.userId || userStore.isGuest || stats.value.score <= 0) {
     return;
   }
   try {
@@ -114,6 +118,16 @@ onMounted(async () => {
   font-weight: 700;
   color: $color-accent;
   animation: glow 1.5s ease-in-out infinite alternate;
+}
+
+.guest-notice {
+  font-size: clamp(11px, 1.6vh, 13px);
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 @keyframes glow {
