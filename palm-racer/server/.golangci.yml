@@ -1,0 +1,78 @@
+# golangci-lint 配置:开源合规 + Sea 框架友好
+# 安装:go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+# 执行:make lint  或  golangci-lint run ./...
+
+run:
+  timeout: 5m
+  go: "1.21"
+  tests: true
+  modules-download-mode: readonly
+  # 生成代码与外部下载目录跳过
+  skip-dirs:
+    - api/protoapi-spec
+    - script/third_party
+    - pack
+    - tmp
+    - log
+
+output:
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+  sort-results: true
+
+linters:
+  # 先用保守集合;后续可逐步启用 gocyclo / revive / gocritic
+  disable-all: true
+  enable:
+    - govet          # 官方静态检查
+    - errcheck       # 强制检查 error 返回值
+    - staticcheck    # 业界标准静态检查
+    - ineffassign    # 无效赋值
+    - unused         # 未使用的代码
+    - gosimple       # 简化建议
+    - typecheck      # 类型检查
+    - gofmt          # 格式化
+    - goimports      # import 分组
+    - misspell       # 拼写错误
+    - bodyclose      # HTTP response body 未 Close
+    - rowserrcheck   # sql.Rows.Err 未检查
+    - noctx          # http.Request 未带 context
+
+linters-settings:
+  errcheck:
+    # 忽略常见的安全可忽略调用
+    exclude-functions:
+      - (io.Closer).Close
+      - (*os.File).Close
+      - (net/http.ResponseWriter).Write
+      - fmt.Fprintln
+      - fmt.Fprintf
+      - fmt.Fprint
+  govet:
+    enable-all: true
+    disable:
+      - fieldalignment # 对齐建议噪音大,暂不开启
+      - shadow         # 语义正确的 shadow 很常见
+  goimports:
+    local-prefixes: github.com/TencentYoutuResearch/Palm-Applications/palm-racer
+  misspell:
+    locale: US
+
+issues:
+  exclude-use-default: false
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  # 对 _test.go 放宽 errcheck:测试里明知错误也要断言而非忽略,但桩代码可容忍
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - errcheck
+        - bodyclose
+    # 生成代码:虽然 skip-dirs 已覆盖,再兜底一层
+    - path: \.pb\.go$
+      linters:
+        - all
+    - path: \.pb\.gw\.go$
+      linters:
+        - all

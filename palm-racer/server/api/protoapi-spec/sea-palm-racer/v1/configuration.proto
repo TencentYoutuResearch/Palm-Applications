@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package sea.api.seapalmracer;
+import "google/protobuf/duration.proto";
+
+option go_package = "github.com/TencentYoutuResearch/Palm-Applications/palm-racer/server/api/protoapi-spec/sea-palm-racer/v1;v1";
+
+// config file yaml
+message Configuration {
+  // 刷掌平台 API 配置
+  Palm palm = 1;
+
+  // App 版本管理配置
+  AppVersion app_version = 2;
+
+  message Palm {
+    int32 app_id = 1;
+    string secret_id = 2;
+    string secret_key = 3;
+    string host = 4;
+    string base_url = 5;
+    string version = 6;
+  }
+
+  // App 版本管理配置，用于控制客户端升级策略
+  message AppVersion {
+    // 最新版本号（如 "1.0.0"），客户端通过语义化版本号比较判断是否需要升级
+    string version = 1;
+    // APK 下载链接
+    string download_url = 3;
+    // 是否强制更新（true 时客户端必须升级才能继续使用）
+    bool force_update = 4;
+    // 更新日志
+    string changelog = 5;
+  }
+}
