@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <title>Palm Racer - Gesture-Controlled 3D Racing Game | 掌上赛车</title>
+<meta name="description" content="Palm Racer is an open-source gesture-controlled 3D racing game with palm registration, palm login and anti-cheat detection powered by Tencent Palm Recognition Platform. Use your palm to steer, accelerate and brake — no controller needed. Built with MediaPipe Hands, Babylon.js, Vue 3 and Go." />
+<meta name="keywords" content="palm racer, gesture control game, hand tracking game, mediapipe game, 3d racing game, webgl game, open source game, babylon.js, vue3, palm recognition, palm registration, palm login, anti-cheat detection, liveness detection, 手势控制, 体感游戏, 掌上赛车, 刷掌注册, 刷掌登录, 作弊检测" />
+    <meta name="author" content="Palm Racer Contributors" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Palm Racer - Gesture-Controlled 3D Racing Game" />
+<meta property="og:description" content="Race with your palm! Open-source 3D racing game with palm registration, login and anti-cheat detection. Powered by Tencent Palm Recognition Platform and MediaPipe hand tracking." />
+    <meta property="og:image" content="/images/palm-racer-banner.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://github.com/TencentYoutuResearch/Palm-Applications/tree/main/palm-racer" />
+    <meta property="og:site_name" content="Palm Racer" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Palm Racer - Gesture-Controlled 3D Racing" />
+    <meta name="twitter:description" content="Race with your palm! Open-source 3D racing game — no controller needed." />
+    <meta name="twitter:image" content="/images/palm-racer-banner.png" />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Palm Racer",
+      "alternateName": "掌上赛车",
+"description": "Open-source palm-gesture controlled 3D racing game with palm registration, palm login and anti-cheat detection. Integrates Tencent Palm Recognition Platform for secure biometric authentication. Built with MediaPipe hand tracking, Babylon.js 3D engine, Vue 3 frontend and Go backend.",
+      "applicationCategory": "GameApplication",
+      "applicationSubCategory": "Racing Game",
+      "operatingSystem": "Web, Android",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": "Palm Racer Contributors"
+      },
+"license": "https://www.apache.org/licenses/LICENSE-2.0",
+      "programmingLanguage": ["TypeScript", "Go", "Java"],
+      "runtimePlatform": ["Web Browser", "Android"],
+      "softwareRequirements": "Camera access required"
+    }
+    </script>
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- MediaPipe Hands (local) -->
+    <script src="./mediapipe/hands.min.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
