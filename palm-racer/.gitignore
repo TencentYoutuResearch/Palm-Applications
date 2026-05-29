@@ -1,0 +1,80 @@
+# Dependencies
+node_modules/
+web/node_modules/
+
+# Build outputs
+pack/
+web/dist/
+*.tsbuildinfo
+.node_local/
+android/app/build/
+android/.gradle/
+android/build/
+android/local.properties
+*.keystore
+*.jks
+android/keystore.properties
+server/cmd/palm-racer/palm-racer
+server/pack/
+
+# IDE & AI tools
+.idea/
+*.iml
+.vscode/
+.codebuddy/
+.DS_Store
+.agent
+
+# Android generated assets (built by scripts/build-web.sh)
+android/app/src/main/assets/web/
+
+# Go build cache & logs
+server/log/
+server/tmp/
+server/debug/
+*.log
+log/
+
+# Auto-downloaded by `make generate` (see server/Makefile)
+# 说明:copyright.sh / copyright.txt 已本地化入库;proto-gen.sh 按需从上游刷新
+server/script/proto-gen.sh
+server/script/third_party/
+
+# Generated proto files — regenerate locally: cd server && make generate
+server/api/protoapi-spec/**/*.pb.gw.go
+server/api/protoapi-spec/**/*.pb.go
+server/api/protoapi-spec/**/*_grpc.pb.go
+
+# MediaPipe WASM assets (copied from node_modules at build time)
+web/public/mediapipe/
+
+# Runtime
+*.out
+*.test
+
+# Internal scripts (keep locally, exclude from git)
+scripts/migrate-to-opensource.sh
+scripts/build-web.sh
+scripts/make-demo-gif.sh
+
+# OS
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Editor swap files
+*.swp
+*.swo
+*~
+
+# Test coverage
+coverage/
+web/coverage/
+
+# Misc
+tmp/
+*.pid
+server/bin/

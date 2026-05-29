@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+title: "Palm Racer"
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+  - name: "Palm Racer Contributors"
+abstract: >-
+  Palm Racer is a gesture-controlled racing game powered by real-time
+  palm recognition. It integrates Tencent Palm Recognition Platform for
+  palm registration, palm login, and anti-cheat detection. Players control
+  a 3D racing car through camera-based hand tracking — steering,
+  accelerating, and braking — all with their palm. Built with Vue 3,
+  Babylon.js, MediaPipe Hands, and a Go backend service.
+keywords:
+  - palm-recognition
+  - palm-registration
+  - palm-login
+  - anti-cheat
+  - liveness-detection
+  - biometric-authentication
+  - gesture-control
+  - racing-game
+  - mediapipe
+  - babylonjs
+  - webgl
+  - hand-tracking
+  - vue3
+  - golang
+license: Apache-2.0
+repository-code: "https://github.com/TencentYoutuResearch/Palm-Applications/tree/main/palm-racer"

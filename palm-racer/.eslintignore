@@ -1,0 +1,3 @@
+# 第三方库文件，不做 ESLint 检查
+web/public/mediapipe/
+public/mediapipe/
