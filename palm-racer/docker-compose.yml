@@ -1,0 +1,45 @@
+# Palm Racer - Local Development / Quick Start
+# Usage: docker compose up -d
+# Access: http://localhost:9090
+
+services:
+  palm-racer:
+    build: .
+    ports:
+      - "9090:9090"
+    environment:
+      - TZ=Asia/Shanghai
+      - STATIC_ROOT=/app/web/dist
+      - PALM_APP_ID=${PALM_APP_ID:-0}
+      - PALM_SECRET_ID=${PALM_SECRET_ID:-}
+      - PALM_SECRET_KEY=${PALM_SECRET_KEY:-}
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USERNAME=app
+      - DB_PASSWORD=changeme
+      - DB_NAME=palm_racer
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: changeme_root
+      MYSQL_DATABASE: palm_racer
+      MYSQL_USER: app
+      MYSQL_PASSWORD: changeme
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./server/script/palm-racer/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  mysql_data:
