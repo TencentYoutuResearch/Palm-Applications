@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package sea.api.types;
+import "google/protobuf/descriptor.proto";
+
+option go_package = "github.com/TencentYoutuResearch/Palm-Applications/palm-racer/server/api/protoapi-spec/types;types";
+
+message Error {
+  string code = 1 [json_name = "Code"];
+  string message = 2 [json_name = "Message"];
+}

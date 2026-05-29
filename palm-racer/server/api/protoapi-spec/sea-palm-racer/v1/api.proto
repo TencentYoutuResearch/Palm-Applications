@@ -1,0 +1,294 @@
+syntax = "proto3";
+
+package sea.api.seapalmracer;
+
+import "google/api/annotations.proto";
+
+option go_package = "github.com/TencentYoutuResearch/Palm-Applications/palm-racer/server/api/protoapi-spec/sea-palm-racer/v1;v1";
+
+service SeaPalmRacerService {
+  // 游戏分数管理
+  rpc SubmitScore(SubmitScoreRequest) returns (SubmitScoreResponse) {
+    option (google.api.http) = {
+      post: "/api/scores"
+      body: "*"
+    };
+  };
+  rpc GetLeaderboard(GetLeaderboardRequest) returns (GetLeaderboardResponse) {
+    option (google.api.http) = {
+      post: "/api/leaderboard"
+      body: "*"
+    };
+  };
+  rpc GetUserHistory(GetUserHistoryRequest) returns (GetUserHistoryResponse) {
+    option (google.api.http) = {
+      post: "/api/user_history"
+      body: "*"
+    };
+  };
+
+  // 刷掌平台 API 代理
+  rpc CreateToken(CreateTokenRequest) returns (CreateTokenResponse) {
+    option (google.api.http) = {
+      post: "/api/palm/create_token"
+      body: "*"
+    };
+  };
+  rpc SearchRgbPalm(SearchRgbPalmRequest) returns (SearchRgbPalmResponse) {
+    option (google.api.http) = {
+      post: "/api/palm/search_rgb_palm"
+      body: "*"
+    };
+  };
+  rpc RegisterRgbPalm(RegisterRgbPalmRequest) returns (RegisterRgbPalmResponse) {
+    option (google.api.http) = {
+      post: "/api/palm/register_rgb_palm"
+      body: "*"
+    };
+  };
+
+  // App 版本管理
+  rpc GetAppVersion(GetAppVersionRequest) returns (GetAppVersionResponse) {
+    option (google.api.http) = {
+      post: "/api/app/version"
+      body: "*"
+    };
+  };
+}
+
+// ==================== 游戏分数管理 ====================
+
+// 提交分数请求
+message SubmitScoreRequest {
+  string request_id = 1 [json_name = "RequestId"];
+  string user_id = 2 [json_name = "UserId"];
+  string user_name = 3 [json_name = "UserName"];
+  int32 score = 4 [json_name = "Score"];
+  double max_speed = 5 [json_name = "MaxSpeed"];
+  double survive_time = 6 [json_name = "SurviveTime"];
+  bool cheated = 7 [json_name = "Cheated"];
+  // 替玩用户ID（多个不同替玩用户以最后1个为准）
+  string cheat_user_id = 8 [json_name = "CheatUserId"];
+}
+
+// 提交分数响应
+message SubmitScoreResponse {
+  int32 code = 1 [json_name = "Code"];
+  string message = 2 [json_name = "Message"];
+}
+
+// 排行榜请求
+message GetLeaderboardRequest {
+  string request_id = 1 [json_name = "RequestId"];
+  string period = 2 [json_name = "Period"];       // today / week / all
+  // 每页条数，默认 50，最大 100。与 offset 配合实现分页查询。
+  int32 limit = 3 [json_name = "Limit"];
+  // 当前登录用户 ID。传入后服务端在响应的 my_rank 字段返回该用户的全局排名条目（不在 Top N 内也会返回）。
+  // 传空字符串则不计算 my_rank。
+  string user_id = 4 [json_name = "UserId"];
+  // 分页偏移量，默认 0。与 limit 配合实现分页查询。
+  int32 offset = 5 [json_name = "Offset"];
+}
+
+// 排行榜条目
+message LeaderboardEntry {
+  int32 rank = 1 [json_name = "Rank"];
+  string user_id = 2 [json_name = "UserId"];
+  string user_name = 3 [json_name = "UserName"];
+  int32 score = 4 [json_name = "Score"];
+  double max_speed = 5 [json_name = "MaxSpeed"];
+  double survive_time = 6 [json_name = "SurviveTime"];
+  bool cheated = 7 [json_name = "Cheated"];
+  int64 timestamp = 8 [json_name = "Timestamp"];
+  // 替玩用户ID
+  string cheat_user_id = 9 [json_name = "CheatUserId"];
+}
+
+// 排行榜响应
+message GetLeaderboardResponse {
+  int32 code = 1 [json_name = "Code"];
+  string message = 2 [json_name = "Message"];
+  LeaderboardData data = 3 [json_name = "Data"];
+}
+
+message LeaderboardData {
+  repeated LeaderboardEntry list = 1 [json_name = "List"];
+  // 去重后的排行榜总条数（用于前端计算总页数）。
+  // 受 period 上限约束：all 最大 500、today 最大 20、week 最大 50。
+  int32 total = 2 [json_name = "Total"];
+  // 当前登录用户的全局排名条目（请求传 user_id 时返回）。
+  // 不在 Top N 里时，rank 为真实名次；用户在该 period 无成绩时 rank=0。
+  LeaderboardEntry my_rank = 3 [json_name = "MyRank"];
+}
+
+// 用户历史成绩请求
+message GetUserHistoryRequest {
+  string request_id = 1 [json_name = "RequestId"];
+  string user_id = 2 [json_name = "UserId"];
+  // 偏移量，默认 0
+  int64 offset = 3 [json_name = "Offset"];
+  // 每页数量，默认 20，最大 100
+  int32 limit = 4 [json_name = "Limit"];
+}
+
+// 历史成绩条目
+message HistoryEntry {
+  int32 index = 1 [json_name = "Index"];
+  string user_id = 2 [json_name = "UserId"];
+  string user_name = 3 [json_name = "UserName"];
+  int32 score = 4 [json_name = "Score"];
+  double max_speed = 5 [json_name = "MaxSpeed"];
+  double survive_time = 6 [json_name = "SurviveTime"];
+  bool cheated = 7 [json_name = "Cheated"];
+  int64 timestamp = 8 [json_name = "Timestamp"];
+  // 替玩用户ID
+  string cheat_user_id = 9 [json_name = "CheatUserId"];
+}
+
+// 用户历史成绩响应
+message GetUserHistoryResponse {
+  int32 code = 1 [json_name = "Code"];
+  string message = 2 [json_name = "Message"];
+  UserHistoryData data = 3 [json_name = "Data"];
+}
+
+message UserHistoryData {
+  repeated HistoryEntry list = 1 [json_name = "List"];
+  int32 total = 2 [json_name = "Total"];
+  // 用户历史全量聚合统计（不受分页影响）
+  UserHistoryStats stats = 3 [json_name = "Stats"];
+}
+
+// 用户历史全量聚合统计
+message UserHistoryStats {
+  // 非作弊最高分
+  int32 best_score = 1 [json_name = "BestScore"];
+  // 总场次
+  int32 total_games = 2 [json_name = "TotalGames"];
+  // 作弊场次
+  int32 cheat_count = 3 [json_name = "CheatCount"];
+}
+
+// ==================== 刷掌平台 API 代理 ====================
+
+// 创建 AccessToken 请求
+message CreateTokenRequest {
+  string request_id = 1 [json_name = "RequestId"];
+  string grant_type = 2 [json_name = "GrantType"];
+  string user_id = 3 [json_name = "UserId"];
+}
+
+// 创建 AccessToken 响应（结构化字段，适配前端和 app 侧解析）
+message CreateTokenResponse {
+  CreateTokenData response = 1 [json_name = "Response"];
+  // 兼容刷掌平台 Error 包裹格式
+  CreateTokenError error = 2 [json_name = "Error"];
+}
+
+// 创建 AccessToken 响应数据
+message CreateTokenData {
+  string access_token = 1 [json_name = "AccessToken"];
+  int64 expires_in = 2 [json_name = "ExpiresIn"];
+}
+
+// 创建 AccessToken 错误信息
+message CreateTokenError {
+  string code = 1 [json_name = "Code"];
+  string message = 2 [json_name = "Message"];
+}
+
+// RGB 手掌图片信息（全部基础类型，避免 Struct 循环引用导致框架 truncate 栈溢出）
+message RgbImageInfo {
+  // base64 编码的图片数据
+  string data = 1 [json_name = "Data"];
+  // 图片类型（1=RGB）
+  int32 image_type = 2 [json_name = "ImageType"];
+  // 图片数据的 MD5 摘要
+  string data_digest = 3 [json_name = "DataDigest"];
+}
+
+// 搜索 RGB 手掌请求（字段与前端直接对齐，无需 payload 包裹）
+message SearchRgbPalmRequest {
+  string request_id = 1 [json_name = "RequestId"];
+  // RGB 手掌图片信息
+  RgbImageInfo rgb_image = 2 [json_name = "RgbImage"];
+  // SDK 版本号
+  string sdk_version = 3 [json_name = "SdkVersion"];
+  // SDK 时间戳 JSON 字符串
+  string sdk_timestamps = 4 [json_name = "SdkTimestamps"];
+  // 用户 Token
+  string user_token = 5 [json_name = "UserToken"];
+  // 用户 ID（可选）
+  string user_id = 6 [json_name = "UserId"];
+}
+
+// 搜索 RGB 手掌响应（结构化字段，适配前端和 app 侧解析）
+message SearchRgbPalmResponse {
+  int32 code = 1 [json_name = "Code"];
+  string message = 2 [json_name = "Message"];
+  SearchRgbPalmData data = 3 [json_name = "Data"];
+}
+
+// 搜索 RGB 手掌响应数据
+message SearchRgbPalmData {
+  string user_id = 1 [json_name = "UserId"];
+  double score = 2 [json_name = "Score"];
+  string algorithm_version = 3 [json_name = "AlgorithmVersion"];
+  int32 palm_direction = 4 [json_name = "PalmDirection"];
+}
+
+// 注册 RGB 手掌请求（字段与 RegisterRgbPalm 对齐）
+message RegisterRgbPalmRequest {
+  string request_id = 1 [json_name = "RequestId"];
+  // 用户唯一标识
+  string user_id = 2 [json_name = "UserId"];
+  // RGB 手掌图片信息
+  RgbImageInfo rgb_image = 3 [json_name = "RgbImage"];
+  // 是否强制换绑（业务使用时传 false）
+  bool is_force = 4 [json_name = "IsForce"];
+  // 用户 Token（可选，非空则对图片数据加密）
+  string user_token = 5 [json_name = "UserToken"];
+}
+
+// 注册 RGB 手掌响应（结构化字段，适配前端和 app 侧解析）
+message RegisterRgbPalmResponse {
+  int32 code = 1 [json_name = "Code"];
+  string message = 2 [json_name = "Message"];
+  RegisterRgbPalmData data = 3 [json_name = "Data"];
+}
+
+// 注册 RGB 手掌响应数据
+message RegisterRgbPalmData {
+  // 用户的掌纹 ID（游戏侧一般不关心，仅作透传便于排障）
+  string palm_id = 1 [json_name = "PalmId"];
+}
+
+// ==================== App 版本管理 ====================
+
+// 获取 App 最新版本请求
+message GetAppVersionRequest {
+  string request_id = 1 [json_name = "RequestId"];
+  // 客户端当前平台（android / ios）
+  string platform = 2 [json_name = "Platform"];
+  // 客户端当前版本号（如 "1.0.0"），服务端通过比较版本号判断是否需要升级
+  string current_version = 3 [json_name = "CurrentVersion"];
+}
+
+// 获取 App 最新版本响应
+message GetAppVersionResponse {
+  int32 code = 1 [json_name = "Code"];
+  string message = 2 [json_name = "Message"];
+  AppVersionData data = 3 [json_name = "Data"];
+}
+
+// App 版本信息
+message AppVersionData {
+  // 最新版本号（如 "1.1.0"），客户端通过语义化版本号比较判断是否需要升级
+  string version = 1 [json_name = "Version"];
+  // APK 下载链接
+  string download_url = 3 [json_name = "DownloadUrl"];
+  // 是否强制更新（true 时客户端必须升级才能继续使用）
+  bool force_update = 4 [json_name = "ForceUpdate"];
+  // 更新日志
+  string changelog = 5 [json_name = "Changelog"];
+}
