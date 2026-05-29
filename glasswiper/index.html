@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN" id="html-root">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GlassWiper 🧹 体感擦玻璃小游戏</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧹</text></svg>">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- API Key 注入（由服务端动态生成） -->
+    <script src="api/frontend-config.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- ========== 窗户框架（包含游戏区域） ========== -->
+    <div class="window-frame">
+        <div class="window-glass" id="window-glass">
+            <!-- 游戏 Canvas 区域 -->
+            <div id="game-area">
+                <!-- Layer 1: 隐藏图片层 -->
+                <canvas id="canvas-image" class="game-canvas"></canvas>
+                <!-- Layer 2: 污渍层 -->
+                <canvas id="canvas-dirt" class="game-canvas"></canvas>
+                <!-- Layer 3: 手掌指示层 -->
+                <canvas id="canvas-cursor" class="game-canvas"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="window-sill"></div>
+    <div class="curtain left"></div>
+    <div class="curtain right"></div>
+
+    <!-- ========== 语言切换按钮 ========== -->
+    <button id="lang-toggle-btn" class="lang-toggle-btn" title="Switch Language">
+        <span class="lang-icon">🌐</span>
+        <span class="lang-text">EN</span>
+    </button>
+
+    <!-- ========== 开始界面 ========== -->
+    <div id="start-screen" class="screen active">
+        <div class="start-content">
+            <h1 class="game-title">🪟 GlassWiper</h1>
+            <p class="game-subtitle" data-i18n="gameSubtitle">窗户清洁大冒险</p>
+            <div class="instructions">
+                <div class="instruction-item">
+                    <span class="icon">✋</span>
+                    <span data-i18n="instructionOpenPalm">张开手掌对准摄像头</span>
+                </div>
+                <div class="instruction-item">
+                    <span class="icon">👋</span>
+                    <span data-i18n="instructionWipe">移动手掌擦除窗户污渍</span>
+                </div>
+                <div class="instruction-item">
+                    <span class="icon">✊</span>
+                    <span data-i18n="instructionFist">握拳暂停擦拭</span>
+                </div>
+                <div class="instruction-item">
+                    <span class="icon">🖼️</span>
+                    <span data-i18n="instructionDiscover">发现窗外精彩场景！</span>
+                </div>
+            </div>
+
+            <!-- 掌纹认证区域 -->
+            <div id="palm-auth-section" class="palm-auth-section">
+                <!-- 已登录状态 -->
+                <div id="palm-logged-in" class="palm-status" style="display:none;">
+                    <span id="palm-welcome-text" class="palm-welcome">👋 </span>
+                    <button id="palm-logout-btn" class="btn-small btn-outline" data-i18n="palmLogoutBtn">切换用户</button>
+                </div>
+                <!-- 未登录状态 -->
+                <div id="palm-logged-out" class="palm-status">
+                    <div class="palm-user-select">
+                        <select id="palm-user-select" class="palm-select">
+                            <option value="" data-i18n="palmSelectUser">-- 选择已有用户 --</option>
+                        </select>
+                        <button id="palm-login-btn" class="btn-small btn-palm" data-i18n="palmVerifyBtn">验证掌纹</button>
+                    </div>
+                    <div class="palm-actions">
+                        <button id="palm-new-user-btn" class="btn-small btn-outline" data-i18n="palmNewUserBtn">新用户注册</button>
+                        <button id="palm-skip-btn" class="btn-small btn-outline" data-i18n="palmSkipBtn">跳过登录</button>
+                    </div>
+                    <!-- 掌纹验证摄像头预览 -->
+                    <div id="palm-camera-preview" class="palm-camera-preview" style="display:none;">
+                        <video id="palm-preview-video" autoplay playsinline></video>
+                        <div class="palm-preview-guide">
+                            <div class="palm-guide-frame"></div>
+                            <span class="palm-guide-text">手心朝向摄像头，五指张开</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- 状态消息 -->
+                <div id="palm-message" class="palm-message" style="display:none;"></div>
+            </div>
+
+            <div class="high-score-display">
+                <span data-i18n="highScoreLabel">🏆 历史最高分：</span><span id="high-score">0</span>
+            </div>
+            <div class="start-buttons">
+                <button id="start-btn" class="btn btn-primary" data-i18n="startBtn">开始冒险</button>
+                <button id="leaderboard-btn" class="btn btn-secondary" data-i18n="leaderboardBtn">🏆 排行榜</button>
+            </div>
+            <p class="camera-hint" data-i18n="cameraHint">* 需要授权摄像头使用权限</p>
+        </div>
+    </div>
+
+    <!-- ========== 掌纹注册弹窗 ========== -->
+    <div id="palm-register-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-content palm-modal">
+            <h2 data-i18n="palmRegisterTitle">📝 新用户注册</h2>
+            <p data-i18n="palmRegisterDesc">输入昵称，然后扫描掌纹完成注册</p>
+            <!-- 注册摄像头预览 -->
+            <div id="palm-register-preview" class="palm-camera-preview" style="display:none;">
+                <video id="palm-register-video" autoplay playsinline></video>
+                <div class="palm-preview-guide">
+                    <div class="palm-guide-frame"></div>
+                    <span class="palm-guide-text">手心朝向摄像头，五指张开</span>
+                </div>
+            </div>
+            <div class="palm-register-form">
+                <input type="text" id="palm-nickname-input" class="palm-input" maxlength="20" placeholder="请输入昵称">
+                <button id="palm-register-confirm-btn" class="btn btn-primary" data-i18n="palmRegisterBtn">注册掌纹</button>
+            </div>
+            <div id="palm-register-message" class="palm-message" style="display:none;"></div>
+            <button id="palm-register-cancel-btn" class="btn-small btn-outline" data-i18n="palmSkipBtn">跳过登录</button>
+        </div>
+    </div>
+
+    <!-- ========== 排行榜弹窗 ========== -->
+    <div id="leaderboard-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-content leaderboard-modal">
+            <h2 data-i18n="leaderboardTitle">🏆 排行榜</h2>
+            <div id="leaderboard-content" class="leaderboard-content"></div>
+            <button id="leaderboard-close-btn" class="btn btn-primary">OK</button>
+        </div>
+    </div>
+
+    <!-- ========== 游戏界面 ========== -->
+    <div id="game-screen" class="screen">
+        <!-- 顶部 HUD -->
+        <div id="game-hud">
+            <div class="hud-item">
+                <span class="hud-label" data-i18n="hudLevel">关卡</span>
+                <span id="hud-level" class="hud-value">1</span>
+            </div>
+            <div class="hud-item">
+                <span class="hud-label" data-i18n="hudScore">分数</span>
+                <span id="hud-score" class="hud-value">0</span>
+            </div>
+            <div class="hud-item hud-timer">
+                <span class="hud-label" data-i18n="hudTime">时间</span>
+                <span id="hud-time" class="hud-value">60</span>
+            </div>
+            <div class="hud-item hud-progress">
+                <span class="hud-label" data-i18n="hudProgress">擦除进度</span>
+                <div class="progress-bar">
+                    <div id="progress-fill" class="progress-fill"></div>
+                    <span id="progress-text" class="progress-text">0%</span>
+                </div>
+            </div>
+            <div class="hud-item hud-combo" id="hud-combo" style="display:none;">
+                <span id="combo-text" class="combo-text">x1.5</span>
+            </div>
+        </div>
+
+        <!-- 游戏 Canvas 区域已移到窗框内部 -->
+
+        <!-- 摄像头小窗口 -->
+        <div id="camera-preview">
+            <video id="camera-video" autoplay playsinline></video>
+            <canvas id="camera-overlay" class="camera-canvas"></canvas>
+            <div class="camera-label" data-i18n="cameraLabel">📷 摄像头</div>
+        </div>
+
+        <!-- 倒计时覆盖层 -->
+        <div id="countdown-overlay" class="overlay" style="display:none;">
+            <span id="countdown-number" class="countdown-number">3</span>
+        </div>
+
+        <!-- 关卡完成覆盖层 -->
+        <div id="level-complete-overlay" class="overlay" style="display:none;">
+            <div class="level-complete-content">
+                <h2 data-i18n="levelCompleteTitle">✨ 关卡完成！</h2>
+                <p><span data-i18n="wipedArea">擦除面积：</span><span id="complete-percent">0</span>%</p>
+                <p><span data-i18n="earnedScore">获得分数：</span><span id="complete-score">0</span></p>
+                <p id="complete-bonus"></p>
+                <button id="next-level-btn" class="btn btn-primary" data-i18n="nextLevelBtn">下一关</button>
+            </div>
+        </div>
+
+        <!-- Boss 来袭覆盖层 -->
+        <div id="boss-incoming-overlay" class="overlay boss-overlay" style="display:none;">
+            <div class="boss-incoming-content">
+                <div class="boss-incoming-icon">👾</div>
+                <h2 id="boss-incoming-title" data-i18n="bossIncomingTitle">👾 BOSS 来袭！</h2>
+                <p id="boss-incoming-subtitle" data-i18n="bossIncomingSubtitle">把它擦出来，用手掌扣它！</p>
+            </div>
+        </div>
+
+        <!-- Boss 战完成覆盖层 -->
+        <div id="boss-complete-overlay" class="overlay" style="display:none;">
+            <div class="boss-complete-content">
+                <h2 data-i18n="bossDefeatedTitle">🎉 Boss 已击败！</h2>
+                <div class="boss-stats">
+                    <div class="boss-stat">
+                        <span class="boss-stat-label" data-i18n="bossHitCount">打击次数</span>
+                        <span id="boss-complete-hits" class="boss-stat-value">0</span>
+                    </div>
+                    <div class="boss-stat">
+                        <span class="boss-stat-label" data-i18n="bossMaxCombo">最高连击</span>
+                        <span id="boss-complete-combo" class="boss-stat-value">0</span>
+                    </div>
+                </div>
+                <p><span data-i18n="bossEarnedScore">获得分数：</span><span id="boss-complete-score">0</span></p>
+                <p id="boss-complete-bonus" class="boss-bonus-text"></p>
+                <button id="boss-continue-btn" class="btn btn-primary" data-i18n="bossContinueBtn">继续擦玻璃</button>
+            </div>
+        </div>
+
+        <!-- Boss 血条 HUD -->
+        <div id="boss-hud" style="display:none;">
+            <div class="boss-hud-label" data-i18n="bossHudLabel">👾 BOSS</div>
+            <div class="boss-hp-bar">
+                <div id="boss-hp-fill" class="boss-hp-fill"></div>
+                <span id="boss-hp-text" class="boss-hp-text">100 / 100</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 结算界面 ========== -->
+    <div id="end-screen" class="screen">
+        <div class="end-content">
+            <h1 data-i18n="gameOverTitle">🎉 游戏结束</h1>
+            <div class="end-stats">
+                <div class="stat-item">
+                    <span class="stat-label" data-i18n="totalScore">总分</span>
+                    <span id="end-score" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label" data-i18n="levelsPassed">通过关卡</span>
+                    <span id="end-levels" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label" data-i18n="maxCombo">最高连击</span>
+                    <span id="end-combo" class="stat-value">x1</span>
+                </div>
+            </div>
+            <div id="end-gallery">
+                <h3 data-i18n="galleryTitle">🖼️ 揭示的隐藏图片</h3>
+                <div id="gallery-container" class="gallery-container"></div>
+            </div>
+            <!-- 排行榜信息 -->
+            <div id="end-leaderboard-info" class="end-leaderboard-info" style="display:none;">
+                <div id="end-rank-text" class="end-rank-text"></div>
+            </div>
+            <div id="end-leaderboard-container" class="end-leaderboard-container"></div>
+            <div class="end-buttons">
+                <button id="restart-btn" class="btn btn-primary" data-i18n="restartBtn">再来一局</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 隐藏的 video 元素用于手部检测 -->
+    <video id="hand-video" style="display:none;" autoplay playsinline></video>
+
+    <!-- MediaPipe Hands CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+    <!-- 游戏脚本 -->
+<script src="js/i18n.js?v=3"></script>
+<script src="js/palm-auth.js?v=3"></script>
+    <script src="js/leaderboard.js?v=1"></script>
+    <script src="js/hand.js?v=3"></script>
+    <script src="js/glass.js?v=6"></script>
+    <script src="js/score.js?v=3"></script>
+    <script src="js/boss.js?v=4"></script>
+    <script src="js/scene.js?v=5"></script>
+    <script src="js/ui.js?v=8"></script>
+    <script src="js/game.js?v=7"></script>
+<script src="js/main.js?v=6"></script>
+</body>
+</html>

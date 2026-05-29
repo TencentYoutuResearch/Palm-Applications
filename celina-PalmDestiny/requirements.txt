@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+python-multipart
+Pillow
+opencv-python-headless
+scikit-image
+numpy
+httpx
+sqlalchemy
+aiosqlite
+greenlet
+pydantic
+pydantic-settings
+python-dotenv
+loguru

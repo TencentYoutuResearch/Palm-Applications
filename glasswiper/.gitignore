@@ -1,0 +1,16 @@
+# 环境变量（包含敏感信息）
+.env
+
+# 部署配置（可能含密钥）
+.with/
+
+# Node.js
+node_modules/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

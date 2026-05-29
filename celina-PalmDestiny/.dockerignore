@@ -1,0 +1,28 @@
+# 敏感文件 - 绝对不能打入镜像
+.env
+.env.*
+
+# 数据库文件
+*.db
+*.db-shm
+*.db-wal
+
+# 日志
+logs/
+
+# 上传文件
+static/uploads/
+
+# Python 缓存
+__pycache__/
+*.pyc
+*.pyo
+
+# Git
+.git/
+.gitignore
+
+# 开发/测试文件
+run_tests_server.py
+docs/
+*.md

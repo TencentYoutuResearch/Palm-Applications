@@ -1,0 +1,22 @@
+{
+  "name": "glasswiper",
+  "version": "1.0.0",
+  "description": "[English](./README_en.md) | 中文",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://git.woa.com/guopengwang/glasswiper_jsgame.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^8.57.1",
+    "stylelint": "^17.11.1",
+    "stylelint-config-standard": "^40.0.0"
+  }
+}

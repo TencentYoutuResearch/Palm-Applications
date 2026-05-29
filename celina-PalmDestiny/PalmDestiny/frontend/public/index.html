@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>掌纹算命 · 今日运势</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style-part2.css">
+</head>
+
+<body>
+  <!-- 粒子背景层 -->
+  <canvas id="particles-canvas"></canvas>
+
+  <!-- 页面容器 -->
+  <div id="app" class="app-container">
+
+    <!-- ========== 第1屏：欢迎页 ========== -->
+    <section id="screen-welcome" class="screen active">
+      <div class="welcome-content">
+        <div class="floating-symbols">
+          <span class="float-sym s1">✦</span>
+          <span class="float-sym s2">☽</span>
+          <span class="float-sym s3">♈</span>
+          <span class="float-sym s4">✧</span>
+          <span class="float-sym s5">☆</span>
+          <span class="float-sym s6">♓</span>
+          <span class="float-sym s7">⊹</span>
+          <span class="float-sym s8">✵</span>
+        </div>
+        <div class="logo-aura">
+          <div class="aura-ring ring1"></div>
+          <div class="aura-ring ring2"></div>
+          <div class="aura-ring ring3"></div>
+          <div class="palm-icon">🖐️</div>
+        </div>
+        <h1 class="title-glow">掌纹算命</h1>
+        <p class="subtitle">✦ AI 智能掌纹分析 · 解读命运密码 ✦</p>
+        <p class="desc-text">请选择你的算命方式</p>
+
+        <!-- 两个入口卡片 -->
+        <div class="mode-selection">
+          <div class="mode-card glass-card" id="mode-traditional">
+            <div class="mode-icon">🖐️</div>
+            <div class="mode-badge">经典</div>
+            <h3>传统手相</h3>
+            <p class="mode-desc">纯手相解读，只需刷掌<br>十大维度深度分析掌纹</p>
+            <ul class="mode-features">
+              <li><i class="fas fa-check"></i> 掌型五行总论</li>
+              <li><i class="fas fa-check"></i> 生命线·智慧线·感情线</li>
+              <li><i class="fas fa-check"></i> 命运线·辅助线解读</li>
+              <li><i class="fas fa-check"></i> 八丘论断·流年运势</li>
+            </ul>
+            <button class="btn-mode btn-mode-traditional">
+              <i class="fas fa-hand-sparkles"></i> 开始手相
+            </button>
+          </div>
+
+          <div class="mode-card glass-card" id="mode-fusion">
+            <div class="mode-icon">🔮</div>
+            <div class="mode-badge premium">高级</div>
+            <h3>融合解读</h3>
+            <p class="mode-desc">手相+星座+生辰综合分析<br>全方位运势报告与问答</p>
+            <ul class="mode-features">
+              <li><i class="fas fa-check"></i> 包含全部手相分析</li>
+              <li><i class="fas fa-check"></i> 星座运势匹配</li>
+              <li><i class="fas fa-check"></i> 生辰八字推演</li>
+              <li><i class="fas fa-check"></i> 四维运势·宜忌·幸运</li>
+            </ul>
+            <button class="btn-mode btn-mode-fusion">
+              <i class="fas fa-magic"></i> 高级解读
+            </button>
+          </div>
+        </div>
+
+        <div class="trust-indicators">
+          <div class="trust-item">
+            <span class="trust-num" data-target="1286573">0</span>
+            <span class="trust-label">累计测算次数</span>
+          </div>
+          <div class="trust-divider"></div>
+          <div class="trust-item">
+            <span class="trust-num" data-target="98">0</span>
+            <span class="trust-label">好评率(%)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 第2屏：用户信息（仅融合模式） ========== -->
+    <section id="screen-info" class="screen">
+      <div class="screen-header">
+        <button class="btn-back" data-target="screen-welcome"><i class="fas fa-chevron-left"></i></button>
+        <h2><i class="fas fa-user-astronaut"></i> 个人信息</h2>
+        <div class="header-step">1/3</div>
+      </div>
+      <div class="info-content">
+        <div class="info-card glass-card">
+          <div class="card-header-line">
+            <div class="card-icon">🐲</div>
+            <h3>选择你的生肖</h3>
+          </div>
+          <div id="zodiac-grid" class="zodiac-grid"></div>
+        </div>
+        <div class="info-card glass-card">
+          <div class="card-header-line">
+            <div class="card-icon">⭐</div>
+            <h3>选择你的星座 <span style="font-size:11px;color:rgba(255,255,255,0.3);font-weight:400;margin-left:4px;">（可选，可从出生日期自动推算）</span></h3>
+          </div>
+          <div id="constellation-grid" class="constellation-grid"></div>
+          <div id="constellation-hint" class="constellation-hint" style="display:none;"></div>
+        </div>
+        <div class="info-card glass-card">
+          <div class="card-header-line">
+            <div class="card-icon">🎂</div>
+            <h3>出生日期</h3>
+          </div>
+          <input type="hidden" id="user-birthday" value="">
+          <div class="birthday-picker-wrapper">
+            <div class="birthday-picker" id="birthday-picker">
+              <div class="birthday-col" id="birthday-col-year">
+                <div class="birthday-mask-top"></div>
+                <div class="birthday-mask-bottom"></div>
+                <div class="birthday-highlight"></div>
+                <div class="birthday-list" id="birthday-list-year"></div>
+              </div>
+              <div class="birthday-col" id="birthday-col-month">
+                <div class="birthday-mask-top"></div>
+                <div class="birthday-mask-bottom"></div>
+                <div class="birthday-highlight"></div>
+                <div class="birthday-list" id="birthday-list-month"></div>
+              </div>
+              <div class="birthday-col" id="birthday-col-day">
+                <div class="birthday-mask-top"></div>
+                <div class="birthday-mask-bottom"></div>
+                <div class="birthday-highlight"></div>
+                <div class="birthday-list" id="birthday-list-day"></div>
+              </div>
+            </div>
+          </div>
+          <div class="birthday-selected-info" id="birthday-selected-info">
+            <span class="birthday-display" id="birthday-display">请选择出生日期</span>
+          </div>
+        </div>
+        <!-- 时辰选择器 -->
+        <div class="info-card glass-card">
+          <div class="card-header-line">
+            <div class="card-icon">🕐</div>
+            <h3>出生时辰</h3>
+          </div>
+          <div class="shichen-picker-wrapper">
+            <div class="shichen-picker" id="shichen-picker">
+              <div class="shichen-mask-top"></div>
+              <div class="shichen-mask-bottom"></div>
+              <div class="shichen-highlight"></div>
+              <div class="shichen-list" id="shichen-list"></div>
+            </div>
+          </div>
+          <div class="shichen-selected-info" id="shichen-selected-info">
+            <span class="shichen-name-display" id="shichen-name-display">子时</span>
+            <span class="shichen-time-display" id="shichen-time-display">前日23:00 ~ 次日01:00</span>
+          </div>
+        </div>
+        <!-- 真太阳时开关 -->
+        <div class="info-card glass-card">
+          <div class="card-header-line" style="margin-bottom:8px;">
+            <div class="card-icon">☀️</div>
+            <h3>真太阳时</h3>
+            <div class="toggle-switch-wrapper">
+              <label class="toggle-switch">
+                <input type="checkbox" id="true-solar-toggle">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+          <p class="solar-time-desc">开启后将根据出生地经度修正为真太阳时，可能影响时辰判定。真太阳时是天文学上的实际时间，与北京时间存在差异。</p>
+          <div class="solar-time-input-row" id="solar-time-input-row" style="display:none;">
+            <label class="solar-label">出生地经度</label>
+            <input type="number" id="birth-longitude" class="name-input" placeholder="如：116.4 (北京)" step="0.1" min="73" max="135" style="flex:1;">
+            <span class="solar-unit">°E</span>
+          </div>
+        </div>
+        <div class="info-card glass-card">
+          <div class="card-header-line">
+            <div class="card-icon">👤</div>
+            <h3>输入姓名（选填）</h3>
+          </div>
+          <input type="text" id="user-name" class="name-input" placeholder="请输入你的姓名" maxlength="10">
+        </div>
+        <button id="btn-to-scan" class="btn-primary btn-full" disabled>
+          <i class="fas fa-camera"></i> 下一步：刷掌扫描
+          <i class="fas fa-arrow-right btn-arrow"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- ========== 第3屏：刷掌扫描（两种模式共用） ========== -->
+    <section id="screen-scan" class="screen">
+      <div class="screen-header">
+        <button class="btn-back" id="scan-back-btn" data-target="screen-welcome"><i class="fas fa-chevron-left"></i></button>
+        <h2><i class="fas fa-hand-sparkles"></i> 掌纹扫描</h2>
+        <div class="header-step" id="scan-step-label">1/2</div>
+      </div>
+      <div class="scan-content">
+        <div class="scan-instruction">
+          <div class="instruction-icon"><i class="fas fa-info-circle"></i></div>
+          <p>请将手掌放置在扫描区域内，保持手掌平展，点击拍照按钮采集掌纹</p>
+        </div>
+        <div class="scan-area" id="scan-area">
+          <video id="camera-video" autoplay playsinline></video>
+          <div class="scan-overlay">
+            <div class="scan-frame">
+              <div class="corner tl"></div>
+              <div class="corner tr"></div>
+              <div class="corner bl"></div>
+              <div class="corner br"></div>
+              <div class="scan-line" id="scan-line"></div>
+            </div>
+            <div class="hand-guide">
+              <svg viewBox="0 0 200 240" class="hand-svg">
+                <path d="M100,20 C95,20 90,30 90,45 L90,100 C85,95 75,90 70,90 C60,90 55,100 55,110 L55,115 C50,110 40,108 35,110 C28,113 25,122 25,130 L25,135 C20,132 15,132 12,135 C8,140 8,150 10,160 L30,200 C40,215 55,225 75,228 L125,228 C145,225 160,215 170,200 L190,160 C192,150 192,140 188,135 C185,132 180,132 175,135 L175,130 C175,122 172,113 165,110 C160,108 150,110 145,115 L145,110 C145,100 140,90 130,90 C125,90 115,95 110,100 L110,45 C110,30 105,20 100,20Z" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2" stroke-dasharray="5,5" />
+              </svg>
+            </div>
+          </div>
+          <canvas id="scan-canvas" style="display:none;"></canvas>
+        </div>
+        <div class="scan-progress-wrapper" id="scan-progress-wrapper" style="display:none;">
+          <div class="scan-progress-info">
+            <span class="scan-progress-percent" id="scan-progress-percent">0%</span>
+            <span class="scan-progress-eta" id="scan-progress-eta"><i class="fas fa-circle-notch"></i><span class="eta-text"> 预计约30秒</span></span>
+          </div>
+          <div class="scan-progress-bar">
+            <div class="scan-progress-fill" id="scan-progress-fill"></div>
+          </div>
+          <p class="scan-status" id="scan-status"><span class="status-dot"></span>正在识别掌纹...</p>
+        </div>
+        <div id="identify-result-card" class="glass-card identify-result-card" style="display:none;">
+          <div class="identify-header">
+            <div class="identify-icon" id="identify-icon"><i class="fas fa-spinner fa-spin"></i></div>
+            <div class="identify-info">
+              <div class="identify-title" id="identify-title">正在检测手掌...</div>
+              <div class="identify-subtitle" id="identify-subtitle">分析图像中是否包含手掌</div>
+            </div>
+          </div>
+          <div class="identify-details" id="identify-details" style="display:none;">
+            <div class="identify-detail-row">
+              <span class="identify-label">检测置信度</span>
+              <span class="identify-value" id="identify-userid">-</span>
+            </div>
+          </div>
+          <!-- 掌纹认证结果区域 -->
+          <div id="identify-auth-section" class="identify-auth-section" style="display:none;">
+            <div class="identify-auth-divider"></div>
+            <div class="identify-auth-header">
+              <div class="identify-auth-icon" id="identify-auth-icon"><i class="fas fa-spinner fa-spin"></i></div>
+              <div class="identify-auth-info">
+                <div class="identify-auth-title" id="identify-auth-title">正在查询掌纹库...</div>
+                <div class="identify-auth-subtitle" id="identify-auth-subtitle">比对掌纹特征中</div>
+              </div>
+            </div>
+            <div class="identify-auth-details" id="identify-auth-details" style="display:none;">
+              <div class="identify-detail-row">
+                <span class="identify-label">用户ID</span>
+                <span class="identify-value" id="identify-auth-userid">-</span>
+              </div>
+              <div class="identify-detail-row">
+                <span class="identify-label">匹配置信度</span>
+                <span class="identify-value" id="identify-auth-confidence">-</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button id="btn-capture" class="btn-primary btn-full scan-btn-main">
+          <i class="fas fa-camera"></i> 拍照采集掌纹
+        </button>
+        <!-- 文件上传备选方案（摄像头不可用时显示） -->
+        <input type="file" id="palm-file-input" accept="image/jpeg,image/png,image/webp,image/bmp" capture="environment" style="display:none;" onchange="handlePalmUpload(event)">
+        <button id="btn-upload-palm" class="btn-primary btn-full scan-btn-main" style="display:none;" onclick="document.getElementById('palm-file-input').click();">
+          <i class="fas fa-image"></i> 从相册选择手掌照片
+        </button>
+        <button id="btn-scan" class="btn-primary btn-full scan-btn-main pulse-btn" style="display:none;">
+          <i class="fas fa-hand-sparkles"></i> 开始掌纹分析
+        </button>
+        <button id="btn-recapture" class="btn-secondary btn-full" style="display:none;">
+          <i class="fas fa-redo"></i> 重新拍照
+        </button>
+        <div class="scan-tips">
+          <div class="scan-tip-item"><i class="fas fa-lightbulb"></i><span>确保光线充足</span></div>
+          <div class="scan-tip-item"><i class="fas fa-hand-paper"></i><span>手掌平展放置</span></div>
+          <div class="scan-tip-item"><i class="fas fa-shield-alt"></i><span>AI智能分析掌纹</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 第4屏：分析中 ========== -->
+    <section id="screen-analyzing" class="screen">
+      <div class="analyzing-content">
+        <div class="crystal-ball">
+          <div class="ball-glow"></div>
+          <div class="ball-inner"><div class="ball-palm-emoji">🖐️</div></div>
+          <div class="orbit-ring">
+            <div class="orbit-dot d1"></div>
+            <div class="orbit-dot d2"></div>
+            <div class="orbit-dot d3"></div>
+          </div>
+        </div>
+        <h2 class="analyzing-title" id="analyzing-title">正在解读命运...</h2>
+        <p class="analyzing-subtitle" id="analyzing-subtitle">AI正在分析你的掌纹特征...</p>
+        <div class="analyzing-progress-wrapper" id="analyzing-progress-wrapper">
+          <div class="analyzing-progress-info">
+            <span class="analyzing-progress-percent" id="analyzing-progress-percent">0%</span>
+            <span class="analyzing-progress-eta" id="analyzing-progress-eta"><i class="fas fa-circle-notch"></i><span class="eta-text"> 预计约5秒</span></span>
+          </div>
+          <div class="analyzing-progress-bar">
+            <div class="analyzing-progress-fill" id="analyzing-progress-fill"></div>
+          </div>
+        </div>
+        <div class="analyzing-steps" id="analyzing-steps"></div>
+      </div>
+    </section>
+
+    <!-- ========== 第5屏：传统手相结果页 ========== -->
+    <section id="screen-result-traditional" class="screen">
+      <div class="result-content">
+        <div class="result-header-card glass-card">
+          <div class="result-date" id="trad-result-date"></div>
+          <div class="result-user-info" id="trad-result-user-info"></div>
+          <div class="trad-title-badge"><i class="fas fa-hand-sparkles"></i> 传统手相解读报告</div>
+          <div class="trad-report-source-badge" id="trad-report-source-badge" style="display:none;">
+            <i class="fas fa-robot"></i> AI大模型深度解读
+          </div>
+        </div>
+        <div id="trad-palm-sections"></div>
+        <div class="encouragement-card">
+          <div class="encourage-decoration"><span>✦</span><span>·</span><span>✧</span><span>·</span><span>✦</span></div>
+          <div class="encourage-icon">🌟</div>
+          <p class="encourage-text" id="trad-encourage-text"></p>
+          <div class="encourage-decoration"><span>✦</span><span>·</span><span>✧</span><span>·</span><span>✦</span></div>
+        </div>
+        <div class="action-buttons">
+          <button id="btn-share-trad" class="btn-secondary"><i class="fas fa-share-alt"></i> 分享给朋友</button>
+          <button id="btn-retry-trad" class="btn-primary"><i class="fas fa-redo"></i> 重新算一次</button>
+        </div>
+        <p class="footer-sign">由 <a href="https://with.woa.com/" style="color: #8A2BE2;" target="_blank">With</a> 通过自然语言生成</p>
+      </div>
+    </section>
+
+    <!-- ========== 第6屏：融合解读结果页 ========== -->
+    <section id="screen-result-fusion" class="screen">
+      <div class="result-content">
+        <div class="result-header-card glass-card">
+          <div class="result-date" id="fusion-result-date"></div>
+          <div class="result-user-info" id="fusion-result-user-info"></div>
+          <div class="fortune-score-ring">
+            <svg viewBox="0 0 120 120" class="score-svg">
+              <defs>
+                <linearGradient id="score-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" style="stop-color:#8A2BE2" />
+                  <stop offset="100%" style="stop-color:#FF69B4" />
+                </linearGradient>
+              </defs>
+              <circle cx="60" cy="60" r="54" class="score-bg" />
+              <circle cx="60" cy="60" r="54" class="score-fill" id="score-circle" />
+            </svg>
+            <div class="score-text">
+              <span class="score-num" id="score-num">0</span>
+              <span class="score-label">综合运势</span>
+            </div>
+          </div>
+          <div class="fortune-level" id="fortune-level"></div>
+        </div>
+        <!-- 生辰八字卡片 -->
+        <div class="bazi-card glass-card" id="bazi-card" style="display:none;">
+          <h3><i class="fas fa-calendar-alt"></i> 生辰八字</h3>
+          <div class="bazi-pillars-table" id="bazi-pillars">
+            <!-- 第一行：柱名 -->
+            <div class="bazi-row bazi-row-label">
+              <div class="bazi-row-header"></div>
+              <div class="bazi-cell">年柱</div>
+              <div class="bazi-cell">月柱</div>
+              <div class="bazi-cell">日柱</div>
+              <div class="bazi-cell">时柱</div>
+            </div>
+            <!-- 第二行：天干 -->
+            <div class="bazi-row bazi-row-gan">
+              <div class="bazi-row-header">天干</div>
+              <div class="bazi-cell"><span class="bazi-gan" id="bazi-year-gan">甲</span></div>
+              <div class="bazi-cell"><span class="bazi-gan" id="bazi-month-gan">丙</span></div>
+              <div class="bazi-cell"><span class="bazi-gan bazi-gan-day" id="bazi-day-gan">戊</span></div>
+              <div class="bazi-cell"><span class="bazi-gan" id="bazi-hour-gan">壬</span></div>
+            </div>
+            <!-- 第三行：地支 -->
+            <div class="bazi-row bazi-row-zhi">
+              <div class="bazi-row-header">地支</div>
+              <div class="bazi-cell"><span class="bazi-zhi" id="bazi-year-zhi">子</span></div>
+              <div class="bazi-cell"><span class="bazi-zhi" id="bazi-month-zhi">寅</span></div>
+              <div class="bazi-cell"><span class="bazi-zhi" id="bazi-day-zhi">辰</span></div>
+              <div class="bazi-cell"><span class="bazi-zhi" id="bazi-hour-zhi">子</span></div>
+            </div>
+            <!-- 第四行：地支藏干 -->
+            <div class="bazi-row bazi-row-canggan">
+              <div class="bazi-row-header">藏干</div>
+              <div class="bazi-cell"><span class="bazi-canggan" id="bazi-year-canggan">癸</span></div>
+              <div class="bazi-cell"><span class="bazi-canggan" id="bazi-month-canggan">甲丙戊</span></div>
+              <div class="bazi-cell"><span class="bazi-canggan" id="bazi-day-canggan">戊乙癸</span></div>
+              <div class="bazi-cell"><span class="bazi-canggan" id="bazi-hour-canggan">癸</span></div>
+            </div>
+          </div>
+          <div class="bazi-summary" id="bazi-summary">
+            <div class="bazi-daymaster-info">
+              <span class="bazi-daymaster-label">日主</span>
+              <span class="bazi-daymaster-name" id="bazi-daymaster-name">戊土</span>
+              <span class="bazi-daymaster-trait" id="bazi-daymaster-trait">厚重诚信</span>
+            </div>
+          </div>
+          <!-- 滴天髓阐微（排盘后、简评前） -->
+          <div class="ditian-section" id="ditian-card" style="display:none;">
+            <div class="ditian-section-title"><i class="fas fa-book-open"></i> 滴天髓阐微 · 日主论</div>
+            <div class="ditian-header" id="ditian-header">
+              <span class="ditian-gan-badge" id="ditian-gan-badge">甲</span>
+              <span class="ditian-gan-title" id="ditian-gan-title">甲木</span>
+            </div>
+            <div class="ditian-original" id="ditian-original"></div>
+            <div class="ditian-commentary" id="ditian-commentary"></div>
+          </div>
+          <!-- 八字简评 -->
+          <div class="bazi-comment-section-wrapper" id="bazi-comment-wrapper">
+            <div class="bazi-comment-section-title"><i class="fas fa-scroll"></i> 八字简评</div>
+            <div class="bazi-brief-comment" id="bazi-brief-comment"></div>
+          </div>
+        </div>
+        <div class="palm-ai-card glass-card" id="palm-ai-analysis" style="display:none;">
+          <h3><i class="fas fa-robot"></i> AI掌纹分析报告</h3>
+          <div class="ai-identity-info" id="ai-identity-info"></div>
+          <div class="ai-palm-features" id="ai-palm-features"></div>
+        </div>
+        <div class="keywords-card glass-card">
+          <h3><i class="fas fa-tags"></i> 今日关键词</h3>
+          <div class="keywords-list" id="keywords-list"></div>
+        </div>
+        <div class="result-detail-cards">
+          <div class="detail-card glass-card" id="card-love">
+            <div class="detail-icon">💕</div>
+            <h4>感情运势</h4>
+            <div class="detail-bar-wrap"><div class="detail-bar"><div class="detail-bar-fill" id="bar-love"></div></div><span class="detail-score-text" id="score-love"></span></div>
+            <p class="detail-text" id="text-love"></p>
+          </div>
+          <div class="detail-card glass-card" id="card-career">
+            <div class="detail-icon">💼</div>
+            <h4>事业运势</h4>
+            <div class="detail-bar-wrap"><div class="detail-bar"><div class="detail-bar-fill" id="bar-career"></div></div><span class="detail-score-text" id="score-career"></span></div>
+            <p class="detail-text" id="text-career"></p>
+          </div>
+          <div class="detail-card glass-card" id="card-wealth">
+            <div class="detail-icon">💰</div>
+            <h4>财运运势</h4>
+            <div class="detail-bar-wrap"><div class="detail-bar"><div class="detail-bar-fill" id="bar-wealth"></div></div><span class="detail-score-text" id="score-wealth"></span></div>
+            <p class="detail-text" id="text-wealth"></p>
+          </div>
+          <div class="detail-card glass-card" id="card-health">
+            <div class="detail-icon">🏥</div>
+            <h4>健康运势</h4>
+            <div class="detail-bar-wrap"><div class="detail-bar"><div class="detail-bar-fill" id="bar-health"></div></div><span class="detail-score-text" id="score-health"></span></div>
+            <p class="detail-text" id="text-health"></p>
+          </div>
+        </div>
+        <div class="palm-reading-card glass-card">
+          <h3><i class="fas fa-hand-sparkles"></i> 掌纹解读</h3>
+          <div class="palm-lines" id="fusion-palm-lines"></div>
+        </div>
+        <div class="guardian-card glass-card" id="constellation-guardian-card" style="display:none;">
+          <h3><i class="fas fa-star-of-david"></i> 星座守护星解读</h3>
+          <div class="guardian-header">
+            <div class="guardian-symbol" id="guardian-constellation-symbol">♈</div>
+            <div class="guardian-info">
+              <div class="guardian-name" id="guardian-constellation-name">白羊座</div>
+              <div class="guardian-meta">
+                <span class="guardian-tag"><i class="fas fa-planet-ringed"></i> 守护星：<strong id="guardian-star-name">火星</strong></span>
+                <span class="guardian-tag"><i class="fas fa-fire"></i> <span id="guardian-element-type">火象</span></span>
+                <span class="guardian-tag"><i class="fas fa-gem"></i> <span id="guardian-quality">开创</span></span>
+              </div>
+            </div>
+          </div>
+          <div class="guardian-reading-text" id="guardian-reading"></div>
+        </div>
+        <div class="zodiac-fortune-card glass-card" id="zodiac-fortune-card" style="display:none;">
+          <h3><i class="fas fa-dragon"></i> 生肖运势解读</h3>
+          <div class="zodiac-fortune-header">
+            <div class="zodiac-fortune-name" id="zodiac-fortune-name">🐲 属龙</div>
+            <div class="zodiac-fortune-tags">
+              <span class="zodiac-tag">五行：<strong id="zodiac-fortune-element">土</strong></span>
+              <span class="zodiac-tag good">三合：<span id="zodiac-fortune-ally">鼠、猴、鸡</span></span>
+              <span class="zodiac-tag warn">相冲：<span id="zodiac-fortune-conflict">狗、兔</span></span>
+            </div>
+          </div>
+          <div class="zodiac-fortune-reading" id="zodiac-fortune-reading"></div>
+        </div>
+        <div class="five-elements-card glass-card" id="five-elements-card" style="display:none;">
+          <h3><i class="fas fa-yin-yang"></i> 五行能量分析</h3>
+          <div class="dominant-element">
+            <div class="dominant-element-badge">
+              <span class="dominant-icon" id="dominant-element-icon">🌿</span>
+              <div class="dominant-info">
+                <div class="dominant-label">主导五行</div>
+                <div class="dominant-name"><span id="dominant-element-name">木</span> · <span id="dominant-element-trait">仁</span></div>
+              </div>
+            </div>
+            <p class="dominant-desc" id="dominant-element-desc"></p>
+          </div>
+          <div class="five-elements-bars" id="five-elements-bars"></div>
+        </div>
+        <div class="ganzhi-card glass-card" id="ganzhi-card" style="display:none;">
+          <h3><i class="fas fa-compass"></i> 天干地支 · 今日解读</h3>
+          <div class="ganzhi-header">
+            <div class="ganzhi-badge">
+              <span class="ganzhi-text" id="ganzhi-today">甲子</span>
+              <span class="ganzhi-label">今日干支</span>
+            </div>
+            <div class="ganzhi-tags">
+              <span class="ganzhi-tag">天干五行：<strong id="ganzhi-element">木</strong></span>
+              <span class="ganzhi-tag">地支生肖：<strong id="ganzhi-animal">鼠</strong></span>
+            </div>
+          </div>
+          <div class="ganzhi-reading" id="ganzhi-reading"></div>
+        </div>
+        <div class="advice-card glass-card">
+          <h3><i class="fas fa-lightbulb"></i> 今日建议</h3>
+          <div class="advice-content" id="advice-content"></div>
+        </div>
+        <div class="lucky-card glass-card">
+          <h3><i class="fas fa-clover"></i> 今日幸运</h3>
+          <div class="lucky-items">
+            <div class="lucky-item"><span class="lucky-label">幸运颜色</span><div class="lucky-color" id="lucky-color"></div><span class="lucky-value" id="lucky-color-name"></span></div>
+            <div class="lucky-item"><span class="lucky-label">幸运数字</span><span class="lucky-value lucky-number" id="lucky-number"></span></div>
+            <div class="lucky-item"><span class="lucky-label">幸运方位</span><span class="lucky-value lucky-direction" id="lucky-direction"></span></div>
+            <div class="lucky-item"><span class="lucky-label">幸运时辰</span><span class="lucky-value" id="lucky-time"></span></div>
+          </div>
+          <div class="lucky-extra">
+            <div class="lucky-extra-item">
+              <div class="lucky-extra-icon" id="lucky-item-icon">💎</div>
+              <div class="lucky-extra-info"><span class="lucky-extra-label">幸运物品</span><span class="lucky-extra-name" id="lucky-item-name">紫水晶</span><span class="lucky-extra-desc" id="lucky-item-desc">增强直觉力与灵性</span></div>
+            </div>
+            <div class="lucky-extra-item">
+              <div class="lucky-extra-icon" id="lucky-flower-icon">🌸</div>
+              <div class="lucky-extra-info"><span class="lucky-extra-label">幸运花卉</span><span class="lucky-extra-name" id="lucky-flower-name">百合花</span><span class="lucky-extra-desc" id="lucky-flower-desc">百年好合</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="yiji-card glass-card">
+          <h3><i class="fas fa-scroll"></i> 今日宜忌</h3>
+          <div class="yiji-content">
+            <div class="yiji-section yi"><div class="yiji-label"><span class="yi-badge">宜</span></div><div class="yiji-list" id="yi-list"></div></div>
+            <div class="yiji-divider"></div>
+            <div class="yiji-section ji"><div class="yiji-label"><span class="ji-badge">忌</span></div><div class="yiji-list" id="ji-list"></div></div>
+          </div>
+        </div>
+        <div class="encouragement-card">
+          <div class="encourage-decoration"><span>✦</span><span>·</span><span>✧</span><span>·</span><span>✦</span></div>
+          <div class="encourage-icon">🌟</div>
+          <p class="encourage-text" id="fusion-encourage-text"></p>
+          <div class="encourage-decoration"><span>✦</span><span>·</span><span>✧</span><span>·</span><span>✦</span></div>
+        </div>
+        <div class="action-buttons">
+          <button id="btn-share-fusion" class="btn-secondary"><i class="fas fa-share-alt"></i> 分享给朋友</button>
+          <button id="btn-retry-fusion" class="btn-primary"><i class="fas fa-redo"></i> 重新算一次</button>
+        </div>
+        <p class="footer-sign">由 <a href="https://with.woa.com/" style="color: #8A2BE2;" target="_blank">With</a> 通过自然语言生成</p>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- 分享弹窗 -->
+  <div class="share-toast" id="share-toast">
+    <div class="toast-icon">📱</div>
+    <p>已复制运势到剪贴板<br>快去分享给朋友吧！</p>
+  </div>
+
+  <!-- 错误提示 -->
+  <div class="error-toast" id="error-toast">
+    <div class="toast-icon">⚠️</div>
+    <p id="error-message">识别失败，请重试</p>
+  </div>
+
+  <script src="/api/v1/frontend-config.js"></script>
+  <script src="script.js"></script>
+  <script src="script-part2.js"></script>
+</body>
+
+</html>
