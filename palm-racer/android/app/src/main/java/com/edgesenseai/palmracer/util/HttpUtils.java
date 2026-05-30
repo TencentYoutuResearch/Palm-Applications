@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -25,7 +26,7 @@ public final class HttpUtils {
   /**
    * Read all bytes from an InputStream.
    */
-  public static byte[] readAllBytes(InputStream is) throws Exception {
+  public static byte[] readAllBytes(InputStream is) throws IOException {
     ByteArrayOutputStream buffer = new ByteArrayOutputStream();
     byte[] data = new byte[4096];
     int bytesRead;
