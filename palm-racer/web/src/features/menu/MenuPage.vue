@@ -49,7 +49,7 @@
           ⚙️ {{ t('menu.settings') }}
         </button>
       </div>
-      <p v-if="userStore.isGuest" class="guest-hint">{{ t('menu.guestHint') }}</p>
+      <p v-if="userStore.isGuest && appConfigStore.features.guestMode" class="guest-hint">{{ t('menu.guestHint') }}</p>
       <button class="logout-btn" @click="handleLogout">
         🚪 {{ t('menu.logout') }}
       </button>
@@ -61,6 +61,7 @@
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useUserStore } from '@/stores/user';
+import { useAppConfigStore } from '@/stores/appConfig';
 import { useSettingsStore } from '@/stores/settings';
 import { useGameStore } from '@/stores/game';
 import type { CameraView } from '@/stores/settings';
@@ -68,6 +69,7 @@ import type { CameraView } from '@/stores/settings';
 const router = useRouter();
 const { t } = useI18n();
 const userStore = useUserStore();
+const appConfigStore = useAppConfigStore();
 const settingsStore = useSettingsStore();
 const gameStore = useGameStore();
 
