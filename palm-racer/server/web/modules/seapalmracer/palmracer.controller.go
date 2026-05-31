@@ -8,6 +8,7 @@
 //   - search_rgb_palm.go      : SearchRgbPalm 方法
 //   - register_rgb_palm.go    : RegisterRgbPalm 方法
 //   - get_app_version.go      : GetAppVersion 方法
+//   - get_app_config.go       : GetAppConfig 方法
 //   - palmracer.error.go      : domain/application error → (code, msg) 映射
 //   - palmracer.router.go     : HTTP 路由、CORS、静态资源等
 //   - palmracer.cors.go       : CORS 中间件
