@@ -88,8 +88,14 @@ onMounted(async () => {
   if (!userStore.userId || userStore.isGuest || stats.value.score <= 0) {
     return;
   }
+  // 防止同一局游戏分数被重复提交（如组件被重新挂载）
+  if (gameStore.scoreSubmitted) {
+    logger.debug('GameOver', 'Score already submitted, skip duplicate');
+    return;
+  }
+  gameStore.scoreSubmitted = true;
   try {
-    await submitScore(userStore.userId, userStore.userName, stats.value, stats.value.cheatUserId);
+    await submitScore(userStore.userId, userStore.userName, stats.value, stats.value.cheatUserId, gameStore.gameSessionId);
     logger.debug('GameOver', 'Score submitted:', stats.value.score);
   } catch (e) {
     // Never block UI on submission failure (e.g. MySQL not configured).

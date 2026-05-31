@@ -123,12 +123,15 @@ function toHistoryEntry(r: RawLeaderboardEntry & { Index?: number }, fallbackInd
  * Submit game score to the server.
  * Silently ignores submission errors (e.g. MySQL not configured) so the
  * game-over flow is not blocked.
+ *
+ * @param gameSessionId 前端生成的唯一局标识，服务端用于幂等去重。
  */
 export async function submitScore(
   userId: string,
   userName: string,
   stats: GameStats,
-  cheatUserId = ''
+  cheatUserId = '',
+  gameSessionId = ''
 ): Promise<void> {
   await api.post('/scores', {
     UserId: userId,
@@ -138,6 +141,7 @@ export async function submitScore(
     SurviveTime: Math.round(stats.surviveTime),
     Cheated: stats.cheated,
     CheatUserId: cheatUserId,
+    GameSessionId: gameSessionId,
   });
 }
 

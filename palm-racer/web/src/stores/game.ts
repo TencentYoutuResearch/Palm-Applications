@@ -24,6 +24,10 @@ export const useGameStore = defineStore('game', () => {
   const comboCount = ref(0);
   const comboMultiplier = computed(() => Math.min(1 + comboCount.value * 0.5, 5));
   const lastStats = ref<GameStats | null>(null);
+  /** 当前局分数是否已提交，防止重复提交 */
+  const scoreSubmitted = ref(false);
+  /** 当前局唯一标识，用于服务端去重 */
+  const gameSessionId = ref('');
 
   function reset(): void {
     state.value = 'idle';
@@ -34,11 +38,15 @@ export const useGameStore = defineStore('game', () => {
     gameTime.value = 0;
     comboCount.value = 0;
     lastStats.value = null;
+    scoreSubmitted.value = false;
+    gameSessionId.value = '';
   }
 
   function setGameOver(stats: GameStats): void {
     state.value = 'gameover';
     lastStats.value = stats;
+    // 每局结束时生成唯一 session id，用于服务端幂等去重
+    gameSessionId.value = crypto.randomUUID();
     if (stats.score > highScore.value) {
       highScore.value = stats.score;
       localStorage.setItem('palmRacer_highScore', String(stats.score));
@@ -56,6 +64,8 @@ export const useGameStore = defineStore('game', () => {
     comboCount,
     comboMultiplier,
     lastStats,
+    scoreSubmitted,
+    gameSessionId,
     reset,
     setGameOver,
   };
