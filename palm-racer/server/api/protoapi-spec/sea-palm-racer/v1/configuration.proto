@@ -13,6 +13,9 @@ message Configuration {
   // App 版本管理配置
   AppVersion app_version = 2;
 
+  // 功能开关配置
+  Features features = 3;
+
   message Palm {
     int32 app_id = 1;
     string secret_id = 2;
@@ -32,5 +35,11 @@ message Configuration {
     bool force_update = 4;
     // 更新日志
     string changelog = 5;
+  }
+
+  // 功能开关配置
+  message Features {
+    // 是否启用游客模式（前端登录页展示游客按钮）
+    bool guest_mode = 1;
   }
 }
