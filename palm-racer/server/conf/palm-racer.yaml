@@ -55,4 +55,6 @@ database:
     fail_after_duration: 60s
     interpolate_params: true
 
-
+# 功能开关配置（控制前端功能展示）
+features:
+  guest_mode: true            # 是否启用游客模式（登录页显示游客按钮）
