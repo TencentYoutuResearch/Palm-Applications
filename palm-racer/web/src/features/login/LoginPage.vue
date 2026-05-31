@@ -27,7 +27,7 @@
       <button class="btn-palm" @click="handlePalmLogin" :disabled="isLoggingIn">
         {{ isLoggingIn ? t('login.palmLoginLoading') : '🖐️ ' + t('login.palmLogin') }}
       </button>
-      <button class="btn-guest" @click="handleGuestLogin">
+      <button v-if="appConfigStore.features.guestMode" class="btn-guest" @click="handleGuestLogin">
         🎮 {{ t('login.guestLogin') }}
       </button>
       <p v-if="loginError" class="login-error">{{ loginError }}</p>
@@ -114,6 +114,7 @@ import { ref, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useUserStore } from '@/stores/user';
+import { useAppConfigStore } from '@/stores/appConfig';
 import { useSettingsStore } from '@/stores/settings';
 import type { Locale } from '@/stores/settings';
 import { palmLogin } from '@/platform/PalmAuthService';
@@ -126,6 +127,7 @@ import ScanGuide from '@/components/ScanGuide.vue';
 const router = useRouter();
 const { t, locale } = useI18n();
 const userStore = useUserStore();
+const appConfigStore = useAppConfigStore();
 const settingsStore = useSettingsStore();
 
 function switchLocale(lang: Locale): void {
