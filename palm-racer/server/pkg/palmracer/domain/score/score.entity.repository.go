@@ -9,7 +9,8 @@ import (
 // ScoreRepository 游戏分数数据访问接口（领域层定义）。
 type ScoreRepository interface {
 	// InsertScore 插入一条游戏分数记录。
-	InsertScore(ctx context.Context, userID, userName string, score int, maxSpeed, surviveTime float64, cheated bool, cheatUserID string) error
+	// gameSessionId 为前端每局生成的唯一标识，用于幂等去重；为空时不做去重检查。
+	InsertScore(ctx context.Context, userID, userName string, score int, maxSpeed, surviveTime float64, cheated bool, cheatUserID, gameSessionId string) error
 
 	// GetLeaderboard 获取排行榜，每个用户只保留最高非作弊分数。
 	// offset 用于分页偏移，pageSize 为每页条数。

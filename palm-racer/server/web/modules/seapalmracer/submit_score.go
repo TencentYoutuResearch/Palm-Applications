@@ -19,13 +19,14 @@ func (c *Controller) SubmitScore(
 	req *v1.SubmitScoreRequest,
 ) (*v1.SubmitScoreResponse, error) {
 	appReq := &application.SubmitScoreRequest{
-		UserID:      req.GetUserId(),
-		UserName:    req.GetUserName(),
-		Score:       int(req.GetScore()),
-		MaxSpeed:    req.GetMaxSpeed(),
-		SurviveTime: req.GetSurviveTime(),
-		Cheated:     req.GetCheated(),
-		CheatUserID: req.GetCheatUserId(),
+		UserID:        req.GetUserId(),
+		UserName:      req.GetUserName(),
+		Score:         int(req.GetScore()),
+		MaxSpeed:      req.GetMaxSpeed(),
+		SurviveTime:   req.GetSurviveTime(),
+		Cheated:       req.GetCheated(),
+		CheatUserID:   req.GetCheatUserId(),
+		GameSessionID: req.GetGameSessionId(),
 	}
 	// 先做参数校验，错误直接返回（不打数据库）
 	if err := appReq.Validate(); err != nil {

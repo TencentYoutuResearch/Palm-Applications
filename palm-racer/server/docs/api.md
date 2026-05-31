@@ -4,11 +4,15 @@
 ## Table of Contents
 
 - [api/protoapi-spec/sea-palm-racer/v1/api.proto](#api_protoapi-spec_sea-palm-racer_v1_api-proto)
+    - [AppConfigData](#sea-api-seapalmracer-AppConfigData)
+    - [AppConfigFeatures](#sea-api-seapalmracer-AppConfigFeatures)
     - [AppVersionData](#sea-api-seapalmracer-AppVersionData)
     - [CreateTokenData](#sea-api-seapalmracer-CreateTokenData)
     - [CreateTokenError](#sea-api-seapalmracer-CreateTokenError)
     - [CreateTokenRequest](#sea-api-seapalmracer-CreateTokenRequest)
     - [CreateTokenResponse](#sea-api-seapalmracer-CreateTokenResponse)
+    - [GetAppConfigRequest](#sea-api-seapalmracer-GetAppConfigRequest)
+    - [GetAppConfigResponse](#sea-api-seapalmracer-GetAppConfigResponse)
     - [GetAppVersionRequest](#sea-api-seapalmracer-GetAppVersionRequest)
     - [GetAppVersionResponse](#sea-api-seapalmracer-GetAppVersionResponse)
     - [GetLeaderboardRequest](#sea-api-seapalmracer-GetLeaderboardRequest)
@@ -40,6 +44,36 @@
 <p align="right"><a href="#top">Top</a></p>
 
 ## api/protoapi-spec/sea-palm-racer/v1/api.proto
+
+
+
+<a name="sea-api-seapalmracer-AppConfigData"></a>
+
+### AppConfigData
+应用功能配置数据
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| features | [AppConfigFeatures](#sea-api-seapalmracer-AppConfigFeatures) |  |  |
+
+
+
+
+
+
+<a name="sea-api-seapalmracer-AppConfigFeatures"></a>
+
+### AppConfigFeatures
+功能开关
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| guest_mode | [bool](#bool) |  |  |
+
+
+
 
 
 
@@ -120,6 +154,38 @@ App 版本信息
 | ----- | ---- | ----- | ----------- |
 | response | [CreateTokenData](#sea-api-seapalmracer-CreateTokenData) |  |  |
 | error | [CreateTokenError](#sea-api-seapalmracer-CreateTokenError) |  | 兼容刷掌平台 Error 包裹格式 |
+
+
+
+
+
+
+<a name="sea-api-seapalmracer-GetAppConfigRequest"></a>
+
+### GetAppConfigRequest
+获取应用功能配置请求
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| request_id | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="sea-api-seapalmracer-GetAppConfigResponse"></a>
+
+### GetAppConfigResponse
+获取应用功能配置响应
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| code | [int32](#int32) |  |  |
+| message | [string](#string) |  |  |
+| data | [AppConfigData](#sea-api-seapalmracer-AppConfigData) |  |  |
 
 
 
@@ -433,6 +499,7 @@ RGB 手掌图片信息（全部基础类型，避免 Struct 循环引用导致�
 | survive_time | [double](#double) |  |  |
 | cheated | [bool](#bool) |  |  |
 | cheat_user_id | [string](#string) |  | 替玩用户ID（多个不同替玩用户以最后1个为准） |
+| game_session_id | [string](#string) |  | 游戏会话唯一标识，前端每局游戏开始时生成（UUID v4），服务端用于幂等去重 |
 
 
 
@@ -509,6 +576,7 @@ RGB 手掌图片信息（全部基础类型，避免 Struct 循环引用导致�
 | SearchRgbPalm | [SearchRgbPalmRequest](#sea-api-seapalmracer-SearchRgbPalmRequest) | [SearchRgbPalmResponse](#sea-api-seapalmracer-SearchRgbPalmResponse) |  |
 | RegisterRgbPalm | [RegisterRgbPalmRequest](#sea-api-seapalmracer-RegisterRgbPalmRequest) | [RegisterRgbPalmResponse](#sea-api-seapalmracer-RegisterRgbPalmResponse) |  |
 | GetAppVersion | [GetAppVersionRequest](#sea-api-seapalmracer-GetAppVersionRequest) | [GetAppVersionResponse](#sea-api-seapalmracer-GetAppVersionResponse) | App 版本管理 |
+| GetAppConfig | [GetAppConfigRequest](#sea-api-seapalmracer-GetAppConfigRequest) | [GetAppConfigResponse](#sea-api-seapalmracer-GetAppConfigResponse) | 获取应用功能配置（feature flags） |
 
  
 

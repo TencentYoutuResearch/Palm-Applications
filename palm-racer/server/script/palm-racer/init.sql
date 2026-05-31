@@ -6,6 +6,7 @@ USE `palm_racer`;
 -- game_scores 游戏分数表
 CREATE TABLE IF NOT EXISTS `t_game_scores` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `game_session_id` VARCHAR(64) DEFAULT NULL COMMENT '游戏会话唯一标识(UUID v4),用于幂等去重',
   `user_id` VARCHAR(128) NOT NULL DEFAULT '' COMMENT '用户ID',
   `user_name` VARCHAR(128) NOT NULL DEFAULT '' COMMENT '用户名',
   `score` INT NOT NULL DEFAULT 0 COMMENT '游戏分数',
@@ -15,6 +16,7 @@ CREATE TABLE IF NOT EXISTS `t_game_scores` (
   `cheat_user_id` VARCHAR(128) NOT NULL DEFAULT '' COMMENT '替玩用户ID',
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_game_session_id` (`game_session_id`),
   INDEX `idx_user_id` (`user_id`),
   INDEX `idx_created_at` (`created_at`),
   INDEX `idx_score` (`cheated`, `score` DESC),
@@ -33,3 +35,10 @@ CREATE TABLE IF NOT EXISTS `t_palm_registrations` (
 -- 从 t_game_scores 补全存量已注册用户数据
 INSERT IGNORE INTO t_palm_registrations (user_id)
 SELECT DISTINCT user_id FROM t_game_scores;
+
+-- ============================================================
+-- v1.0.2 变更: 增加 game_session_id 字段用于幂等去重
+-- ============================================================
+ALTER TABLE `t_game_scores`
+  ADD COLUMN `game_session_id` VARCHAR(64) DEFAULT NULL COMMENT '游戏会话唯一标识' AFTER `id`,
+  ADD UNIQUE KEY `uk_game_session_id` (`game_session_id`);

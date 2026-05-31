@@ -13,7 +13,7 @@ type mockScoreRepo struct {
 	insertErr    error
 }
 
-func (m *mockScoreRepo) InsertScore(_ context.Context, _, _ string, _ int, _, _ float64, _ bool, _ string) error {
+func (m *mockScoreRepo) InsertScore(_ context.Context, _, _ string, _ int, _, _ float64, _ bool, _, _ string) error {
 	m.insertCalled = true
 	return m.insertErr
 }

@@ -37,18 +37,30 @@ func buildDateFilter(period string) string {
 }
 
 // InsertScore 插入一条游戏分数记录。
-func (d *ScoreDao) InsertScore(ctx context.Context, userID, userName string, score int, maxSpeed, surviveTime float64, cheated bool, cheatUserID string) error {
+// gameSessionId 非空时，利用 UNIQUE 约束实现幂等去重：重复插入会被忽略。
+func (d *ScoreDao) InsertScore(ctx context.Context, userID, userName string, score int, maxSpeed, surviveTime float64, cheated bool, cheatUserID, gameSessionId string) error {
 	ctx, cancel := context_.WithTimeout(ctx, dao.DatabaseExecuteTimeout)
 	defer cancel()
-
-	query := fmt.Sprintf(`INSERT INTO %s (user_id, user_name, score, max_speed, survive_time, cheated, cheat_user_id)
-		VALUES (?, ?, ?, ?, ?, ?, ?)`, scoreTableName)
 
 	cheatedInt := 0
 	if cheated {
 		cheatedInt = 1
 	}
 
+	// gameSessionId 非空时使用 INSERT IGNORE 利用唯一索引去重
+	if gameSessionId != "" {
+		query := fmt.Sprintf(`INSERT IGNORE INTO %s (user_id, user_name, score, max_speed, survive_time, cheated, cheat_user_id, game_session_id)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, scoreTableName)
+		_, err := d.db.ExecContext(ctx, query, userID, userName, score, maxSpeed, surviveTime, cheatedInt, cheatUserID, gameSessionId)
+		if err != nil {
+			return fmt.Errorf("score_dao: insert: %w", err)
+		}
+		return nil
+	}
+
+	// 兼容旧版客户端：无 gameSessionId 时直接插入
+	query := fmt.Sprintf(`INSERT INTO %s (user_id, user_name, score, max_speed, survive_time, cheated, cheat_user_id)
+		VALUES (?, ?, ?, ?, ?, ?, ?)`, scoreTableName)
 	_, err := d.db.ExecContext(ctx, query, userID, userName, score, maxSpeed, surviveTime, cheatedInt, cheatUserID)
 	if err != nil {
 		return fmt.Errorf("score_dao: insert: %w", err)

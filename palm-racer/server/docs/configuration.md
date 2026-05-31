@@ -6,6 +6,7 @@
 - [api/protoapi-spec/sea-palm-racer/v1/configuration.proto](#api_protoapi-spec_sea-palm-racer_v1_configuration-proto)
     - [Configuration](#sea-api-seapalmracer-Configuration)
     - [Configuration.AppVersion](#sea-api-seapalmracer-Configuration-AppVersion)
+    - [Configuration.Features](#sea-api-seapalmracer-Configuration-Features)
     - [Configuration.Palm](#sea-api-seapalmracer-Configuration-Palm)
   
 - [Scalar Value Types](#scalar-value-types)
@@ -29,6 +30,7 @@ config file yaml
 | ----- | ---- | ----- | ----------- |
 | palm | [Configuration.Palm](#sea-api-seapalmracer-Configuration-Palm) |  | 刷掌平台 API 配置 |
 | app_version | [Configuration.AppVersion](#sea-api-seapalmracer-Configuration-AppVersion) |  | App 版本管理配置 |
+| features | [Configuration.Features](#sea-api-seapalmracer-Configuration-Features) |  | 功能开关配置 |
 
 
 
@@ -47,6 +49,21 @@ App 版本管理配置，用于控制客户端升级策略
 | download_url | [string](#string) |  | APK 下载链接 |
 | force_update | [bool](#bool) |  | 是否强制更新（true 时客户端必须升级才能继续使用） |
 | changelog | [string](#string) |  | 更新日志 |
+
+
+
+
+
+
+<a name="sea-api-seapalmracer-Configuration-Features"></a>
+
+### Configuration.Features
+功能开关配置
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| guest_mode | [bool](#bool) |  | 是否启用游客模式（前端登录页展示游客按钮） |
 
 
 

@@ -22,8 +22,8 @@ func NewScoreRepository(db *sqlx.DB) score.ScoreRepository {
 }
 
 // InsertScore 插入一条游戏分数记录。
-func (r *ScoreRepository) InsertScore(ctx context.Context, userID, userName string, scoreVal int, maxSpeed, surviveTime float64, cheated bool, cheatUserID string) error {
-	return r.dao.InsertScore(ctx, userID, userName, scoreVal, maxSpeed, surviveTime, cheated, cheatUserID)
+func (r *ScoreRepository) InsertScore(ctx context.Context, userID, userName string, scoreVal int, maxSpeed, surviveTime float64, cheated bool, cheatUserID, gameSessionId string) error {
+	return r.dao.InsertScore(ctx, userID, userName, scoreVal, maxSpeed, surviveTime, cheated, cheatUserID, gameSessionId)
 }
 
 // GetLeaderboard 获取排行榜。

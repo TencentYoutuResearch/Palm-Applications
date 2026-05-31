@@ -21,13 +21,14 @@ func NewScoreHandler(repo score.ScoreRepository) ScoreHandler {
 
 // SubmitScoreRequest 提交分数请求。
 type SubmitScoreRequest struct {
-	UserID      string  `json:"UserId"`
-	UserName    string  `json:"UserName"`
-	Score       int     `json:"Score"`
-	MaxSpeed    float64 `json:"MaxSpeed"`
-	SurviveTime float64 `json:"SurviveTime"`
-	Cheated     bool    `json:"Cheated"`
-	CheatUserID string  `json:"CheatUserId"` // 替玩用户ID
+	UserID        string  `json:"UserId"`
+	UserName      string  `json:"UserName"`
+	Score         int     `json:"Score"`
+	MaxSpeed      float64 `json:"MaxSpeed"`
+	SurviveTime   float64 `json:"SurviveTime"`
+	Cheated       bool    `json:"Cheated"`
+	CheatUserID   string  `json:"CheatUserId"`   // 替玩用户ID
+	GameSessionID string  `json:"GameSessionId"` // 游戏会话唯一标识，用于幂等去重
 }
 
 // Validate 校验提交分数请求。
@@ -57,7 +58,7 @@ func (h *ScoreHandler) SubmitScore(ctx context.Context, req *SubmitScoreRequest)
 	}
 	return h.repo.InsertScore(
 		ctx, req.UserID, req.UserName, req.Score,
-		req.MaxSpeed, req.SurviveTime, req.Cheated, req.CheatUserID,
+		req.MaxSpeed, req.SurviveTime, req.Cheated, req.CheatUserID, req.GameSessionID,
 	)
 }
 
