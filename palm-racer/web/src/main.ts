@@ -3,6 +3,7 @@ import { createPinia } from 'pinia';
 import { createI18n } from 'vue-i18n';
 import App from './App.vue';
 import router from './router';
+import { useAppConfigStore } from './stores/appConfig';
 import zh from './assets/locales/zh.json';
 import en from './assets/locales/en.json';
 import ja from './assets/locales/ja.json';
@@ -31,3 +32,7 @@ app.use(createPinia());
 app.use(router);
 app.use(i18n);
 app.mount('#app');
+
+// Fetch feature flags (non-blocking, UI reactively updates)
+const appConfigStore = useAppConfigStore();
+appConfigStore.init();
