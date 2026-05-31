@@ -54,6 +54,14 @@ service SeaPalmRacerService {
       body: "*"
     };
   };
+
+  // 获取应用功能配置（feature flags）
+  rpc GetAppConfig(GetAppConfigRequest) returns (GetAppConfigResponse) {
+    option (google.api.http) = {
+      post: "/api/app/config"
+      body: "*"
+    };
+  };
 }
 
 // ==================== 游戏分数管理 ====================
@@ -69,6 +77,8 @@ message SubmitScoreRequest {
   bool cheated = 7 [json_name = "Cheated"];
   // 替玩用户ID（多个不同替玩用户以最后1个为准）
   string cheat_user_id = 8 [json_name = "CheatUserId"];
+  // 游戏会话唯一标识，前端每局游戏开始时生成（UUID v4），服务端用于幂等去重
+  string game_session_id = 9 [json_name = "GameSessionId"];
 }
 
 // 提交分数响应
@@ -291,4 +301,28 @@ message AppVersionData {
   bool force_update = 4 [json_name = "ForceUpdate"];
   // 更新日志
   string changelog = 5 [json_name = "Changelog"];
+}
+
+// ==================== App 功能配置 ====================
+
+// 获取应用功能配置请求
+message GetAppConfigRequest {
+  string request_id = 1 [json_name = "RequestId"];
+}
+
+// 获取应用功能配置响应
+message GetAppConfigResponse {
+  int32 code = 1 [json_name = "Code"];
+  string message = 2 [json_name = "Message"];
+  AppConfigData data = 3 [json_name = "Data"];
+}
+
+// 应用功能配置数据
+message AppConfigData {
+  AppConfigFeatures features = 1 [json_name = "Features"];
+}
+
+// 功能开关
+message AppConfigFeatures {
+  bool guest_mode = 1 [json_name = "GuestMode"];
 }
