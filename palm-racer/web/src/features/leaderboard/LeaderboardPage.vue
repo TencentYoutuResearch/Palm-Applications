@@ -159,7 +159,7 @@ type TabId = 'all' | 'today' | 'week';
 /** Top-N limits, mirror the server-side hardcoded values (constants.go). */
 const TOP_N: Record<TabId, number> = { all: 500, today: 20, week: 50 };
 /** 每页加载条数 */
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 20;
 
 const activeTab = ref<TabId>('all');
 const tabs: { id: TabId; topN: number }[] = [

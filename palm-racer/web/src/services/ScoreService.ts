@@ -162,13 +162,13 @@ export interface LeaderboardPage {
  * @param period 'all' | 'today' | 'week'
  * @param userId Current logged-in user id. Leave empty to skip my_rank lookup.
  * @param offset Pagination offset, default 0.
- * @param limit Page size, default 50 (server max 100).
+ * @param limit Page size, default 20 (server max 100).
  */
 export async function getLeaderboard(
   period: 'all' | 'today' | 'week' = 'all',
   userId = '',
   offset = 0,
-  limit = 50
+  limit = 20
 ): Promise<LeaderboardPage> {
   const resp: RawListResponse = await api.post('/leaderboard', {
     Period: period,
