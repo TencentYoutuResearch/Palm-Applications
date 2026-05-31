@@ -27,7 +27,7 @@
       <button class="btn-palm" @click="handlePalmLogin" :disabled="isLoggingIn">
         {{ isLoggingIn ? t('login.palmLoginLoading') : '🖐️ ' + t('login.palmLogin') }}
       </button>
-      <button v-if="appConfigStore.features.guestMode" class="btn-guest" @click="handleGuestLogin">
+      <button v-if="appConfigStore.loaded && appConfigStore.features.guestMode" class="btn-guest" @click="handleGuestLogin">
         🎮 {{ t('login.guestLogin') }}
       </button>
       <p v-if="loginError" class="login-error">{{ loginError }}</p>
