@@ -16,6 +16,9 @@ message Configuration {
   // 功能开关配置
   Features features = 3;
 
+  // 计分鉴权配置（身份 token 与单局 session）
+  Auth auth = 4;
+
   message Palm {
     int32 app_id = 1;
     string secret_id = 2;
@@ -41,5 +44,16 @@ message Configuration {
   message Features {
     // 是否启用游客模式（前端登录页展示游客按钮）
     bool guest_mode = 1;
+  }
+
+  // 计分鉴权配置
+  message Auth {
+    // 身份 token 的 HMAC-SHA256 签名密钥（至少 32 字节）；可由环境变量 JWT_SECRET 覆盖
+    string jwt_secret = 1;
+    // 身份 token 有效期秒数：> 0 显式有限有效期；0 表示未配置，使用默认 7 天；
+    // < 0 表示永不过期（仅限长期 demo 等可控场景，token 无法撤销，泄露风险高）。
+    int32 token_ttl_seconds = 2;
+    // 单局 session 存活秒数（应覆盖单局最大时长 + 缓冲）
+    int32 session_ttl_seconds = 3;
   }
 }

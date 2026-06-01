@@ -8,6 +8,13 @@ option go_package = "github.com/TencentYoutuResearch/Palm-Applications/palm-race
 
 service SeaPalmRacerService {
   // 游戏分数管理
+  // 开始一局游戏：校验登录态身份 token，创建单局 session 并下发 sid
+  rpc StartGame(StartGameRequest) returns (StartGameResponse) {
+    option (google.api.http) = {
+      post: "/api/game/start"
+      body: "*"
+    };
+  };
   rpc SubmitScore(SubmitScoreRequest) returns (SubmitScoreResponse) {
     option (google.api.http) = {
       post: "/api/scores"
@@ -66,7 +73,27 @@ service SeaPalmRacerService {
 
 // ==================== 游戏分数管理 ====================
 
-// 提交分数请求
+// 开始游戏请求（身份 token 通过 Authorization: Bearer 头传递）
+message StartGameRequest {
+  string request_id = 1 [json_name = "RequestId"];
+}
+
+// 开始游戏响应
+message StartGameResponse {
+  int32 code = 1 [json_name = "Code"];
+  string message = 2 [json_name = "Message"];
+  StartGameData data = 3 [json_name = "Data"];
+}
+
+// 开始游戏响应数据
+message StartGameData {
+  // 单局 session 标识：后续局中核身续期与 SubmitScore 提交均需携带
+  string sid = 1 [json_name = "Sid"];
+  // 续命后的身份 token：仅当原 token 剩余有效期低于阈值时下发，前端应写回登录态；为空表示无需更新
+  string token = 2 [json_name = "Token"];
+}
+
+// 提交分数请求（身份 token 通过 Authorization: Bearer 头传递）
 message SubmitScoreRequest {
   string request_id = 1 [json_name = "RequestId"];
   string user_id = 2 [json_name = "UserId"];
@@ -79,6 +106,8 @@ message SubmitScoreRequest {
   string cheat_user_id = 8 [json_name = "CheatUserId"];
   // 游戏会话唯一标识，前端每局游戏开始时生成（UUID v4），服务端用于幂等去重
   string game_session_id = 9 [json_name = "GameSessionId"];
+  // 单局 session 标识（StartGame 下发）：服务端据此校验并一次性消费
+  string sid = 10 [json_name = "Sid"];
 }
 
 // 提交分数响应
@@ -230,6 +259,8 @@ message SearchRgbPalmRequest {
   string user_token = 5 [json_name = "UserToken"];
   // 用户 ID（可选）
   string user_id = 6 [json_name = "UserId"];
+  // 单局 session 标识（可选）：游戏内反作弊核身时携带，服务端据此续期并标记替玩
+  string sid = 7 [json_name = "Sid"];
 }
 
 // 搜索 RGB 手掌响应（结构化字段，适配前端和 app 侧解析）
@@ -237,6 +268,8 @@ message SearchRgbPalmResponse {
   int32 code = 1 [json_name = "Code"];
   string message = 2 [json_name = "Message"];
   SearchRgbPalmData data = 3 [json_name = "Data"];
+  // 登录态身份 token（仅 1:N 登录成功时下发；游戏内核身续期不下发）
+  string token = 4 [json_name = "Token"];
 }
 
 // 搜索 RGB 手掌响应数据
