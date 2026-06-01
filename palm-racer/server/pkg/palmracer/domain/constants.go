@@ -56,6 +56,23 @@ const (
 
 	// MaxSpeedValue is the maximum valid speed value.
 	MaxSpeedValue = 1000.0
+
+	// MaxScorePerSecond 单位有效游戏时长允许的理论最高得分（合理性校验上限）。
+	// 推导：350km/h 时速度倍率 5 → 约 175 基础分/秒，叠加躲避与连击约 250 分/秒。
+	MaxScorePerSecond = 250
+
+	// MaxSurviveSeconds 单局有效游戏时长硬上限（秒），用于约束可提交分数额度。
+	MaxSurviveSeconds = 3600
+
+	// DefaultTokenTTLSeconds 身份 token 默认有效期（秒），0 表示不过期。
+	DefaultTokenTTLSeconds = 7 * 24 * 3600
+
+	// DefaultSessionTTLSeconds 单局 session 默认存活时长（秒），覆盖单局最大时长 + 缓冲。
+	DefaultSessionTTLSeconds = 90 * 60
+
+	// LoginTokenRefreshAheadSeconds 身份 token 剩余有效期低于此阈值时，
+	// StartGame 接口会在响应中下发新 token（静默续命），避免玩到一半 token 过期。
+	LoginTokenRefreshAheadSeconds = 24 * 3600
 )
 
 // ================== HTTP/TLS Configuration ==================
