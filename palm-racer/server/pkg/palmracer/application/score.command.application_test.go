@@ -68,7 +68,7 @@ func TestSubmitScore_Validation(t *testing.T) {
 		},
 		{
 			name:    "score at max boundary",
-			req:     &SubmitScoreRequest{UserID: "u1", Score: 999999},
+			req:     &SubmitScoreRequest{UserID: "u1", Score: 900000, SurviveTime: 3600, ServerElapsedSeconds: 3600},
 			wantErr: false,
 		},
 		{
@@ -78,17 +78,17 @@ func TestSubmitScore_Validation(t *testing.T) {
 		},
 		{
 			name:    "negative max_speed",
-			req:     &SubmitScoreRequest{UserID: "u1", Score: 100, MaxSpeed: -0.1},
+			req:     &SubmitScoreRequest{UserID: "u1", Score: 100, MaxSpeed: -0.1, SurviveTime: 10, ServerElapsedSeconds: 10},
 			wantErr: true,
 		},
 		{
 			name:    "max_speed too high",
-			req:     &SubmitScoreRequest{UserID: "u1", Score: 100, MaxSpeed: 1001},
+			req:     &SubmitScoreRequest{UserID: "u1", Score: 100, MaxSpeed: 1001, SurviveTime: 10, ServerElapsedSeconds: 10},
 			wantErr: true,
 		},
 		{
 			name:    "max_speed at boundary",
-			req:     &SubmitScoreRequest{UserID: "u1", Score: 100, MaxSpeed: 1000},
+			req:     &SubmitScoreRequest{UserID: "u1", Score: 100, MaxSpeed: 1000, SurviveTime: 10, ServerElapsedSeconds: 10},
 			wantErr: false,
 		},
 		{
@@ -103,12 +103,12 @@ func TestSubmitScore_Validation(t *testing.T) {
 		},
 		{
 			name:    "survive_time at boundary",
-			req:     &SubmitScoreRequest{UserID: "u1", Score: 100, SurviveTime: 3600},
+			req:     &SubmitScoreRequest{UserID: "u1", Score: 100, SurviveTime: 3600, ServerElapsedSeconds: 3600},
 			wantErr: false,
 		},
 		{
 			name:    "with optional fields",
-			req:     &SubmitScoreRequest{UserID: "u1", UserName: "Alice", Score: 500, Cheated: true, CheatUserID: "u2"},
+			req:     &SubmitScoreRequest{UserID: "u1", UserName: "Alice", Score: 500, Cheated: true, CheatUserID: "u2", SurviveTime: 10, ServerElapsedSeconds: 10},
 			wantErr: false,
 		},
 	}

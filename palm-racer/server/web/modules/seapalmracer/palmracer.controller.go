@@ -1,17 +1,18 @@
 // Package seapalmracer PalmRacer gRPC Controller 骨架。
 //
 //   - palmracer.controller.go : 定义 Controller 结构体与构造函数（本文件）
+//   - palmracer.auth.go       : Authorization 头解析等 web 工具
+//   - start_game.go           : StartGame 方法（签发单局 session）
 //   - submit_score.go         : SubmitScore 方法
 //   - get_leaderboard.go      : GetLeaderboard 方法
 //   - get_user_history.go     : GetUserHistory 方法
 //   - create_token.go         : CreateToken 方法
-//   - search_rgb_palm.go      : SearchRgbPalm 方法
+//   - search_rgb_palm.go      : SearchRgbPalm 方法（登录下发 token / 局中续期）
 //   - register_rgb_palm.go    : RegisterRgbPalm 方法
 //   - get_app_version.go      : GetAppVersion 方法
 //   - get_app_config.go       : GetAppConfig 方法
 //   - palmracer.error.go      : domain/application error → (code, msg) 映射
 //   - palmracer.router.go     : HTTP 路由、CORS、静态资源等
-//   - palmracer.cors.go       : CORS 中间件
 //
 // 一个 RPC 方法一个文件，便于阅读与后续新增方法（例如注册协议扩展）。
 package seapalmracer

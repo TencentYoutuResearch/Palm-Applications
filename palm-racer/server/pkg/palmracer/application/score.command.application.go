@@ -29,6 +29,9 @@ type SubmitScoreRequest struct {
 	Cheated       bool    `json:"Cheated"`
 	CheatUserID   string  `json:"CheatUserId"`   // 替玩用户ID
 	GameSessionID string  `json:"GameSessionId"` // 游戏会话唯一标识，用于幂等去重
+	// ServerElapsedSeconds 服务端侧有效时长（开局到提交的真实跨度，秒）。
+	// 由 controller 从单局 session 推算后注入，用于合理性校验，0 表示不参与约束。
+	ServerElapsedSeconds float64 `json:"-"`
 }
 
 // Validate 校验提交分数请求。
@@ -42,8 +45,34 @@ func (r *SubmitScoreRequest) Validate() error {
 	if r.MaxSpeed < 0 || r.MaxSpeed > appconfig.MaxSpeedValue {
 		return fmt.Errorf("max_speed range [0, %v]: %w", appconfig.MaxSpeedValue, score.ErrMaxSpeedOutOfRange)
 	}
-	if r.SurviveTime < 0 || r.SurviveTime > 3600 {
-		return fmt.Errorf("survive_time range [0, 3600]: %w", score.ErrSurviveTimeOutOfRange)
+	if r.SurviveTime < 0 || r.SurviveTime > appconfig.MaxSurviveSeconds {
+		return fmt.Errorf("survive_time range [0, %d]: %w", appconfig.MaxSurviveSeconds, score.ErrSurviveTimeOutOfRange)
+	}
+	return nil
+}
+
+// effectiveSeconds 返回用于合理性校验的有效游戏时长：
+// 取「客户端上报时长、服务端真实跨度、硬上限」三者的最小值，避免客户端伪造时长放大可提交额度。
+func (r *SubmitScoreRequest) effectiveSeconds() float64 {
+	eff := r.SurviveTime
+	if r.ServerElapsedSeconds > 0 && r.ServerElapsedSeconds < eff {
+		eff = r.ServerElapsedSeconds
+	}
+	if eff > appconfig.MaxSurviveSeconds {
+		eff = appconfig.MaxSurviveSeconds
+	}
+	return eff
+}
+
+// checkReasonable 校验分数是否超过有效游戏时长允许的理论上限。
+func (r *SubmitScoreRequest) checkReasonable() error {
+	eff := r.effectiveSeconds()
+	if float64(r.Score) > eff*float64(appconfig.MaxScorePerSecond) {
+		// 用 %.2f 保留两位小数：retry 路径下 server_elapsed 可能是 0.0x 秒，
+		// %.0f 会把 0.05 显示成 "0s" 误导排查。
+		return fmt.Errorf("score=%d exceeds cap for %.2fs (max %d/s, client_survive=%.0fs, server_elapsed=%.2fs): %w",
+			r.Score, eff, appconfig.MaxScorePerSecond,
+			r.SurviveTime, r.ServerElapsedSeconds, score.ErrScoreUnreasonable)
 	}
 	return nil
 }
@@ -54,6 +83,9 @@ func (h *ScoreHandler) SubmitScore(ctx context.Context, req *SubmitScoreRequest)
 		return score.ErrMySQLNotEnabled
 	}
 	if err := req.Validate(); err != nil {
+		return err
+	}
+	if err := req.checkReasonable(); err != nil {
 		return err
 	}
 	return h.repo.InsertScore(

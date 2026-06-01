@@ -8,6 +8,7 @@ type Application struct {
 
 // Commands 聚合所有业务 Handler。
 type Commands struct {
-	ScoreHandler ScoreHandler
-	PalmHandler  PalmHandler
+	ScoreHandler    ScoreHandler
+	PalmHandler     PalmHandler
+	GameAuthHandler GameAuthHandler
 }

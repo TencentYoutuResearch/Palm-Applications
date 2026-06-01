@@ -9,6 +9,11 @@ import (
 )
 
 // SearchRgbPalm 搜索 RGB 手掌。
+//
+// 计分鉴权辅路：
+//   - 登录场景（请求未带 sid）：1:N 命中后下发身份 token（response.token）。
+//   - 局中反作弊场景（请求带 sid）：服务端为该 session 续期；如核到他人则标记替玩。
+//     续期只要求「核身请求发生」，对刷掌召回率不敏感，正常玩家不会因质量差被惩罚。
 func (c *Controller) SearchRgbPalm(
 	ctx context.Context,
 	req *v1.SearchRgbPalmRequest,
@@ -40,6 +45,18 @@ func (c *Controller) SearchRgbPalm(
 		return &v1.SearchRgbPalmResponse{Code: code, Message: msg}, nil
 	}
 
+	// 局中反作弊续期：sid 非空时尝试续期并按需标记替玩。
+	// 失败不阻断主流程，仅记录日志（避免因鉴权侧故障影响游戏体验）。
+	if sid := req.GetSid(); sid != "" {
+		matchedUID := ""
+		if domainResp.Code == 0 && domainResp.Data != nil {
+			matchedUID = domainResp.Data.UserId
+		}
+		if rerr := c.app.Commands.GameAuthHandler.RenewOnVerify(ctx, sid, matchedUID); rerr != nil {
+			logger.WithError(rerr).Debugf("SearchRgbPalm renew session failed: sid=%s", sid)
+		}
+	}
+
 	// 上游返回非 0 code 时透传错误
 	if domainResp.Code != 0 {
 		return &v1.SearchRgbPalmResponse{
@@ -48,7 +65,6 @@ func (c *Controller) SearchRgbPalm(
 		}, nil
 	}
 
-	// 成功响应
 	resp := &v1.SearchRgbPalmResponse{
 		Code:    0,
 		Message: domainResp.Message,
@@ -59,6 +75,15 @@ func (c *Controller) SearchRgbPalm(
 			Score:            domainResp.Data.Score,
 			AlgorithmVersion: domainResp.Data.AlgorithmVersion,
 			PalmDirection:    int32(domainResp.Data.PalmDirection),
+		}
+
+		// 登录场景：未带 sid 且命中用户时签发身份 token。
+		if req.GetSid() == "" && domainResp.Data.UserId != "" {
+			if token, terr := c.app.Commands.GameAuthHandler.IssueLoginToken(domainResp.Data.UserId); terr == nil {
+				resp.Token = token
+			} else {
+				logger.WithError(terr).Warnf("SearchRgbPalm issue token failed: uid=%s", domainResp.Data.UserId)
+			}
 		}
 	}
 

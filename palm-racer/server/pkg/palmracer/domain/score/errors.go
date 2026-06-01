@@ -24,4 +24,7 @@ var (
 
 	// ErrPeriodInvalid period 参数非法。
 	ErrPeriodInvalid = errors.New("score: period must be one of today/week/all")
+
+	// ErrScoreUnreasonable 分数超过有效游戏时长允许的理论上限（疑似伪造）。
+	ErrScoreUnreasonable = errors.New("score: score exceeds reasonable maximum for survive time")
 )

@@ -4,8 +4,10 @@ package seapalmracer
 import (
 	"errors"
 
+	authdomain "github.com/TencentYoutuResearch/Palm-Applications/palm-racer/server/pkg/palmracer/domain/auth"
 	palmdomain "github.com/TencentYoutuResearch/Palm-Applications/palm-racer/server/pkg/palmracer/domain/palm"
 	scoredomain "github.com/TencentYoutuResearch/Palm-Applications/palm-racer/server/pkg/palmracer/domain/score"
+	sessiondomain "github.com/TencentYoutuResearch/Palm-Applications/palm-racer/server/pkg/palmracer/domain/session"
 )
 
 // 业务错误码
@@ -23,6 +25,13 @@ const (
 	CodeInvalidParameter_RgbImageDataEmpty    int32 = 1008
 	CodeInvalidParameter_RgbImageTypeInvalid  int32 = 1009
 	CodeInvalidParameter_UserIDInvalid        int32 = 1010
+
+	// Auth / Session / AntiCheat (2000-2999)
+	CodeUnauthorized       int32 = 2001 // 身份 token 缺失或非法（签名错、格式错等）
+	CodeScoreUnreasonable  int32 = 2002 // 分数超过有效时长理论上限
+	CodeSessionExpired     int32 = 2004 // 单局 session 已过期
+	CodeSessionInvalid     int32 = 2005 // 单局 session 不存在或已结算
+	CodeTokenExpired       int32 = 2006 // 身份 token 签名合法但已过期（前端可提示重新登录）
 
 	// InternalError (3000-3999)
 	CodeInternalError_MySQLNotEnabled int32 = 3001
@@ -61,8 +70,25 @@ func toResponseCode(err error, defaultCode int32) (int32, string) {
 		return CodeInvalidParameter_SurviveTimeOutOfRange, msg
 	case errors.Is(err, scoredomain.ErrPeriodInvalid):
 		return CodeInvalidParameter_PeriodInvalid, msg
+	case errors.Is(err, scoredomain.ErrScoreUnreasonable):
+		return CodeScoreUnreasonable, msg
 	case errors.Is(err, scoredomain.ErrMySQLNotEnabled):
 		return CodeInternalError_MySQLNotEnabled, msg
+	}
+
+	// auth / session errors
+	// 注意：ErrTokenExpired 会同时满足 errors.Is(err, ErrUnauthorized)，
+	// 因此必须放在 ErrUnauthorized 判断之前，否则永远命中不到 2006。
+	switch {
+	case errors.Is(err, authdomain.ErrTokenExpired):
+		return CodeTokenExpired, msg
+	case errors.Is(err, authdomain.ErrUnauthorized):
+		return CodeUnauthorized, msg
+	case errors.Is(err, sessiondomain.ErrSessionExpired):
+		return CodeSessionExpired, msg
+	case errors.Is(err, sessiondomain.ErrSessionNotFound),
+		errors.Is(err, sessiondomain.ErrSessionSettled):
+		return CodeSessionInvalid, msg
 	}
 
 	// palm domain errors

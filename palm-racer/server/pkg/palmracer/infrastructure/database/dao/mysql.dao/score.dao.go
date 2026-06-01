@@ -38,7 +38,14 @@ func buildDateFilter(period string) string {
 
 // InsertScore 插入一条游戏分数记录。
 // gameSessionId 非空时，利用 UNIQUE 约束实现幂等去重：重复插入会被忽略。
-func (d *ScoreDao) InsertScore(ctx context.Context, userID, userName string, score int, maxSpeed, surviveTime float64, cheated bool, cheatUserID, gameSessionId string) error {
+func (d *ScoreDao) InsertScore(
+	ctx context.Context,
+	userID, userName string,
+	score int,
+	maxSpeed, surviveTime float64,
+	cheated bool,
+	cheatUserID, gameSessionId string,
+) error {
 	ctx, cancel := context_.WithTimeout(ctx, dao.DatabaseExecuteTimeout)
 	defer cancel()
 
@@ -49,9 +56,14 @@ func (d *ScoreDao) InsertScore(ctx context.Context, userID, userName string, sco
 
 	// gameSessionId 非空时使用 INSERT IGNORE 利用唯一索引去重
 	if gameSessionId != "" {
-		query := fmt.Sprintf(`INSERT IGNORE INTO %s (user_id, user_name, score, max_speed, survive_time, cheated, cheat_user_id, game_session_id)
+		query := fmt.Sprintf(`INSERT IGNORE INTO %s
+			(user_id, user_name, score, max_speed, survive_time, cheated, cheat_user_id, game_session_id)
 			VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, scoreTableName)
-		_, err := d.db.ExecContext(ctx, query, userID, userName, score, maxSpeed, surviveTime, cheatedInt, cheatUserID, gameSessionId)
+		_, err := d.db.ExecContext(
+			ctx, query,
+			userID, userName, score, maxSpeed, surviveTime,
+			cheatedInt, cheatUserID, gameSessionId,
+		)
 		if err != nil {
 			return fmt.Errorf("score_dao: insert: %w", err)
 		}
@@ -71,7 +83,9 @@ func (d *ScoreDao) InsertScore(ctx context.Context, userID, userName string, sco
 // GetLeaderboard 获取排行榜，每个用户只保留最高非作弊分数。
 // 优先取非作弊成绩，如果没有则取最高作弊成绩。
 // offset 用于分页偏移，pageSize 为每页条数。
-func (d *ScoreDao) GetLeaderboard(ctx context.Context, period string, offset int, pageSize int) ([]model.LeaderboardEntry, error) {
+func (d *ScoreDao) GetLeaderboard(
+	ctx context.Context, period string, offset int, pageSize int,
+) ([]model.LeaderboardEntry, error) {
 	ctx, cancel := context_.WithTimeout(ctx, dao.DatabaseExecuteTimeout)
 	defer cancel()
 
@@ -219,7 +233,9 @@ func (d *ScoreDao) GetUserRank(ctx context.Context, userID, period string) (mode
 
 // GetUserHistory 分页获取指定用户的历史成绩，按时间降序。
 // Index 字段在此处按倒序位置临时赋值，application 层会根据 TotalGames 重新计算为真实局数。
-func (d *ScoreDao) GetUserHistory(ctx context.Context, userID string, offset int64, limit int32) ([]model.HistoryEntry, error) {
+func (d *ScoreDao) GetUserHistory(
+	ctx context.Context, userID string, offset int64, limit int32,
+) ([]model.HistoryEntry, error) {
 	ctx, cancel := context_.WithTimeout(ctx, dao.DatabaseExecuteTimeout)
 	defer cancel()
 
