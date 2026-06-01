@@ -467,7 +467,7 @@ public class MainActivity extends AppCompatActivity {
   /**
    * 读取响应体字节。
    */
-  private byte[] readResponseBytes(HttpURLConnection conn) throws IOException {
+  private byte[] readResponseBytes(HttpURLConnection conn) throws Exception {
     InputStream responseStream;
     try {
       responseStream = conn.getInputStream();
