@@ -91,7 +91,7 @@ func (s *palmServiceImpl) doRequest(ctx context.Context, path string, payload in
 		return nil, fmt.Errorf("marshal payload: %w", err)
 	}
 
-	reqURL := fmt.Sprintf("https://%s%s", s.cfg.Host, path)
+	reqURL := buildURL(s.cfg.Host, path)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, reqURL, strings.NewReader(string(bodyBytes)))
 	if err != nil {
 		return nil, fmt.Errorf("create request: %w", err)
@@ -125,7 +125,25 @@ func (s *palmServiceImpl) doRequest(ctx context.Context, path string, payload in
 		logger.Infof("[Proxy]   Response: %s", preview)
 	}
 
+	// 非 2xx 状态码直接报错，避免把上游错误页（"404 page not found"
+	// 之类的纯文本）当成 JSON 喂给 Unmarshal，掩盖真实失败原因。
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return nil, fmt.Errorf("upstream %s returned HTTP %d: %s",
+			reqURL, resp.StatusCode, bodyPreview(respBody, appconfig.PalmResponsePreviewMaxLen))
+	}
+
 	return json.RawMessage(respBody), nil
+}
+
+// bodyPreview 截取响应体前 N 字节用于错误信息，避免将巨大的上游响应原样回写到 error。
+func bodyPreview(body []byte, maxLen int) string {
+	if len(body) == 0 {
+		return "(empty body)"
+	}
+	if len(body) <= maxLen {
+		return string(body)
+	}
+	return string(body[:maxLen]) + "...(truncated)"
 }
 
 // generateTraceID 生成 32 位小写 hex 的 trace ID。
@@ -133,4 +151,20 @@ func generateTraceID() string {
 	b := make([]byte, 16)
 	_, _ = rand.Read(b)
 	return hex.EncodeToString(b)
+}
+
+// buildURL 拼接刷掌平台请求 URL。
+//
+// host 兼容三种形态：
+//  1. 已带 scheme："https://palm.example.com" / "http://localhost:8080"
+//     直接拼接，便于本地用纯 HTTP mock 联调。
+//  2. 仅域名/IP:port："palm.example.com" / "10.0.0.1:9090"
+//     默认补 "https://" 前缀，符合生产环境刷掌平台对外 HTTPS 的常态。
+//  3. 末尾多余 "/"：会被裁掉，避免出现 "https://host//palm/..."。
+func buildURL(host, path string) string {
+	host = strings.TrimRight(host, "/")
+	if !strings.HasPrefix(host, "http://") && !strings.HasPrefix(host, "https://") {
+		host = "https://" + host
+	}
+	return host + path
 }
