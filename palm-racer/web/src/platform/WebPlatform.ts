@@ -54,10 +54,10 @@ export class WebPlatform extends BasePlatform {
    * 3. code=1001013 (not found)   → skip (image quality issue)
    * 4. Other codes / network error → skip
    */
-  async antiCheatVerify(expectedUserId: string, bestFrame?: PreSelectedFrame): Promise<AntiCheatResult> {
+  async antiCheatVerify(expectedUserId: string, bestFrame?: PreSelectedFrame, sid?: string): Promise<AntiCheatResult> {
     const extracted = this.extractBestFrame(bestFrame);
     if (extracted) {
-      return this.verifyWithFrame(expectedUserId, extracted.base64, extracted.digest);
+      return this.verifyWithFrame(expectedUserId, extracted.base64, extracted.digest, sid);
     }
 
     // Fallback: realtime capture from existing video element
@@ -68,6 +68,6 @@ export class WebPlatform extends BasePlatform {
     }
     const captured = captureFrameFromVideo(existingVideo);
     logger.debug('AntiCheat', `Using realtime frame (${captured.base64.length} chars)`);
-    return this.verifyWithFrame(expectedUserId, captured.base64, captured.digest);
+    return this.verifyWithFrame(expectedUserId, captured.base64, captured.digest, sid);
   }
 }

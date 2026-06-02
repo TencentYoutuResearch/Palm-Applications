@@ -42,11 +42,13 @@ export async function palmRegister(options: PalmRegisterOptions): Promise<PalmRe
  *
  * @param expectedUserId - 期望的用户 ID
  * @param bestFrame - 可选的预选最优帧，由 BestFrameCollector 提供
+ * @param sid - 单局 session 标识：传入则告知服务端续期并按需标记替玩
  */
 export async function antiCheatVerify(
   expectedUserId: string,
-  bestFrame?: PreSelectedFrame
+  bestFrame?: PreSelectedFrame,
+  sid?: string
 ): Promise<AntiCheatResult> {
   const platform = getPlatformService();
-  return platform.antiCheatVerify(expectedUserId, bestFrame);
+  return platform.antiCheatVerify(expectedUserId, bestFrame, sid);
 }

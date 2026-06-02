@@ -138,10 +138,10 @@ export class NativePlatform extends BasePlatform {
    * 3. code=1001013 (not found)   → skip
    * 4. Other codes / network error → skip
    */
-  async antiCheatVerify(expectedUserId: string, bestFrame?: PreSelectedFrame): Promise<AntiCheatResult> {
+  async antiCheatVerify(expectedUserId: string, bestFrame?: PreSelectedFrame, sid?: string): Promise<AntiCheatResult> {
     const extracted = this.extractBestFrame(bestFrame);
     if (extracted) {
-      return this.verifyWithFrame(expectedUserId, extracted.base64, extracted.digest);
+      return this.verifyWithFrame(expectedUserId, extracted.base64, extracted.digest, sid);
     }
 
     if (!this.latestFrame_) {
@@ -159,7 +159,7 @@ export class NativePlatform extends BasePlatform {
       const base64 = mirrored;
       const digest = Math.abs(hash).toString(16).padStart(8, '0');
       logger.debug('AntiCheat', `Using latest native frame (${base64.length} chars)`);
-      return this.verifyWithFrame(expectedUserId, base64, digest);
+      return this.verifyWithFrame(expectedUserId, base64, digest, sid);
     } catch (e) {
       logger.debug('AntiCheat', `Error preparing frame: ${(e as Error).message}`);
       return { passed: true };

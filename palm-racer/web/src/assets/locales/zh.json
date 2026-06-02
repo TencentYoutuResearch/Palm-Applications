@@ -54,6 +54,7 @@
     "welcome": "欢迎, {name}",
     "guestMode": "游客模式（成绩不计入排行榜）",
     "guestHint": "💡 游客模式下成绩不计入排行榜，刷掌登录后可解锁完整功能",
+    "tokenExpired": "登录已失效，请重新登录后再开始游戏",
     "subtitle": "掌上赛车 · 手掌体感竞速",
     "controlsGuide": "🎮 操控指南",
     "controlOpen": "伸出手掌 = 自动加速",

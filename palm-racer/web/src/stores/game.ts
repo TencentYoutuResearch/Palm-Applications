@@ -26,8 +26,10 @@ export const useGameStore = defineStore('game', () => {
   const lastStats = ref<GameStats | null>(null);
   /** 当前局分数是否已提交，防止重复提交 */
   const scoreSubmitted = ref(false);
-  /** 当前局唯一标识，用于服务端去重 */
+  /** 当前局唯一标识，用于服务端去重（前端兼容字段） */
   const gameSessionId = ref('');
+  /** 服务端 StartGame 下发的单局 session 标识：提交分数和反作弊核身均需携带 */
+  const sid = ref('');
 
   function reset(): void {
     state.value = 'idle';
@@ -40,12 +42,13 @@ export const useGameStore = defineStore('game', () => {
     lastStats.value = null;
     scoreSubmitted.value = false;
     gameSessionId.value = '';
+    sid.value = '';
   }
 
   function setGameOver(stats: GameStats): void {
     state.value = 'gameover';
     lastStats.value = stats;
-    // 每局结束时生成唯一 session id，用于服务端幂等去重
+    // 客户端 gameSessionId 仅作幂等去重提示，权威 sid 由服务端 StartGame 下发。
     gameSessionId.value = crypto.randomUUID();
     if (stats.score > highScore.value) {
       highScore.value = stats.score;
@@ -66,6 +69,7 @@ export const useGameStore = defineStore('game', () => {
     lastStats,
     scoreSubmitted,
     gameSessionId,
+    sid,
     reset,
     setGameOver,
   };

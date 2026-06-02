@@ -77,6 +77,7 @@ export interface PlatformService {
    *
    * @param expectedUserId - 期望的用户 ID
    * @param bestFrame - 可选的预选最优帧，由 BestFrameCollector 提供
+   * @param sid - 单局 session 标识：非空时服务端为该 session 续期，并按需标记替玩
    */
-  antiCheatVerify(expectedUserId: string, bestFrame?: PreSelectedFrame): Promise<AntiCheatResult>;
+  antiCheatVerify(expectedUserId: string, bestFrame?: PreSelectedFrame, sid?: string): Promise<AntiCheatResult>;
 }

@@ -15,6 +15,8 @@ export interface PalmSearchResponse {
   userId: string;
   userName: string;
   tenantName: string;
+  /** 服务端在 1:N 登录成功时下发的身份 token（仅登录场景非空）。 */
+  token: string;
 }
 
 /**
@@ -23,25 +25,35 @@ export interface PalmSearchResponse {
  * Never throws on API-level errors (code != 0) — always returns
  * a structured response so callers can handle each code explicitly.
  * Only throws on network / transport errors.
+ *
+ * @param imageBase64  掌纹图片 base64
+ * @param _imageDigest 兼容参数，未使用
+ * @param sid          可选：传入则告知服务端这是「局中反作弊核身」，用于为该单局 session 续期
+ *                     并在核到他人时标记替玩；登录场景留空。
  */
 export async function searchRgbPalm(
   imageBase64: string,
-  _imageDigest?: string
+  _imageDigest?: string,
+  sid?: string
 ): Promise<PalmSearchResponse> {
+  const body: Record<string, unknown> = {
+    RgbImage: {
+      Data: imageBase64,
+      ImageType: 1,
+    },
+  };
+  if (sid) body.Sid = sid;
+
   const resp: any = await api.post(
     '/palm/search_rgb_palm',
-    {
-      RgbImage: {
-        Data: imageBase64,
-        ImageType: 1,
-      },
-    },
+    body,
     { timeout: SEARCH_TIMEOUT }
   );
 
   const code = resp.Code ?? resp.code ?? -1;
   const message = resp.Message ?? resp.message ?? '';
   const data = resp.Data ?? resp.data ?? {};
+  const token = resp.Token ?? resp.token ?? '';
 
   return {
     code,
@@ -49,6 +61,7 @@ export async function searchRgbPalm(
     userId: data.UserId || data.userId || '',
     userName: data.UserName || data.userName || data.UserId || data.userId || '',
     tenantName: data.TenantName || data.tenantName || '',
+    token,
   };
 }
 

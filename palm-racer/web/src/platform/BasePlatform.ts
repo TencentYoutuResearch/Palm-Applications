@@ -262,7 +262,15 @@ export abstract class BasePlatform implements PlatformService {
         if (resp.code === 0 && resp.userId) {
           logger.debug(this.platformName, 'Palm login success:', resp.userId, resp.userName);
           onState('matched', getI18nT()('platform.recognizeSuccess', { name: resp.userName }));
-          return { done: true, result: { userId: resp.userId, userName: resp.userName, tenantName: resp.tenantName } };
+          return {
+            done: true,
+            result: {
+              userId: resp.userId,
+              userName: resp.userName,
+              tenantName: resp.tenantName,
+              token: resp.token,
+            },
+          };
         }
         logger.debug(this.platformName, `code=${resp.code}, ${resp.message}`);
         return { done: false };
@@ -386,14 +394,17 @@ export abstract class BasePlatform implements PlatformService {
   /**
    * Anti-cheat 基础验证逻辑（处理 API 响应的 3-tier 判定）。
    * 子类需要自行获取帧数据后调用此方法。
+   *
+   * @param sid 单局 session 标识：非空时由服务端为该 session 续期并按需标记替玩。
    */
   protected async verifyWithFrame(
     expectedUserId: string,
     base64: string,
-    digest: string
+    digest: string,
+    sid?: string
   ): Promise<AntiCheatResult> {
     try {
-      const resp = await PalmApiService.searchRgbPalm(base64, digest);
+      const resp = await PalmApiService.searchRgbPalm(base64, digest, sid);
       logger.debug('AntiCheat', `resp: code=${resp.code}, userId=${resp.userId}, expected=${expectedUserId}`);
 
       if (resp.code === 0 && resp.userId) {
@@ -424,5 +435,5 @@ export abstract class BasePlatform implements PlatformService {
   // ─── 抽象方法 ──────────────────────────────────────────────────
 
   abstract palmLogin(options?: PalmLoginOptions): Promise<UserInfo>;
-  abstract antiCheatVerify(expectedUserId: string, bestFrame?: PreSelectedFrame): Promise<AntiCheatResult>;
+  abstract antiCheatVerify(expectedUserId: string, bestFrame?: PreSelectedFrame, sid?: string): Promise<AntiCheatResult>;
 }

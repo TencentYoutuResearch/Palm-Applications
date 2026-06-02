@@ -66,6 +66,31 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Auto-inject `Authorization: Bearer <token>` from localStorage so
+// scoring/auth-protected endpoints work transparently. Read directly from
+// localStorage instead of pinia store to avoid module init order issues
+// (this file is imported by services that may load before the store).
+api.interceptors.request.use((config) => {
+  try {
+    const raw = localStorage.getItem('palmRacer_user');
+    if (!raw) return config;
+    const parsed = JSON.parse(raw);
+    const token: string = parsed?.token ?? '';
+    if (!token) return config;
+    const headers: any = config.headers ?? {};
+    const has = headers['Authorization'] ?? headers['authorization']
+      ?? (typeof headers.get === 'function' ? headers.get('Authorization') : undefined);
+    if (has) return config;
+    if (typeof headers.set === 'function') {
+      headers.set('Authorization', `Bearer ${token}`);
+    } else {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    config.headers = headers;
+  } catch { /* ignore */ }
+  return config;
+});
+
 // Native WebView API 代理拦截器：
 // Android WebView 的 shouldInterceptRequest 无法获取 POST 请求体，
 // 因此将 body 以 Base64 编码放入自定义 header X-Proxy-Body 中传递给 Native 层。
@@ -88,8 +113,49 @@ if (isNative()) {
   });
 }
 
+// 服务端登录态错误码：
+//   2001 token 缺失/非法（签名错、格式错、被篡改）→ 严格踢登录
+//   2006 token 签名合法但已过期                     → 同样跳登录，但语义更友好
+// 两者前端处理方式当前一致（都跳登录页），保留两个常量便于未来差异化（如
+// 2006 时保留 game store 状态、2001 时彻底清理等）。
+const UNAUTHORIZED_CODE = 2001;
+const TOKEN_EXPIRED_CODE = 2006;
+const USER_STORAGE_KEY = 'palmRacer_user';
+
+/**
+ * 处理身份 token 失效：清空持久化用户 + 跳到登录页。
+ *
+ * - localStorage 清空：刷新或下次启动时不会再用旧 token
+ * - 页面 reload：让 pinia store 从空 localStorage 重建，触发路由守卫重定向。
+ *   单纯改 hash 不够，因为 pinia 内存里的 userId 还在 → isLoggedIn=true →
+ *   守卫不会重定向，会被卡在错误的页面上。
+ *
+ * 在此模块里直接用 window.location 而不引入 vue-router/pinia，避免循环依赖。
+ * 仅在非登录页时执行，避免登录流程被自身误触。
+ */
+function handleUnauthorized(): void {
+  try {
+    localStorage.removeItem(USER_STORAGE_KEY);
+  } catch { /* ignore */ }
+  if (window.location.hash.includes('/login')) return;
+  logger.warn('API', 'identity token rejected, redirect to login');
+  // 先把 hash 切到 /login（带 reason 让登录页显示提示），再 reload：
+  // reload 后路由直接落在登录页，而非先回到旧路由再跳一次。
+  window.location.hash = '#/login?reason=expired';
+  window.location.reload();
+}
+
 api.interceptors.response.use(
-  (response) => response.data,
+  (response) => {
+    // grpc-gateway 风格的业务错误码（HTTP 200 + Code 字段）
+    const data: any = response.data;
+    if (data && typeof data === 'object') {
+      if (data.Code === UNAUTHORIZED_CODE || data.Code === TOKEN_EXPIRED_CODE) {
+        handleUnauthorized();
+      }
+    }
+    return data;
+  },
   (error) => {
     logger.error('API', error.message);
     return Promise.reject(error);

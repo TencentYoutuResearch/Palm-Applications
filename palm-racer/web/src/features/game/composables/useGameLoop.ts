@@ -9,6 +9,7 @@ import { useGameStore } from '@/stores/game';
 import { useUserStore } from '@/stores/user';
 import { useSettingsStore } from '@/stores/settings';
 import { antiCheatVerify } from '@/platform/PalmAuthService';
+import { startGame as startGameSession } from '@/services/GameService';
 import { BestFrameCollector } from '@/utils/BestFrameCollector';
 import type { FrameCapturer } from '@/utils/BestFrameCollector';
 import { captureFrameFromVideo } from '@/utils/videoCapture';
@@ -166,7 +167,8 @@ export function useGameLoop(options: UseGameLoopOptions) {
 
       const result = await antiCheatVerify(
         userStore.userId,
-        { base64: bestFrame.base64, digest: bestFrame.digest }
+        { base64: bestFrame.base64, digest: bestFrame.digest },
+        gameStore.sid
       );
       if (!result.passed) {
         userStore.incrementCheat();
@@ -305,6 +307,33 @@ export function useGameLoop(options: UseGameLoopOptions) {
     engine?.switchCamera(settingsStore.cameraView);
     startLoop();
     startAntiCheat();
+    // 异步启动单局 session：失败不阻断游戏，但失败时 SubmitScore 会触发 retry-once 兜底。
+    void initGameSession();
+  }
+
+  /**
+   * 调用服务端 StartGame 拿到本局 sid。游客或失败时静默放过：
+   * 游客本来就不上榜，登录态用户即便此处失败也会在 SubmitScore 阶段 retry once。
+   *
+   * 服务端可能顺带下发续命后的新 token；若有则写回 user store，让登录态自动续命。
+   */
+  async function initGameSession(): Promise<void> {
+    if (!userStore.isLoggedIn || userStore.isGuest || !userStore.token) {
+      gameStore.sid = '';
+      return;
+    }
+    try {
+      const res = await startGameSession();
+      gameStore.sid = res.sid;
+      if (res.refreshedToken) {
+        userStore.token = res.refreshedToken;
+        logger.debug('GameSession', 'identity token refreshed by server');
+      }
+      logger.debug('GameSession', `started: sid=${res.sid}`);
+    } catch (e) {
+      gameStore.sid = '';
+      logger.warn('GameSession', `start failed: ${(e as Error).message}`);
+    }
   }
 
   return {

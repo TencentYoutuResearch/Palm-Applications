@@ -55,6 +55,7 @@
     "guestHint": "💡 Scores are not saved in guest mode. Login with palm scan to unlock full features",
     "guestMode": "Guest Mode (scores not saved to leaderboard)",
     "guestHint": "💡 Scores are not saved in guest mode. Login with palm scan to unlock full features",
+    "tokenExpired": "Session expired. Please log in again before starting the game.",
     "subtitle": "Palm Racing · Gesture-Controlled Racing",
     "controlsGuide": "🎮 Controls Guide",
     "controlOpen": "Open Palm = Auto Accelerate",

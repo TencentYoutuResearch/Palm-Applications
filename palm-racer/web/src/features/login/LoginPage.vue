@@ -30,7 +30,9 @@
       <button v-if="appConfigStore.loaded && appConfigStore.features.guestMode" class="btn-guest" @click="handleGuestLogin">
         🎮 {{ t('login.guestLogin') }}
       </button>
-      <p v-if="loginError" class="login-error">{{ loginError }}</p>
+      <p v-if="loginError || loginNoticeKey" class="login-error">
+        {{ loginNoticeKey ? t(loginNoticeKey) : loginError }}
+      </p>
       <!-- APK 下载功能暂时屏蔽，待 COS/CDN 托管方案就绪后恢复
       <router-link to="/download" class="link-download-app">
         📱 下载安卓 App
@@ -110,8 +112,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, nextTick, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useUserStore } from '@/stores/user';
 import { useAppConfigStore } from '@/stores/appConfig';
@@ -125,6 +127,7 @@ import { useCameraPreview } from '@/composables/useCameraPreview';
 import ScanGuide from '@/components/ScanGuide.vue';
 
 const router = useRouter();
+const route = useRoute();
 const { t, locale } = useI18n();
 const userStore = useUserStore();
 const appConfigStore = useAppConfigStore();
@@ -135,7 +138,25 @@ function switchLocale(lang: Locale): void {
   locale.value = lang;
 }
 const loginError = ref('');
+// loginNoticeKey 与 loginError 互斥：前者存 i18n key（在模板中现场 t()，跟随
+// locale 变化），后者存来自 API/异常的字面字符串（不跟随 locale）。
+// 拆开是为了让「token 过期」这类 i18n 提示在用户切换语言后能动态翻译。
+const loginNoticeKey = ref('');
 const isLoggingIn = ref(false);
+
+// 来自其它页面（如 MenuPage 检测到 token 过期）的跳转可能携带 reason 参数，
+// 用于在登录页顶部直接显示原因，避免用 window.confirm 弹窗（Android WebView 默认不支持）。
+//
+// flash message 风格：消费一次后立刻把 query 从 URL 中清掉，避免：
+//   1. 用户刷新后陈旧提示再次出现
+//   2. 用户书签 / 分享带 reason 的 URL，每次打开都看到错误提示
+// 用 router.replace 不产生历史记录，且 reactive 状态保留——提示该显示还显示。
+onMounted(() => {
+  if (route.query.reason === 'expired') {
+    loginNoticeKey.value = 'menu.tokenExpired';
+    router.replace({ path: '/login', query: {} });
+  }
+});
 
 // Scan modal state
 const showScanModal = ref(false);
@@ -177,6 +198,8 @@ async function handlePalmLogin(): Promise<void> {
   if (isLoggingIn.value) return;
   isLoggingIn.value = true;
   loginError.value = '';
+  // 用户已经主动开始重新登录，清掉「token 过期」之类的提示，避免与登录失败信息叠加。
+  loginNoticeKey.value = '';
 
   // Show modal and wait for video element to mount
   showScanModal.value = true;

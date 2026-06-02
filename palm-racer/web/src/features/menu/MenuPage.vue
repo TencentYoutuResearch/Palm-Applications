@@ -64,6 +64,7 @@ import { useUserStore } from '@/stores/user';
 import { useAppConfigStore } from '@/stores/appConfig';
 import { useSettingsStore } from '@/stores/settings';
 import { useGameStore } from '@/stores/game';
+import { isJwtExpired } from '@/utils/jwt';
 import type { CameraView } from '@/stores/settings';
 
 const router = useRouter();
@@ -79,7 +80,27 @@ const cameraViews: { id: CameraView; icon: string; labelKey: string }[] = [
   { id: 'top', icon: '🛰️', labelKey: 'menu.cameraView.top' },
 ];
 
+/**
+ * 开局前置鉴权：登录态用户在跳转 /game 前先本地校验 token 是否过期。
+ *
+ * 为什么不依赖服务端 401：
+ *   - StartGame 在 /game 页面 onMounted 才发，玩家会先看到游戏画面在加载，
+ *     然后才被踢回登录页 → 体验割裂
+ *   - 提前在「点击开始游戏」拦下来，给一个明确的"登录已失效"提示更直观
+ *
+ * 不用 window.confirm 弹窗：Android WebView 默认 WebChromeClient 不实现
+ * onJsConfirm，confirm 会被静默吞掉返回 false，导致 app 内点击无任何反应。
+ * 改为登出后跳登录页 + query 参数，由登录页显示提示，行为跨平台一致。
+ *
+ * 游客模式无 token，跳过此检查。
+ * 本地校验仅做体验优化，服务端仍会做最终验签。
+ */
 function startGame(): void {
+  if (!userStore.isGuest && isJwtExpired(userStore.token)) {
+    userStore.logout();
+    router.push({ path: '/login', query: { reason: 'expired' } });
+    return;
+  }
   gameStore.reset();
   router.push('/game');
 }

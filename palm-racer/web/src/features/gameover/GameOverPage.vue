@@ -95,7 +95,14 @@ onMounted(async () => {
   }
   gameStore.scoreSubmitted = true;
   try {
-    await submitScore(userStore.userId, userStore.userName, stats.value, stats.value.cheatUserId, gameStore.gameSessionId);
+    await submitScore(
+      userStore.userId,
+      userStore.userName,
+      stats.value,
+      stats.value.cheatUserId,
+      gameStore.gameSessionId,
+      () => gameStore.sid,
+    );
     logger.debug('GameOver', 'Score submitted:', stats.value.score);
   } catch (e) {
     // Never block UI on submission failure (e.g. MySQL not configured).
