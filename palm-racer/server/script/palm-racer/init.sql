@@ -1,7 +1,7 @@
 -- 创建数据库
 CREATE DATABASE IF NOT EXISTS `palmracer` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
-USE `palm_racer`;
+USE `palmracer`;
 
 -- game_scores 游戏分数表
 CREATE TABLE IF NOT EXISTS `t_game_scores` (

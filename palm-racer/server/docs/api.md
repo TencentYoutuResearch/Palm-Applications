@@ -29,6 +29,9 @@
     - [SearchRgbPalmData](#sea-api-seapalmracer-SearchRgbPalmData)
     - [SearchRgbPalmRequest](#sea-api-seapalmracer-SearchRgbPalmRequest)
     - [SearchRgbPalmResponse](#sea-api-seapalmracer-SearchRgbPalmResponse)
+    - [StartGameData](#sea-api-seapalmracer-StartGameData)
+    - [StartGameRequest](#sea-api-seapalmracer-StartGameRequest)
+    - [StartGameResponse](#sea-api-seapalmracer-StartGameResponse)
     - [SubmitScoreRequest](#sea-api-seapalmracer-SubmitScoreRequest)
     - [SubmitScoreResponse](#sea-api-seapalmracer-SubmitScoreResponse)
     - [UserHistoryData](#sea-api-seapalmracer-UserHistoryData)
@@ -460,6 +463,7 @@ RGB 手掌图片信息（全部基础类型，避免 Struct 循环引用导致�
 | sdk_timestamps | [string](#string) |  | SDK 时间戳 JSON 字符串 |
 | user_token | [string](#string) |  | 用户 Token |
 | user_id | [string](#string) |  | 用户 ID（可选） |
+| sid | [string](#string) |  | 单局 session 标识（可选）：游戏内反作弊核身时携带，服务端据此续期并标记替玩 |
 
 
 
@@ -477,6 +481,55 @@ RGB 手掌图片信息（全部基础类型，避免 Struct 循环引用导致�
 | code | [int32](#int32) |  |  |
 | message | [string](#string) |  |  |
 | data | [SearchRgbPalmData](#sea-api-seapalmracer-SearchRgbPalmData) |  |  |
+| token | [string](#string) |  | 登录态身份 token（仅 1:N 登录成功时下发；游戏内核身续期不下发） |
+
+
+
+
+
+
+<a name="sea-api-seapalmracer-StartGameData"></a>
+
+### StartGameData
+开始游戏响应数据
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| sid | [string](#string) |  | 单局 session 标识：后续局中核身续期与 SubmitScore 提交均需携带 |
+| token | [string](#string) |  | 续命后的身份 token：仅当原 token 剩余有效期低于阈值时下发，前端应写回登录态；为空表示无需更新 |
+
+
+
+
+
+
+<a name="sea-api-seapalmracer-StartGameRequest"></a>
+
+### StartGameRequest
+开始游戏请求（身份 token 通过 Authorization: Bearer 头传递）
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| request_id | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="sea-api-seapalmracer-StartGameResponse"></a>
+
+### StartGameResponse
+开始游戏响应
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| code | [int32](#int32) |  |  |
+| message | [string](#string) |  |  |
+| data | [StartGameData](#sea-api-seapalmracer-StartGameData) |  |  |
 
 
 
@@ -486,7 +539,7 @@ RGB 手掌图片信息（全部基础类型，避免 Struct 循环引用导致�
 <a name="sea-api-seapalmracer-SubmitScoreRequest"></a>
 
 ### SubmitScoreRequest
-提交分数请求
+提交分数请求（身份 token 通过 Authorization: Bearer 头传递）
 
 
 | Field | Type | Label | Description |
@@ -500,6 +553,7 @@ RGB 手掌图片信息（全部基础类型，避免 Struct 循环引用导致�
 | cheated | [bool](#bool) |  |  |
 | cheat_user_id | [string](#string) |  | 替玩用户ID（多个不同替玩用户以最后1个为准） |
 | game_session_id | [string](#string) |  | 游戏会话唯一标识，前端每局游戏开始时生成（UUID v4），服务端用于幂等去重 |
+| sid | [string](#string) |  | 单局 session 标识（StartGame 下发）：服务端据此校验并一次性消费 |
 
 
 
@@ -569,7 +623,8 @@ RGB 手掌图片信息（全部基础类型，避免 Struct 循环引用导致�
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| SubmitScore | [SubmitScoreRequest](#sea-api-seapalmracer-SubmitScoreRequest) | [SubmitScoreResponse](#sea-api-seapalmracer-SubmitScoreResponse) | 游戏分数管理 |
+| StartGame | [StartGameRequest](#sea-api-seapalmracer-StartGameRequest) | [StartGameResponse](#sea-api-seapalmracer-StartGameResponse) | 游戏分数管理 开始一局游戏：校验登录态身份 token，创建单局 session 并下发 sid |
+| SubmitScore | [SubmitScoreRequest](#sea-api-seapalmracer-SubmitScoreRequest) | [SubmitScoreResponse](#sea-api-seapalmracer-SubmitScoreResponse) |  |
 | GetLeaderboard | [GetLeaderboardRequest](#sea-api-seapalmracer-GetLeaderboardRequest) | [GetLeaderboardResponse](#sea-api-seapalmracer-GetLeaderboardResponse) |  |
 | GetUserHistory | [GetUserHistoryRequest](#sea-api-seapalmracer-GetUserHistoryRequest) | [GetUserHistoryResponse](#sea-api-seapalmracer-GetUserHistoryResponse) |  |
 | CreateToken | [CreateTokenRequest](#sea-api-seapalmracer-CreateTokenRequest) | [CreateTokenResponse](#sea-api-seapalmracer-CreateTokenResponse) | 刷掌平台 API 代理 |

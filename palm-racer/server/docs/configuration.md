@@ -6,6 +6,7 @@
 - [api/protoapi-spec/sea-palm-racer/v1/configuration.proto](#api_protoapi-spec_sea-palm-racer_v1_configuration-proto)
     - [Configuration](#sea-api-seapalmracer-Configuration)
     - [Configuration.AppVersion](#sea-api-seapalmracer-Configuration-AppVersion)
+    - [Configuration.Auth](#sea-api-seapalmracer-Configuration-Auth)
     - [Configuration.Features](#sea-api-seapalmracer-Configuration-Features)
     - [Configuration.Palm](#sea-api-seapalmracer-Configuration-Palm)
   
@@ -31,6 +32,7 @@ config file yaml
 | palm | [Configuration.Palm](#sea-api-seapalmracer-Configuration-Palm) |  | 刷掌平台 API 配置 |
 | app_version | [Configuration.AppVersion](#sea-api-seapalmracer-Configuration-AppVersion) |  | App 版本管理配置 |
 | features | [Configuration.Features](#sea-api-seapalmracer-Configuration-Features) |  | 功能开关配置 |
+| auth | [Configuration.Auth](#sea-api-seapalmracer-Configuration-Auth) |  | 计分鉴权配置（身份 token 与单局 session） |
 
 
 
@@ -49,6 +51,23 @@ App 版本管理配置，用于控制客户端升级策略
 | download_url | [string](#string) |  | APK 下载链接 |
 | force_update | [bool](#bool) |  | 是否强制更新（true 时客户端必须升级才能继续使用） |
 | changelog | [string](#string) |  | 更新日志 |
+
+
+
+
+
+
+<a name="sea-api-seapalmracer-Configuration-Auth"></a>
+
+### Configuration.Auth
+计分鉴权配置
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| jwt_secret | [string](#string) |  | 身份 token 的 HMAC-SHA256 签名密钥（至少 32 字节）；可由环境变量 JWT_SECRET 覆盖 |
+| token_ttl_seconds | [int32](#int32) |  | 身份 token 有效期秒数：&gt; 0 显式有限有效期；0 表示未配置，使用默认 7 天； &lt; 0 表示永不过期（仅限长期 demo 等可控场景，token 无法撤销，泄露风险高）。 |
+| session_ttl_seconds | [int32](#int32) |  | 单局 session 存活秒数（应覆盖单局最大时长 &#43; 缓冲） |
 
 
 

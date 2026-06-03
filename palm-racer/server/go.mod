@@ -3,18 +3,19 @@ module github.com/TencentYoutuResearch/Palm-Applications/palm-racer/server
 go 1.26
 
 require (
+	github.com/alicebob/miniredis/v2 v2.38.0
 	github.com/gin-gonic/gin v1.11.0
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.3
 	github.com/jmoiron/sqlx v1.4.0
-	github.com/kaydxh/golang/go v0.0.0-20260522064015-bdf001618851
+	github.com/kaydxh/golang/go v0.0.0-20260602021148-d8bb35637ab9
 	github.com/kaydxh/golang/pkg/config v0.0.0-20260522064015-bdf001618851
 	github.com/kaydxh/golang/pkg/database v0.0.0-20260522064015-bdf001618851
 	github.com/kaydxh/golang/pkg/file-cleanup v0.0.0-20260522064015-bdf001618851
 	github.com/kaydxh/golang/pkg/grpc-gateway v0.0.0-20260522064015-bdf001618851
 	github.com/kaydxh/golang/pkg/logs v0.0.0-20260522064015-bdf001618851
-	github.com/kaydxh/golang/pkg/middleware v0.0.0-20260522064015-bdf001618851
+	github.com/kaydxh/golang/pkg/middleware v0.0.0-20260602054739-2704ec117682
 	github.com/kaydxh/golang/pkg/opentelemetry v0.0.0-20260522064015-bdf001618851
 	github.com/kaydxh/golang/pkg/profile v0.0.0-20260522064015-bdf001618851
 	github.com/kaydxh/golang/pkg/resolver v0.0.0-20260522064015-bdf001618851
@@ -102,6 +103,7 @@ require (
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.3.0 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
+	github.com/yuin/gopher-lua v1.1.1 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.53.0 // indirect
