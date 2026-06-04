@@ -49,7 +49,7 @@ test: test-server test-web ## Run all tests
 docker: ## Build Docker image
 	docker build -t palm-racer:latest .
 
-docker-up: ## Start with docker-compose (server + mysql)
+docker-up: ## Start with docker-compose (server + mysql + redis)
 	docker compose up -d
 
 docker-down: ## Stop docker-compose
