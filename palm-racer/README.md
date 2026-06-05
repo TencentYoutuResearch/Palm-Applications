@@ -27,6 +27,8 @@
 
 > **Palm Racer** 是一个开源 3D 体感赛车游戏，通过 MediaPipe 手掌追踪实现纯手势控制——无需手柄或键盘。支持对接掌纹身份认证平台（推荐[腾讯刷掌开放平台](https://palm.tencent.com)），实现刷掌注册、刷掌登录和防作弊检测。
 
+> 🎮 **在线体验**：[https://open.intl.palm.tencent.com/palm-racer](https://open.intl.palm.tencent.com/palm-racer)
+
 ---
 
 ## 📖 简介 | Introduction

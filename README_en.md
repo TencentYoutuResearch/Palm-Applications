@@ -57,6 +57,8 @@
 
 ### 🏎️ [Palm Racer — Gesture-controlled Racing Game](./palm-racer/)
 
+> 🌐 **Online Demo**: [https://open.intl.palm.tencent.com/palm-racer](https://open.intl.palm.tencent.com/palm-racer)
+
 **Palm Racer** is an open-source 3D gesture-controlled racing game that uses palm posture tracking for pure hand gesture control — no gamepad or keyboard needed. Supports palm registration, palm login, and liveness-based anti-cheat detection.
 
 | Feature | Description |

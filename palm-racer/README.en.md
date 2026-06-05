@@ -27,6 +27,8 @@
 
 > **Palm Racer** is an open-source 3D racing game controlled entirely by hand gestures via MediaPipe — no controller needed. It supports optional integration with palm recognition platforms (recommended: [Tencent Palm Recognition Open Platform](https://palm.tencent.com)) for palm registration, palm login, and anti-cheat detection.
 
+> 🎮 **Online Demo**: [https://open.intl.palm.tencent.com/palm-racer](https://open.intl.palm.tencent.com/palm-racer)
+
 ---
 
 ## 📖 Introduction

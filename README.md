@@ -61,6 +61,8 @@
 
 ### 🏎️ [Palm Racer — 掌上赛车](./palm-racer/)
 
+> 🎮 **在线体验**：[https://open.intl.palm.tencent.com/palm-racer](https://open.intl.palm.tencent.com/palm-racer)
+
 **Palm Racer（掌上赛车）** 是一个开源的 3D 体感赛车游戏，通过手掌姿态追踪实现纯手势控制——无需手柄或键盘。支持刷掌注册、刷掌登录和活体防作弊检测。
 
 | 特性 | 说明 |
