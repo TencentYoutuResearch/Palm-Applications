@@ -60,8 +60,14 @@ docker-down: ## Stop docker-compose
 build-android-debug: ## Build Android APK (debug)
 	cd android && ./gradlew assembleDebug
 
-build-android-release: ## Build Android APK (release)
+build-android-release: build-web sync-android-web ## Build Android APK (release)
 	cd android && ./gradlew assembleRelease
+
+sync-android-web: ## Sync web/dist to android assets (preserves mediapipe/models)
+	rm -rf android/app/src/main/assets/web/assets android/app/src/main/assets/web/index.html android/app/src/main/assets/web/favicon.svg
+	cp -r web/dist/assets android/app/src/main/assets/web/
+	cp web/dist/index.html android/app/src/main/assets/web/
+	cp web/dist/favicon.svg android/app/src/main/assets/web/
 
 install-android-release: ## Install release APK to connected device via adb
 	adb install -r android/app/build/outputs/apk/release/app-release.apk
