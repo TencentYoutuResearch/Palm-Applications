@@ -11,6 +11,15 @@ import androidx.lifecycle.LifecycleOwner;
 
 import com.google.gson.JsonObject;
 import com.edgesenseai.palm.core.WebViewBridge;
+import com.edgesenseai.palmracer.util.HttpUtils;
+
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Map;
+
+import javax.net.ssl.HttpsURLConnection;
 
 /**
  * PalmRacerBridge registers game-specific JSBridge handlers on top of
@@ -38,6 +47,7 @@ public class PalmRacerBridge {
     registerGetApiConfig();
     registerStartHandTracking();
     registerStopHandTracking();
+    registerNativePost();
   }
 
   /**
@@ -167,6 +177,97 @@ public class PalmRacerBridge {
       config.addProperty("apiBaseURL", apiBaseURL);
       responder.resolve(config);
     });
+  }
+
+  /**
+   * nativePost — executes an HTTP POST request from the Native layer.
+   *
+   * <p>This bypasses WebView's header size limitation for large request bodies
+   * (e.g., base64-encoded palm images). The JS side passes the full URL and
+   * JSON body, and Native performs the request via HttpURLConnection.</p>
+   */
+  private void registerNativePost() {
+    bridge.registerCall("nativePost", JsonObject.class, (params, responder) -> {
+      if (params == null || !params.has("url") || !params.has("body")) {
+        responder.reject(-1, "Missing required params: url, body");
+        return;
+      }
+
+      String url = params.get("url").getAsString();
+      String body = params.get("body").getAsString();
+      int timeout = params.has("timeout") ? params.get("timeout").getAsInt() : 15000;
+
+      // Extract optional headers
+      JsonObject headers = params.has("headers") ? params.getAsJsonObject("headers") : null;
+
+      new Thread(() -> {
+        try {
+          JsonObject result = executePost(url, body, timeout, headers);
+          responder.resolve(result);
+        } catch (Exception e) {
+          Log.e(TAG, "nativePost failed: " + e.getMessage());
+          responder.reject(-1, "Network error: " + e.getMessage());
+        }
+      }).start();
+    });
+  }
+
+  /**
+   * Executes an HTTP POST request and returns the response as a JsonObject.
+   */
+  private JsonObject executePost(
+      String targetUrl, String body, int timeout, JsonObject headers) throws Exception {
+    URL url = new URL(targetUrl);
+    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    if (conn instanceof HttpsURLConnection && BuildConfig.DEBUG) {
+      HttpUtils.trustAllCerts((HttpsURLConnection) conn);
+    }
+
+    try {
+      conn.setRequestMethod("POST");
+      conn.setConnectTimeout(timeout);
+      conn.setReadTimeout(timeout);
+      conn.setDoInput(true);
+      conn.setDoOutput(true);
+      conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+
+      // Forward custom headers
+      if (headers != null) {
+        for (Map.Entry<String, com.google.gson.JsonElement> entry : headers.entrySet()) {
+          conn.setRequestProperty(entry.getKey(), entry.getValue().getAsString());
+        }
+      }
+
+      // Write body
+      byte[] bodyBytes = body.getBytes("UTF-8");
+      conn.setFixedLengthStreamingMode(bodyBytes.length);
+      OutputStream os = conn.getOutputStream();
+      os.write(bodyBytes);
+      os.flush();
+      os.close();
+
+      // Read response
+      int statusCode = conn.getResponseCode();
+      InputStream responseStream;
+      try {
+        responseStream = conn.getInputStream();
+      } catch (Exception e) {
+        responseStream = conn.getErrorStream();
+      }
+
+      byte[] responseBytes = (responseStream != null)
+          ? HttpUtils.readAllBytes(responseStream) : new byte[0];
+      String responseBody = new String(responseBytes, "UTF-8");
+
+      Log.d(TAG, "nativePost response: " + statusCode + " (" + responseBytes.length + " bytes)");
+
+      JsonObject result = new JsonObject();
+      result.addProperty("status", statusCode);
+      result.addProperty("body", responseBody);
+      return result;
+    } finally {
+      conn.disconnect();
+    }
   }
 
   private JsonObject makeResult(String status) {

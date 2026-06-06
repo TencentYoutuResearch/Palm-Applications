@@ -1,11 +1,70 @@
 /**
- * Palm biometric API service (Web mode only).
+ * Palm biometric API service.
  *
- * In native mode, palm operations go through JSBridge → PalmMobileManager SDK.
- * In web mode, they go through this service → Go backend → Palm Platform.
+ * In native mode, palm API requests go through JSBridge → Native HttpURLConnection
+ * to bypass WebView's header size limitation for large base64 image bodies.
+ * In web mode, they go through axios → Go backend → Palm Platform.
  */
 import api from './api';
 import { SEARCH_TIMEOUT } from '@/config/platformConfig';
+import { isNative } from '@/utils/environment';
+import bridge from '@/bridge/JSBridge';
+import { logger } from '@/utils/logger';
+
+/**
+ * 通过 Native JSBridge 发送 POST 请求（绕过 WebView header 大小限制）。
+ * 仅在 Native 模式下使用。
+ */
+async function nativePost(path: string, body: Record<string, unknown>, timeout: number): Promise<any> {
+  const baseUrl = localStorage.getItem('palmRacer_apiBaseURL') || '';
+
+  let fullUrl: string;
+  if (baseUrl.startsWith('http')) {
+    // 完整 URL，如 https://open.intl.palm.tencent.com/palm-racer/api
+    fullUrl = baseUrl + path;
+  } else {
+    // 兜底：如果 localStorage 中没有完整 URL，尝试通过 JSBridge 获取
+    try {
+      const config = await bridge.call<{ apiBaseURL?: string }>('getApiConfig', {}, { timeout: 3000 });
+      if (config?.apiBaseURL?.startsWith('http')) {
+        fullUrl = config.apiBaseURL + path;
+      } else {
+        throw new Error('Cannot determine backend URL for native POST');
+      }
+    } catch (e) {
+      throw new Error('Cannot determine backend URL: ' + (e as Error).message);
+    }
+  }
+
+  logger.debug('PalmAPI', `nativePost: ${fullUrl}`);
+
+  const result = await bridge.call<{ status: number; body: string }>(
+    'nativePost',
+    { url: fullUrl, body: JSON.stringify(body), timeout },
+    { timeout: timeout + 5000 } // JSBridge 超时比 HTTP 超时多 5s
+  );
+
+  if (!result || result.status >= 400) {
+    throw new Error(`HTTP ${result?.status || 'unknown'}: ${result?.body || 'No response'}`);
+  }
+
+  // 解析 JSON 响应
+  try {
+    return JSON.parse(result.body);
+  } catch {
+    throw new Error(`Invalid JSON response: ${result.body?.substring(0, 100)}`);
+  }
+}
+
+/**
+ * 统一的 POST 请求方法：Native 模式走 JSBridge，Web 模式走 axios。
+ */
+async function palmPost(path: string, body: Record<string, unknown>, timeout: number): Promise<any> {
+  if (isNative()) {
+    return nativePost(path, body, timeout);
+  }
+  return api.post(path, body, { timeout });
+}
 
 /** Response from 1:N palm recognition API. */
 export interface PalmSearchResponse {
@@ -44,11 +103,7 @@ export async function searchRgbPalm(
   };
   if (sid) body.Sid = sid;
 
-  const resp: any = await api.post(
-    '/palm/search_rgb_palm',
-    body,
-    { timeout: SEARCH_TIMEOUT }
-  );
+  const resp: any = await palmPost('/palm/search_rgb_palm', body, SEARCH_TIMEOUT);
 
   const code = resp.Code ?? resp.code ?? -1;
   const message = resp.Message ?? resp.message ?? '';
@@ -88,7 +143,7 @@ export async function registerRgbPalm(
   _imageDigest?: string,
   isForce = true
 ): Promise<PalmRegisterResponse> {
-  const resp: any = await api.post(
+  const resp: any = await palmPost(
     '/palm/register_rgb_palm',
     {
       UserId: userId,
@@ -98,7 +153,7 @@ export async function registerRgbPalm(
       },
       IsForce: isForce,
     },
-    { timeout: SEARCH_TIMEOUT }
+    SEARCH_TIMEOUT
   );
 
   const code = resp.Code ?? resp.code ?? -1;
