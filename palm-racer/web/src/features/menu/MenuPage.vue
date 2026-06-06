@@ -144,12 +144,19 @@ function handleLogout(): void {
 @use '@/assets/styles/variables' as *;
 
 .menu-page {
-  gap: clamp(10px, 2vh, 20px);
-  padding: clamp(8px, 2vh, 24px) 16px;
-  justify-content: center;
+  gap: clamp(8px, 1.5vh, 20px);
+  padding: clamp(8px, 1.5vh, 24px) 16px;
+  justify-content: flex-start;
   background: radial-gradient(ellipse at 50% 20%, rgba($color-primary, 0.1), transparent 60%),
               $color-bg;
   overflow-y: auto;
+  min-height: 100%;
+  height: auto;
+
+  // 当内容不足以撑满屏幕时居中显示
+  @supports (justify-content: safe center) {
+    justify-content: safe center;
+  }
 }
 
 .menu-header {

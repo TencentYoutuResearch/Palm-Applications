@@ -27,14 +27,14 @@
 
     <!-- 排名提示卡片 -->
     <div v-if="(myRank || currentRoundRank > 0) && !userStore.isGuest" class="rank-hint">
-      <!-- 本局排名 -->
+      <!-- 本局排名（始终显示） -->
       <div v-if="currentRoundRank > 0" class="rank-hint-content">
         <span class="rank-text">
           {{ t('gameover.currentRoundRank') }}：{{ t('gameover.rankValue', { rank: currentRoundRank }) }}
         </span>
       </div>
-      <!-- 历史最佳排名 -->
-      <div v-if="myRank && !isNewRecord" class="rank-hint-content best-rank">
+      <!-- 历史最佳排名（当本局分数与最佳分数不同时显示） -->
+      <div v-if="myRank && myRank.score > stats.score" class="rank-hint-content best-rank">
         <span class="rank-text-secondary">
           {{ t('gameover.bestRank') }}：{{ t('gameover.rankValue', { rank: myRank.rank }) }}
           <span class="best-score-hint">({{ t('gameover.bestScore', { score: myRank.score.toLocaleString() }) }})</span>
@@ -137,12 +137,13 @@ async function fetchRank(): Promise<void> {
     if (result.myRank && result.myRank.rank > 0) {
       myRank.value = result.myRank;
 
-      // 计算本局排名
-      if (isNewRecord.value) {
-        // 本局是新纪录，本局排名 = 历史最佳排名（因为提交后最高分就是本局分数）
+      // 计算本局排名：比较本局分数与后端记录的最佳分数
+      const roundScore = stats.value.score;
+      if (roundScore >= result.myRank.score) {
+        // 本局分数 >= 后端最佳分数，说明本局就是最佳，排名相同
         currentRoundRank.value = result.myRank.rank;
       } else {
-        // 本局不是新纪录，需要估算本局分数在排行榜中的位置
+        // 本局分数 < 后端最佳分数，需要估算本局分数在排行榜中的位置
         await estimateCurrentRoundRank(result.total);
       }
 

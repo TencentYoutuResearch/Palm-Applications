@@ -16,4 +16,9 @@ html, body, #app {
   color: #ffffff;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
+
+#app {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
 </style>
