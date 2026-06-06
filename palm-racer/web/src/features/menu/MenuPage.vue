@@ -309,7 +309,7 @@ function handleLogout(): void {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: min(320px, 85vw);
+  width: min(300px, 85vw);
   padding: clamp(8px, 1.2vh, 14px) clamp(12px, 2vw, 18px);
   background: linear-gradient(135deg, rgba($color-primary, 0.12), rgba($color-accent, 0.08));
   border-radius: $border-radius;
