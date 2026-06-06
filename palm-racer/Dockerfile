@@ -24,7 +24,7 @@ COPY web/ ./
 RUN npm run build
 
 # ---- Stage 2: 构建 Go Server ----
-FROM golang:1.25-alpine AS server-builder
+FROM golang:1.26-alpine AS server-builder
 
 RUN apk add --no-cache make bash git
 
