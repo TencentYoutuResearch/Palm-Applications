@@ -13,14 +13,14 @@ services:
       - PALM_APP_ID=${PALM_APP_ID:-0}
       - PALM_SECRET_ID=${PALM_SECRET_ID:-}
       - PALM_SECRET_KEY=${PALM_SECRET_KEY:-}
-      - DB_HOST=mysql
-      - DB_PORT=3306
-      - DB_USERNAME=app
-      - DB_PASSWORD=changeme
-      - DB_NAME=palm_racer
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - REDIS_PASSWORD=changeme
+      - DB_HOST=${DB_HOST:-mysql}
+      - DB_PORT=${DB_PORT:-3306}
+      - DB_USERNAME=${DB_USERNAME:-app}
+      - DB_PASSWORD=${DB_PASSWORD:-changeme}
+      - DB_NAME=${DB_NAME:-palmracer}
+      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-changeme}
     depends_on:
       mysql:
         condition: service_healthy
@@ -31,10 +31,10 @@ services:
   mysql:
     image: mysql:8.0
     environment:
-      MYSQL_ROOT_PASSWORD: changeme_root
-      MYSQL_DATABASE: palm_racer
-      MYSQL_USER: app
-      MYSQL_PASSWORD: changeme
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-changeme_root}
+      MYSQL_DATABASE: ${DB_NAME:-palm_racer}
+      MYSQL_USER: ${DB_USERNAME:-app}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-changeme}
     ports:
       - "3306:3306"
     volumes:
@@ -48,13 +48,13 @@ services:
 
   redis:
     image: redis:7-alpine
-    command: redis-server --requirepass changeme
+    command: redis-server --requirepass ${REDIS_PASSWORD:-changeme}
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "changeme", "ping"]
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-changeme}", "ping"]
       interval: 5s
       timeout: 3s
       retries: 10
