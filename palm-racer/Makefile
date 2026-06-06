@@ -57,8 +57,17 @@ docker-down: ## Stop docker-compose
 
 # === Android ===
 
-build-android: ## Build Android APK (debug)
+build-android-debug: ## Build Android APK (debug)
 	cd android && ./gradlew assembleDebug
+
+build-android-release: ## Build Android APK (release)
+	cd android && ./gradlew assembleRelease
+
+install-android-release: ## Install release APK to connected device via adb
+	adb install -r android/app/build/outputs/apk/release/app-release.apk
+
+install-android-debug: ## Install debug APK to connected device via adb
+	adb install -r android/app/build/outputs/apk/debug/app-debug.apk
 
 # === Utility ===
 
