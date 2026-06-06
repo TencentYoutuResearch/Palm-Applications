@@ -57,7 +57,7 @@ docker-down: ## Stop docker-compose
 
 # === Android ===
 
-build-android-debug: ## Build Android APK (debug)
+build-android-debug: build-web sync-android-web ## Build Android APK (debug)
 	cd android && ./gradlew assembleDebug
 
 build-android-release: build-web sync-android-web ## Build Android APK (release)
