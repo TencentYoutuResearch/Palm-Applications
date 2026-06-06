@@ -37,6 +37,19 @@
       </button>
     </div>
 
+    <!-- 用户最佳排名卡片（仅登录用户展示） -->
+    <div v-if="!userStore.isGuest && myRank" class="rank-card">
+      <div class="rank-info">
+        <span class="rank-icon">🏆</span>
+        <span class="rank-label">{{ t('menu.myRank') }}</span>
+        <span class="rank-value">#{{ myRank.rank }}</span>
+      </div>
+      <div class="rank-score">
+        <span class="score-label">{{ t('menu.myBestScore') }}</span>
+        <span class="score-value">{{ myRank.score.toLocaleString() }}</span>
+      </div>
+    </div>
+
     <div class="menu-actions">
       <button class="btn-primary start-btn" @click="startGame">
         🏁 {{ t('menu.start') }}
@@ -58,13 +71,16 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useUserStore } from '@/stores/user';
 import { useAppConfigStore } from '@/stores/appConfig';
 import { useSettingsStore } from '@/stores/settings';
 import { useGameStore } from '@/stores/game';
+import { getLeaderboard, type LeaderboardEntry } from '@/services/ScoreService';
 import { isJwtExpired } from '@/utils/jwt';
+import { logger } from '@/utils/logger';
 import type { CameraView } from '@/stores/settings';
 
 const router = useRouter();
@@ -79,6 +95,19 @@ const cameraViews: { id: CameraView; icon: string; labelKey: string }[] = [
   { id: 'cockpit', icon: '🏎️', labelKey: 'menu.cameraView.cockpit' },
   { id: 'top', icon: '🛰️', labelKey: 'menu.cameraView.top' },
 ];
+
+/** 用户在排行榜中的最佳排名（登录用户才加载） */
+const myRank = ref<LeaderboardEntry | null>(null);
+
+onMounted(async () => {
+  if (userStore.isGuest || !userStore.userId) return;
+  try {
+    const result = await getLeaderboard('all', userStore.userId, 0, 1);
+    myRank.value = result.myRank;
+  } catch (e) {
+    logger.debug('Menu', 'Failed to load rank:', (e as Error).message);
+  }
+});
 
 /**
  * 开局前置鉴权：登录态用户在跳转 /game 前先本地校验 token 是否过期。
@@ -267,5 +296,56 @@ function handleLogout(): void {
   color: rgba(255, 255, 255, 0.4);
   text-align: center;
   margin-top: -4px;
+}
+
+.rank-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: min(320px, 85vw);
+  padding: clamp(8px, 1.2vh, 14px) clamp(12px, 2vw, 18px);
+  background: linear-gradient(135deg, rgba($color-primary, 0.12), rgba($color-accent, 0.08));
+  border-radius: $border-radius;
+  border: 1px solid rgba($color-primary, 0.25);
+
+  .rank-info {
+    display: flex;
+    align-items: center;
+    gap: clamp(4px, 0.8vw, 8px);
+
+    .rank-icon {
+      font-size: clamp(16px, 2.5vh, 22px);
+    }
+
+    .rank-label {
+      font-size: clamp(11px, 1.5vh, 13px);
+      color: $color-text-secondary;
+    }
+
+    .rank-value {
+      font-size: clamp(16px, 2.5vh, 20px);
+      font-weight: 800;
+      color: $color-accent;
+    }
+  }
+
+  .rank-score {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1px;
+
+    .score-label {
+      font-size: clamp(9px, 1.2vh, 11px);
+      color: $color-text-secondary;
+      text-transform: uppercase;
+    }
+
+    .score-value {
+      font-size: clamp(14px, 2vh, 18px);
+      font-weight: 700;
+      color: $color-text;
+    }
+  }
 }
 </style>

@@ -64,7 +64,11 @@
       "chase": "追踪",
       "cockpit": "驾驶舱",
       "top": "俯视"
-    }
+    },
+    "myRank": "我的排名",
+    "myBestScore": "最佳分数",
+    "rankLabel": "第 {rank} 名",
+    "noRecord": "暂无记录，开始游戏吧！"
   },
   "game": {
     "score": "分数",
@@ -155,7 +159,17 @@
     "retry": "再来一局",
     "menu": "返回菜单",
     "leaderboard": "排行榜",
-    "guestNotice": "游客模式：成绩未保存到排行榜"
+    "leaderboardHighlight": "🏆 查看排名 ↑",
+    "guestNotice": "游客模式：成绩未保存到排行榜",
+    "currentRoundRank": "📊 本局排名",
+    "bestRank": "🏆 最佳排名",
+    "bestScore": "最高分：{score}",
+    "rankTitle": "🏆 当前排名",
+    "rankValue": "第 {rank} 名",
+    "rankLoading": "排名加载中...",
+    "rankNone": "暂无排名",
+    "nextGoal": "再多 {points} 分即可超越第 {rank} 名！",
+    "starNextGoal": "距离 {star} 星还差 {points} 分"
   },
   "leaderboard": {
     "title": "排行榜",

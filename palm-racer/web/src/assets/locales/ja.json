@@ -63,7 +63,11 @@
       "chase": "追跡",
       "cockpit": "コックピット",
       "top": "上空"
-    }
+    },
+    "myRank": "あなたのランキング",
+    "myBestScore": "最高スコア",
+    "rankLabel": "第 {rank} 位",
+    "noRecord": "まだ記録がありません、最初のゲームを始めましょう！"
   },
   "game": {
     "score": "スコア",
@@ -154,7 +158,14 @@
     "retry": "もう一度",
     "menu": "メニューに戻る",
     "leaderboard": "ランキング",
-    "guestNotice": "ゲストモード：スコアはランキングに保存されません"
+    "leaderboardHighlight": "🏆 ランキング確認 ↑",
+    "guestNotice": "ゲストモード：スコアはランキングに保存されません",
+    "rankTitle": "🏆 現在のランキング",
+    "rankValue": "第 {rank} 位",
+    "rankLoading": "ランキング読み込み中...",
+    "rankNone": "ランキングなし",
+    "nextGoal": "あと {points} 点で第 {rank} 位を超えられます！",
+    "starNextGoal": "{star} つ星まであと {points} 点"
   },
   "leaderboard": {
     "title": "ランキング",

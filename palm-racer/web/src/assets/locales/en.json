@@ -65,7 +65,12 @@
       "chase": "Chase",
       "cockpit": "Cockpit",
       "top": "Top"
-    }
+    },
+    "myRank": "My Rank",
+    "myBestScore": "Best Score",
+    "rankLabel": "#{rank}",
+    "noRecord": "No record yet, start your first race!",
+    "beatNext": "Score {points} more to beat #{nextRank}!"
   },
   "game": {
     "score": "Score",
@@ -156,7 +161,16 @@
     "retry": "Play Again",
     "menu": "Back to Menu",
     "leaderboard": "Leaderboard",
-    "guestNotice": "Guest Mode: Score not saved to leaderboard"
+    "leaderboardHighlight": "🏆 Check Rank ↑",
+    "guestNotice": "Guest Mode: Score not saved to leaderboard",
+    "currentRoundRank": "📊 This Round",
+    "bestRank": "🏆 Best Rank",
+    "bestScore": "High Score: {score}",
+    "rankValue": "#{rank}",
+    "currentRank": "Your Rank: #{rank}",
+    "rankUp": "Rank up {count} places!",
+    "nextTarget": "Score {points} more to reach #{rank}!",
+    "bestGap": "Best score gap: {points} pts, keep going!"
   },
   "leaderboard": {
     "title": "Leaderboard",
