@@ -17,13 +17,29 @@ type GameAuthHandler struct {
 	sessions sessiondomain.Store
 }
 
+// ErrAuthNotInitialized 表示 GameAuthHandler 未正确初始化（jwt_secret 未配置）。
+var ErrAuthNotInitialized = errors.New("auth: game auth service not initialized (jwt_secret not configured)")
+
 // NewGameAuthHandler 创建游戏鉴权编排处理器。
 func NewGameAuthHandler(tokens *authdomain.TokenService, sessions sessiondomain.Store) GameAuthHandler {
 	return GameAuthHandler{tokens: tokens, sessions: sessions}
 }
 
+// initialized 检查 GameAuthHandler 是否已正确初始化。
+// 当 jwt_secret 未配置时 buildGameAuthHandler 返回零值结构体，tokens 和 sessions 均为 nil，
+// 此时所有鉴权操作应返回错误而非 panic。
+func (h *GameAuthHandler) initialized() error {
+	if h.tokens == nil || h.sessions == nil {
+		return ErrAuthNotInitialized
+	}
+	return nil
+}
+
 // IssueLoginToken 为登录成功的 uid 签发身份 token。
 func (h *GameAuthHandler) IssueLoginToken(uid string) (string, error) {
+	if err := h.initialized(); err != nil {
+		return "", err
+	}
 	return h.tokens.Issue(uid)
 }
 
@@ -43,6 +59,9 @@ type StartGameResult struct {
 // 在响应中下发新 token。前端写回 user store 即可让玩家在不知不觉中保持登录态，
 // 避免「玩到一半 token 过期被踢回登录页」。
 func (h *GameAuthHandler) StartGame(ctx context.Context, token string) (*StartGameResult, error) {
+	if err := h.initialized(); err != nil {
+		return nil, err
+	}
 	uid, err := h.tokens.Verify(token)
 	if err != nil {
 		return nil, err
@@ -75,6 +94,9 @@ func (h *GameAuthHandler) StartGame(ctx context.Context, token string) (*StartGa
 func (h *GameAuthHandler) RenewOnVerify(ctx context.Context, sid, matchedUID string) error {
 	if sid == "" {
 		return nil
+	}
+	if err := h.initialized(); err != nil {
+		return err
 	}
 	if err := h.sessions.Renew(ctx, sid); err != nil {
 		return err
@@ -120,6 +142,9 @@ type SubmissionContext struct {
 func (h *GameAuthHandler) VerifySubmission(ctx context.Context, token, sid string) (*SubmissionContext, error) {
 	if sid == "" {
 		return nil, sessiondomain.ErrSessionNotFound
+	}
+	if err := h.initialized(); err != nil {
+		return nil, err
 	}
 
 	// token 校验：仅在「签名错/格式非法」时硬拒；过期/缺失走降级。
