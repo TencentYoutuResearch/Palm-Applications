@@ -1,0 +1,58 @@
+log:
+  formatter: glog
+  level: debug
+  filepath: ./log
+  max_age: 604800s #168h
+  max_count: 200
+  rotate_interval: 3600s
+  rotate_size: 104857600
+  report_caller: true
+  redirect: stdout
+
+web:
+  bind_address:
+    port: 9090
+  grpc:
+    timeout: 0s
+  http:
+    api_formatter: trivial_api_v20
+  debug:
+    disable_print_inoutput_methods: [""]
+
+  # OpenTelemetry 监控配置
+  open_telemetry:
+    enabled: false
+
+  # QPS限流配置
+  qps_limit:
+    grpc:
+      default_qps: 0
+      default_burst: 0
+      max_concurrency: 0
+      method_qps: []
+    http:
+      default_qps: 0
+      default_burst: 0
+      max_concurrency: 0
+      method_qps: []
+
+palm:
+  host: ""   # 刷掌平台 API 域名
+  secret_key: ""  # API Token (Bearer)
+
+# 数据库配置（排行榜等功能需要）
+database:
+  mysql:
+    enabled: false                   # 设为 true 启用 MySQL
+    address: "127.0.0.1:3306"        # MySQL 地址
+    username: ""                     # 数据库用户名
+    password: ""                     # 数据库密码
+    db_name: "palm_racer"            # 数据库名
+    max_connections: 10
+    max_idle_connections: 5
+    dial_timeout: 10s
+    max_wait_duration: 20s
+    fail_after_duration: 60s
+    interpolate_params: true
+
+
