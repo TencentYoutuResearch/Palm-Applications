@@ -1,0 +1,7 @@
+dist
+node_modules
+public
+src/**/*.d.ts
+coverage
+*.min.js
+*.min.css
