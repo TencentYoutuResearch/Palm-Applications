@@ -1,0 +1,275 @@
+# Created by kayxhding on 2020-10-11 12:40:37
+#!/usr/bin/env bash
+
+# exit by command return non-zero exit code
+set -o errexit
+# Indicate an error when it encounters an undefined variable
+set -o nounset
+# Fail on any error.
+set -o pipefail
+#set -o xtrace
+
+# example, generate golang proto files
+# bash go_proto_gen.sh -I . --proto_file_path pkg/webserver/webserver.proto --with-go
+
+# if script called by source, $0 is the name of father script, not the name of source run script
+SCRIPT_PATH=$(cd `dirname "${BASH_SOURCE[0]}"`;pwd)
+
+<<'COMMENT'
+SCRIPT=$(readlink -f "${BASH_SOURCE[0]}")
+SCRIPT_PATH=$(dirname "$SCRIPT")
+echo ${SCRIPT_PATH}
+COMMENT
+
+PROTOC_FILE_DIR=
+PROTO_HEADERS=
+# 从 Go Module 缓存中获取 grpc-gateway v1 的路径，其 third_party/googleapis 包含 google/api/annotations.proto
+GRPC_GATEWAY_DIR=$(go list -m -f '{{.Dir}}' github.com/grpc-ecosystem/grpc-gateway 2>/dev/null || echo "")
+# 兼容本地 third_party 目录（当 go module 不可用时作为回退）
+THIRD_PARTY_DIR="${SCRIPT_PATH}/third_party"
+WITH_DOC=
+WITH_CPP=
+WITH_GO=
+
+function die() {
+  echo 1>&2 "$*"
+  exit 1
+}
+
+function getopts() {
+  local -a protodirs
+  while test $# -ne 0
+  do
+    case "$1" in
+       -I|--proto_path)
+             protodirs+=(
+             "-I $(realpath "$2")"
+            )
+            shift
+            ;;
+       --third_party_path)
+           THIRD_PARTY_DIR=$(realpath "$2")
+           GRPC_GATEWAY_DIR=""
+            shift
+            ;;
+       --with-doc)
+            WITH_DOC=1
+            ;;
+       --proto_file_path)
+            PROTOC_FILE_DIR=$(realpath "$2")
+            shift
+            ;;
+       --with-cpp)
+           WITH_CPP=1
+           ;;
+       --with-go)
+           WITH_GO=1
+           ;;
+     esac
+     shift
+ done
+
+ PROTO_HEADERS="${protodirs[*]}"
+ # echo "${protodirs[*]}"
+}
+
+<<'COMMENT'
+# This will place three binaries in your $GOBIN
+# Make sure that your $GOBIN is in your $PATH
+# install protoc-gen-doc on mac=> https:
+# github.com/pseudomuto/protoc-gen-doc/issues/20  (make build, cp bin/protoc-gen-doc ${GOBIN})
+ go install \
+    github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway \
+    github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2 \
+    google.golang.org/protobuf/cmd/protoc-gen-go \
+    google.golang.org/grpc/cmd/protoc-gen-go-grpc \
+    github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc \
+    github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
+COMMENT
+
+echo `pwd`
+
+getopts $@
+
+echo "==> Checking tools..."
+
+# 确保 GOPATH/bin 和 GOBIN 在 PATH 中，go install 安装的二进制文件才能被找到
+GOBIN_DIR="${GOBIN:-$(go env GOBIN)}"
+GOPATH_BIN="$(go env GOPATH)/bin"
+if [[ -n "${GOBIN_DIR}" ]] && [[ ":${PATH}:" != *":${GOBIN_DIR}:"* ]]; then
+  export PATH="${GOBIN_DIR}:${PATH}"
+fi
+if [[ -n "${GOPATH_BIN}" ]] && [[ ":${PATH}:" != *":${GOPATH_BIN}:"* ]]; then
+  export PATH="${GOPATH_BIN}:${PATH}"
+fi
+
+# 工具名 -> go install 路径的映射
+# 使用平行数组而非 `declare -A` 关联数组，兼容 bash 3.2（macOS 自带 bash）
+TOOL_INSTALL_KEYS=(
+  "protoc-gen-go"
+  "protoc-gen-go-grpc"
+  "protoc-gen-grpc-gateway"
+  "protoc-gen-doc"
+)
+TOOL_INSTALL_VALUES=(
+  "google.golang.org/protobuf/cmd/protoc-gen-go@latest"
+  "google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest"
+  "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest"
+  "github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest"
+)
+
+# 工具名 -> 期望的模块路径前缀（用于版本校验，防止 v1/v2 混装）
+# 通过 go version -m <binary> 检查已安装二进制的来源模块是否匹配
+TOOL_EXPECTED_KEYS=(
+  "protoc-gen-grpc-gateway"
+)
+TOOL_EXPECTED_VALUES=(
+  "github.com/grpc-ecosystem/grpc-gateway/v2"
+)
+
+# 平行数组查找：按 key 返回 value，未命中返回空字符串
+# 用法: map_lookup KEY KEYS_VAR VALUES_VAR
+function map_lookup() {
+  local _key="$1"
+  local _keys_var="$2"
+  local _values_var="$3"
+  # 通过间接引用获取数组内容（bash 3.2 兼容）
+  eval "local _keys=(\"\${${_keys_var}[@]}\")"
+  eval "local _values=(\"\${${_values_var}[@]}\")"
+  local _i
+  for _i in "${!_keys[@]}"; do
+    if [[ "${_keys[${_i}]}" == "${_key}" ]]; then
+      echo "${_values[${_i}]}"
+      return 0
+    fi
+  done
+  echo ""
+  return 0
+}
+
+# 检查已安装工具的模块路径是否与期望匹配
+# 返回 0 表示匹配，1 表示不匹配
+function check_tool_module() {
+  local tool_name="$1"
+  local expected_module
+  expected_module="$(map_lookup "${tool_name}" TOOL_EXPECTED_KEYS TOOL_EXPECTED_VALUES)"
+  # 没有配置期望模块的工具，跳过校验
+  if [[ -z "${expected_module}" ]]; then
+    return 0
+  fi
+  local tool_path
+  tool_path=$(command -v "${tool_name}" 2>/dev/null || echo "")
+  if [[ -z "${tool_path}" ]]; then
+    return 1
+  fi
+  # 使用 go version -m 获取二进制的构建信息，检查模块路径
+  local build_info
+  build_info=$(go version -m "${tool_path}" 2>/dev/null || echo "")
+  if echo "${build_info}" | grep -q "${expected_module}"; then
+    return 0
+  else
+    echo 1>&2 "WARNING: ${tool_name} at ${tool_path} is not from expected module '${expected_module}', will reinstall"
+    return 1
+  fi
+}
+
+#GEN_PROTO_TOOLS=(protoc protoc-gen-go protoc-gen-grpc-gateway protoc-gen-govalidators)
+GEN_PROTO_TOOLS=(protoc protoc-gen-go protoc-gen-go-grpc protoc-gen-grpc-gateway protoc-gen-doc)
+for tool in "${GEN_PROTO_TOOLS[@]}"; do
+   need_install=false
+   if command -v ${tool} &>/dev/null; then
+     # 工具存在，但需要校验版本/模块是否匹配
+     if check_tool_module "${tool}"; then
+       echo 1>&2 "${tool}: $(command -v ${tool})"
+     else
+       need_install=true
+     fi
+   else
+     need_install=true
+   fi
+
+   if [[ "${need_install}" == "true" ]]; then
+     install_pkg="$(map_lookup "${tool}" TOOL_INSTALL_KEYS TOOL_INSTALL_VALUES)"
+     if [[ -n "${install_pkg}" ]]; then
+       echo 1>&2 "${tool} not found or version mismatch, installing via: go install ${install_pkg}"
+       go install "${install_pkg}" || die "failed to install ${tool}"
+       # 刷新 hash 缓存，确保 shell 能找到新安装的二进制
+       hash -r 2>/dev/null || true
+       echo 1>&2 "${tool}: $(command -v ${tool})"
+     else
+       die "didn't find ${tool}, please install it manually"
+     fi
+   fi
+done
+
+
+echo "==> Generating proto..."
+# "-I ." need behind PROTO_HEADERS, or remove it
+proto_headers="${PROTO_HEADERS} -I `pwd`"
+# 优先从 Go Module 缓存获取 google/api proto 依赖，无需在项目内维护 third_party 副本
+if [[ -n "${GRPC_GATEWAY_DIR}" ]]; then
+  proto_headers="${proto_headers} -I ${GRPC_GATEWAY_DIR}/third_party/googleapis"
+elif [[ -d "${THIRD_PARTY_DIR}/github.com/grpc-ecosystem/grpc-gateway" ]]; then
+  proto_headers="${proto_headers} -I ${THIRD_PARTY_DIR}/github.com/grpc-ecosystem/grpc-gateway"
+else
+  die "无法找到 google/api proto 依赖，请确保 go.mod 中包含 github.com/grpc-ecosystem/grpc-gateway 或通过 --third_party_path 指定"
+fi
+source_relative_option="paths=source_relative:."
+go_opt_option=""
+go_out_option=""
+go_tag_option=""
+go_grpc_option=""
+doc_option=""
+doc_out_option=""
+cpp_option=""
+cpp_out_option=""
+cpp_grpc_option=""
+# HTTP 路由优先从 proto 里的 google.api.http 注解读取，同时支持 yaml 配置文件兜底。
+grpc_gateway_out_option="--grpc-gateway_out=logtostderr=true"
+grpc_gateway_delete_option="--grpc-gateway_opt=allow_delete_body=true"
+grpc_gateway_option=""
+
+for proto in $(find ${PROTOC_FILE_DIR} -type f -name '*.proto' -print0 | xargs -0); do
+  echo "Generating ${proto}"
+  proto_base_name="$(basename ${proto} .proto)"
+  api_conf_yaml_base_name="${proto_base_name}.yaml"
+  api_conf_yaml_dir="$(dirname ${proto})"
+  api_conf_yaml="${api_conf_yaml_dir}/$api_conf_yaml_base_name"
+  grpc_api_yaml_option=""
+  grpc_gateway_option=""
+
+  # 如果存在同名 yaml 配置文件，则使用 grpc_api_configuration 指定 HTTP 路由映射
+  if [[ -f "${api_conf_yaml}" ]];then
+    grpc_api_yaml_option="grpc_api_configuration=${api_conf_yaml},${source_relative_option}"
+    grpc_gateway_option="${grpc_gateway_out_option},${grpc_api_yaml_option} ${grpc_gateway_delete_option}"
+  else
+    grpc_gateway_option="${grpc_gateway_out_option},${source_relative_option} ${grpc_gateway_delete_option}"
+  fi
+
+  if [[ "${WITH_DOC}" -eq 1 ]]; then
+    # output file name
+    doc_option="--doc_opt=markdown,${proto_base_name}.md"
+    # docs output directory is created on demand so downstream projects do not need to pre-create it
+    doc_out_dir="${SCRIPT_PATH}/../docs"
+    mkdir -p "${doc_out_dir}"
+    doc_out_option="--doc_out=${doc_out_dir}"
+  fi
+
+  if [[ "${WITH_CPP}" -eq 1 ]]; then
+    cpp_option="--cpp_out=."
+    cpp_out_option="--grpc_out=."
+    cpp_grpc_option="--plugin=protoc-gen-grpc=`which grpc_cpp_plugin`"
+  fi
+
+  if [[ "${WITH_GO}" -eq 1 ]]; then
+    # go_tag_option="--go-tag_out=${source_relative_option}"
+    go_out_option="--go_out=."
+    go_opt_option="--go_opt=paths=source_relative"
+    go_grpc_option="--go-grpc_out=${source_relative_option}"
+  fi
+
+  # 打印最终 protoc 调用命令，便于排查 proto 生成问题。
+  echo "+ protoc ${proto_headers} ${go_out_option} ${go_tag_option} ${go_opt_option} ${go_grpc_option} ${grpc_gateway_option} ${cpp_out_option} ${cpp_option} ${doc_option} ${doc_out_option} ${cpp_grpc_option} ${proto}"
+  protoc ${proto_headers} ${go_out_option} ${go_tag_option} ${go_opt_option} ${go_grpc_option} ${grpc_gateway_option} ${cpp_out_option} ${cpp_option} ${doc_option} ${doc_out_option} ${cpp_grpc_option} "${proto}"
+  #protoc -I . ${proto_headers} --go-tag_out=paths=source_relative:. --go-grpc_out=paths=source_relative:. --grpc-gateway_out=logtostderr=true,grpc_api_configuration=${api_conf_yaml},paths=source_relative:. --grpc-gateway_opt=allow_delete_body=true ${f}
+done
