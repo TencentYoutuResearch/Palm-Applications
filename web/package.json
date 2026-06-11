@@ -18,7 +18,7 @@
     "format:check": "prettier --check \"src/**/*.{ts,vue,js,json,css,scss,md}\""
   },
   "dependencies": {
-    "@babylonjs/core": "^7.34.0",
+    "@babylonjs/core": "^9.12.0",
     "@babylonjs/loaders": "^7.34.0",
     "@mediapipe/hands": "^0.4.1675469240",
     "axios": "^1.12.2",
