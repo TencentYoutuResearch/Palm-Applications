@@ -34,7 +34,7 @@ RUN go mod download
 RUN bash script/build.sh -t "palm-racer"
 
 # ---- Stage 3: 运行时镜像 ----
-FROM centos:7
+FROM centos:8
 
 # 修复 CentOS 7 EOL 后 yum 源不可用问题
 RUN sed -i 's|^mirrorlist=|#mirrorlist=|g' /etc/yum.repos.d/CentOS-*.repo \
