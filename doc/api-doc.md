@@ -160,7 +160,7 @@ Authorization: Bearer {your_api_token}
   "message": "ok",
   "requestId": "4d5912a82af144f8a982c2da031c1035",
   "data": {
-    "PalmId": "8db884f9-1fb8-44f5-bdaa-f98fdcb3cd47"
+    "PalmId": "your_palm_id"
   }
 }
 ```
