@@ -1,7 +1,7 @@
 # 🖐️ Palm Applications — 刷掌应用合集
 
 <p align="center">
-  <strong>使用刷掌api的趣味demo合集 | Fun demos using palm recognition API</strong>
+  <strong>基于手掌识别与体感交互的开源应用集合 | Open-source palm recognition & gesture interaction applications</strong>
 </p>
 
 <p align="center">
@@ -60,8 +60,6 @@
 ---
 
 ### 🏎️ [Palm Racer — 掌上赛车](./palm-racer/)
-
-> 🎮 **在线体验**：[https://open.intl.palm.tencent.com/palm-racer](https://open.intl.palm.tencent.com/palm-racer)
 
 **Palm Racer（掌上赛车）** 是一个开源的 3D 体感赛车游戏，通过手掌姿态追踪实现纯手势控制——无需手柄或键盘。支持刷掌注册、刷掌登录和活体防作弊检测。
 

@@ -1,0 +1,38 @@
+# Git
+.git
+.gitattributes
+
+# IDE & AI tools
+.idea
+.vscode
+.codebuddy
+.DS_Store
+.agent
+
+# Build outputs
+pack
+server/pack
+server/cmd/palm-racer/palm-racer
+
+# Dependencies (will be installed in Docker)
+web/node_modules
+
+# Logs
+*.log
+log
+server/log
+
+# Android (not needed for cloud deployment)
+android
+
+# Documentation (not needed in image)
+docs
+images
+*.md
+!README.md
+
+# Test & coverage
+coverage
+web/coverage
+*.test
+*.out
