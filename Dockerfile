@@ -15,7 +15,7 @@
 # =============================================================================
 
 # ---- Stage 1: 构建 Web 前端 ----
-FROM node:20-alpine AS web-builder
+FROM node:26-alpine AS web-builder
 
 WORKDIR /build/web
 COPY web/package.json web/package-lock.json ./
