@@ -1,0 +1,101 @@
+PalmDestiny
+Copyright (c) 2026 Tencent
+
+This project includes the following third-party software:
+
+================================================================================
+OpenCV (opencv-python-headless)
+--------------------------------------------------------------------------------
+License: Apache License 2.0
+Copyright (c) 2000-2024, Intel Corporation, all rights reserved.
+Copyright (c) 2009-2011, Willow Garage Inc., all rights reserved.
+Copyright (c) 2009-2016, NVIDIA Corporation, all rights reserved.
+Copyright (c) 2010-2013, Advanced Micro Devices, Inc., all rights reserved.
+Copyright (c) 2015-2024, OpenCV Foundation, all rights reserved.
+https://opencv.org/license/
+
+================================================================================
+scikit-image
+--------------------------------------------------------------------------------
+License: BSD-3-Clause
+Copyright (c) 2009-2024, the scikit-image team, all rights reserved.
+https://scikit-image.org/docs/stable/license.html
+
+================================================================================
+NumPy
+--------------------------------------------------------------------------------
+License: BSD-3-Clause
+Copyright (c) 2005-2024, NumPy Developers, all rights reserved.
+https://github.com/numpy/numpy/blob/main/LICENSE.txt
+
+================================================================================
+httpx
+--------------------------------------------------------------------------------
+License: BSD-3-Clause
+Copyright (c) 2019, Encode OSS Ltd.
+https://github.com/encode/httpx/blob/master/LICENSE.md
+
+================================================================================
+SQLAlchemy
+--------------------------------------------------------------------------------
+License: MIT License
+Copyright (c) 2005-2024, Michael Bayer and contributors
+https://github.com/sqlalchemy/sqlalchemy/blob/main/LICENSE
+
+================================================================================
+Uvicorn
+--------------------------------------------------------------------------------
+License: BSD-3-Clause
+Copyright (c) 2017, Encode OSS Ltd.
+https://github.com/encode/uvicorn/blob/master/LICENSE.md
+
+================================================================================
+Loguru
+--------------------------------------------------------------------------------
+License: MIT License
+Copyright (c) 2017, Delgan
+https://github.com/Delgan/loguru/blob/master/LICENSE
+
+================================================================================
+Pydantic / Pydantic-Settings
+--------------------------------------------------------------------------------
+License: MIT License
+Copyright (c) 2017-2024, Samuel Colvin and contributors
+https://github.com/pydantic/pydantic/blob/main/LICENSE
+
+================================================================================
+Font Awesome Free (via CDN)
+--------------------------------------------------------------------------------
+Icons: CC BY 4.0 License (https://creativecommons.org/licenses/by/4.0/)
+Fonts: SIL OFL 1.1 License (https://scripts.sil.org/OFL)
+Code: MIT License
+Copyright (c) Fonticons, Inc.
+https://fontawesome.com/license/free
+
+================================================================================
+Tailwind CSS (via CDN)
+--------------------------------------------------------------------------------
+License: MIT License
+Copyright (c) Tailwind Labs, Inc.
+https://github.com/tailwindlabs/tailwindcss/blob/master/LICENSE
+
+================================================================================
+html2canvas (via CDN)
+--------------------------------------------------------------------------------
+License: MIT License
+Copyright (c) 2012 Niklas von Hertzen
+https://github.com/niklasvh/html2canvas/blob/master/LICENSE
+
+================================================================================
+FastAPI
+--------------------------------------------------------------------------------
+License: MIT License
+Copyright (c) 2018 Sebastián Ramírez
+https://github.com/tiangolo/fastapi/blob/master/LICENSE
+
+================================================================================
+Pillow
+--------------------------------------------------------------------------------
+License: HPND License
+Copyright (c) 1995-2024, Fredrik Lundh and contributors
+https://github.com/python-pillow/Pillow/blob/main/LICENSE

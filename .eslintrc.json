@@ -1,0 +1,39 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+    "rules": {
+        "array-bracket-spacing": ["error", "never"],
+        "block-spacing": ["error", "always"],
+        "brace-style": ["error", "1tbs", { "allowSingleLine": true }],
+        "camelcase": ["error", { "properties": "never" }],
+        "comma-style": ["error", "last"],
+        "eol-last": ["error", "always"],
+        "func-call-spacing": ["error", "never"],
+        "max-len": ["warn", { "code": 200, "ignoreUrls": true, "ignoreStrings": true, "ignoreTemplateLiterals": true, "ignoreRegExpLiterals": true }],
+        "new-cap": ["error", { "newIsCap": true, "capIsNew": false }],
+        "no-array-constructor": "error",
+        "no-case-declarations": "error",
+        "no-const-assign": "error",
+        "no-dupe-class-members": "error",
+        "no-duplicate-imports": "error",
+        "no-eval": "error",
+        "no-loop-func": "error",
+        "no-mixed-operators": "warn",
+        "no-multi-assign": "error",
+        "no-multiple-empty-lines": ["error", { "max": 2, "maxEOF": 1 }],
+        "no-new-object": "error",
+        "no-useless-escape": "error",
+        "no-var": "error",
+        "nonblock-statement-body-position": ["error", "beside"],
+        "operator-linebreak": ["error", "before"],
+        "padded-blocks": ["error", "never"],
+        "prefer-template": "warn",
+        "no-console": "off"
+    }
+}
