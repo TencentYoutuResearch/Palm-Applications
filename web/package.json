@@ -1,0 +1,43 @@
+{
+  "name": "palm-racer-web",
+  "private": true,
+  "version": "2.0.0",
+  "type": "module",
+  "scripts": {
+    "copy:mediapipe": "node -e \"const fs=require('fs');const p='public/mediapipe';fs.mkdirSync(p,{recursive:true});['hands_solution_simd_wasm_bin.data','hands_solution_simd_wasm_bin.js','hands_solution_simd_wasm_bin.wasm','hands_solution_wasm_bin.js','hands_solution_wasm_bin.wasm','hands_solution_packed_assets_loader.js','hands_solution_packed_assets.data','hand_landmark_full.tflite','hand_landmark_lite.tflite','hands.binarypb'].forEach(f=>{const s='node_modules/@mediapipe/hands/'+f;if(fs.existsSync(s))fs.copyFileSync(s,p+'/'+f)});const hSrc='node_modules/@mediapipe/hands/hands.js';if(fs.existsSync(hSrc))fs.copyFileSync(hSrc,p+'/hands.min.js')\"",
+    "postinstall": "npm run copy:mediapipe",
+    "dev": "npm run copy:mediapipe && vite",
+    "build": "npm run copy:mediapipe && vue-tsc -b && vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint \"src/**/*.{ts,vue}\"",
+    "lint:fix": "eslint \"src/**/*.{ts,vue}\" --fix",
+    "format": "prettier --write \"src/**/*.{ts,vue,js,json,css,scss,md}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,vue,js,json,css,scss,md}\""
+  },
+  "dependencies": {
+    "@babylonjs/core": "^7.34.0",
+    "@babylonjs/loaders": "^7.34.0",
+    "@mediapipe/hands": "^0.4.1675469240",
+    "axios": "^1.12.2",
+    "pinia": "^3.0.3",
+    "qrcode.vue": "^3.8.1",
+    "vue": "^3.5.21",
+    "vue-i18n": "^11.1.12",
+    "vue-router": "^4.5.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-basic-ssl": "^2.1.0",
+    "@vitejs/plugin-vue": "^5.2.0",
+    "@vitest/coverage-v8": "^4.1.4",
+    "@vue/test-utils": "^2.4.6",
+    "happy-dom": "^20.8.9",
+    "sass": "^1.93.2",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.0",
+    "vitest": "^4.1.4",
+    "vue-tsc": "^2.2.0"
+  }
+}
