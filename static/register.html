@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<base href="/palm-destiny/static/">
+<script>window.PALM_BASE_PATH="/palm-destiny";</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>掌纹注册 · 掌相奇缘</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style-part2.css">
+  <link rel="stylesheet" href="register.css">
+</head>
+
+<body class="register-body">
+  <!-- 装饰星空背景（与首页同款） -->
+  <div class="stars-bg" aria-hidden="true">
+    <div class="star star-1"></div>
+    <div class="star star-2"></div>
+    <div class="star star-3"></div>
+    <div class="star star-4"></div>
+    <div class="star star-5"></div>
+    <div class="star star-6"></div>
+  </div>
+
+  <main class="register-page">
+    <!-- 顶部导航 -->
+    <header class="register-page-header">
+      <a href="index.html" class="register-back-btn" id="register-back-btn">
+        <i class="fas fa-chevron-left"></i>
+        <span>返回首页</span>
+      </a>
+      <div class="register-page-title">
+        <i class="fas fa-fingerprint"></i>
+        <span>掌纹注册</span>
+      </div>
+      <div class="register-page-spacer"></div>
+    </header>
+
+    <!-- 主体卡片 -->
+    <section class="register-page-body">
+      <div class="register-card glass-card">
+        <p class="register-modal-tip">
+          将你的「用户ID」与本人掌纹绑定到掌纹库，下次刷掌算命时可自动识别身份。
+        </p>
+
+        <!-- 步骤指示器 -->
+        <div class="register-step-bar">
+          <div class="register-step-dot active" data-step="1">
+            <span class="dot-num">1</span>
+            <span class="dot-label">填写用户ID</span>
+          </div>
+          <div class="register-step-line"></div>
+          <div class="register-step-dot" data-step="2">
+            <span class="dot-num">2</span>
+            <span class="dot-label">拍摄掌纹</span>
+          </div>
+          <div class="register-step-line"></div>
+          <div class="register-step-dot" data-step="3">
+            <span class="dot-num">3</span>
+            <span class="dot-label">完成绑定</span>
+          </div>
+        </div>
+
+        <!-- 步骤1：输入用户ID -->
+        <div class="register-step" id="register-step-id">
+          <label class="register-label" for="register-user-id">
+            <i class="fas fa-id-badge"></i> 用户ID（如英文名 / 工号）
+          </label>
+          <input
+            type="text"
+            id="register-user-id"
+            class="register-input"
+            placeholder="例如：kanzhou"
+            maxlength="64"
+            autocomplete="off"
+          >
+          <p class="register-input-hint">仅支持英文、数字、下划线、中划线，长度1~64位</p>
+          <button id="register-btn-next" class="btn-primary btn-full">
+            下一步：拍摄掌纹 <i class="fas fa-arrow-right btn-arrow"></i>
+          </button>
+        </div>
+
+        <!-- 步骤2：拍摄/上传掌纹 -->
+        <div class="register-step" id="register-step-capture" style="display:none;">
+          <div class="register-userid-display">
+            <span class="register-userid-label">当前用户ID：</span>
+            <span class="register-userid-value" id="register-userid-value">-</span>
+            <button class="register-userid-edit" id="register-userid-edit" title="修改">
+              <i class="fas fa-pen"></i>
+            </button>
+          </div>
+
+          <div class="register-scan-area" id="register-scan-area">
+            <video id="register-camera-video" autoplay playsinline muted></video>
+            <div class="register-scan-overlay">
+              <div class="register-scan-frame">
+                <div class="corner tl"></div>
+                <div class="corner tr"></div>
+                <div class="corner bl"></div>
+                <div class="corner br"></div>
+              </div>
+            </div>
+            <img id="register-preview-img" class="register-preview-img" style="display:none;" alt="掌纹预览">
+            <canvas id="register-canvas" style="display:none;"></canvas>
+          </div>
+
+          <p class="register-shoot-tip">
+            <i class="fas fa-lightbulb"></i> 请将手掌平展放入扫描框中，光线充足、纹路清晰可提升识别成功率
+          </p>
+
+          <div class="register-action-row">
+            <button id="register-btn-capture" class="btn-primary btn-full">
+              <i class="fas fa-camera"></i> 拍照采集
+            </button>
+            <button id="register-btn-recapture" class="btn-secondary btn-full" style="display:none;">
+              <i class="fas fa-redo"></i> 重新拍照
+            </button>
+          </div>
+
+          <!-- 上传备选 -->
+          <input
+            type="file"
+            id="register-file-input"
+            accept="image/jpeg,image/png,image/webp,image/bmp"
+            capture="environment"
+            style="display:none;"
+          >
+          <button id="register-btn-upload" class="register-upload-link">
+            <i class="fas fa-image"></i> 摄像头不可用？从相册选择手掌照片
+          </button>
+
+          <!-- 提交注册 -->
+          <button id="register-btn-submit" class="btn-primary btn-full pulse-btn" style="display:none;">
+            <i class="fas fa-cloud-upload-alt"></i> 提交注册
+          </button>
+
+          <!-- 状态/结果 -->
+          <div id="register-status-box" class="register-status-box" style="display:none;">
+            <div class="register-status-icon" id="register-status-icon">
+              <i class="fas fa-spinner fa-spin"></i>
+            </div>
+            <div class="register-status-text" id="register-status-text">正在提交...</div>
+          </div>
+        </div>
+
+        <!-- 步骤3：完成（成功 / 失败 两态互斥） -->
+        <div class="register-step" id="register-step-done" style="display:none;">
+
+          <!-- 成功态 -->
+          <div class="register-done-success" id="register-done-success">
+            <div class="register-done-icon success">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <h3 class="register-done-title">掌纹注册成功！</h3>
+            <p class="register-done-desc">
+              用户ID <span class="register-done-userid" id="register-done-userid">-</span>
+              已与本人掌纹完成绑定。下次进入"刷掌算命"时，系统将自动识别您的身份。
+            </p>
+            <div class="register-done-actions">
+              <a href="index.html" class="btn-primary btn-full">
+                <i class="fas fa-home"></i> 返回首页
+              </a>
+              <button id="register-btn-again" class="btn-secondary btn-full">
+                <i class="fas fa-redo"></i> 再注册一个用户
+              </button>
+            </div>
+          </div>
+
+          <!-- 失败态 -->
+          <div class="register-done-fail" id="register-done-fail" style="display:none;">
+            <div class="register-done-icon fail">
+              <i class="fas fa-times-circle"></i>
+            </div>
+            <h3 class="register-done-title fail">注册失败</h3>
+            <p class="register-done-desc">
+              用户ID <span class="register-done-userid" id="register-fail-userid">-</span>
+              的掌纹未能完成绑定，详细原因如下：
+            </p>
+
+            <!-- 错误详情卡片 -->
+            <div class="register-fail-detail" id="register-fail-detail">
+              <div class="register-fail-row">
+                <span class="register-fail-label"><i class="fas fa-exclamation-triangle"></i> 错误信息</span>
+                <span class="register-fail-value" id="register-fail-message">-</span>
+              </div>
+              <div class="register-fail-row" id="register-fail-code-row" style="display:none;">
+                <span class="register-fail-label"><i class="fas fa-hashtag"></i> 错误码</span>
+                <span class="register-fail-value mono" id="register-fail-code">-</span>
+              </div>
+              <div class="register-fail-row" id="register-fail-trace-row" style="display:none;">
+                <span class="register-fail-label"><i class="fas fa-fingerprint"></i> TraceId</span>
+                <span class="register-fail-value mono" id="register-fail-trace">-</span>
+              </div>
+            </div>
+
+            <p class="register-fail-tip" id="register-fail-tip">
+              <i class="fas fa-lightbulb"></i>
+              <span id="register-fail-tip-text">请尝试重新拍摄一张光线充足、纹路清晰的手掌照片，或换一个用户ID再试。</span>
+            </p>
+
+            <div class="register-done-actions">
+              <button id="register-btn-fail-recapture" class="btn-primary btn-full">
+                <i class="fas fa-redo"></i> 重新拍摄掌纹
+              </button>
+              <button id="register-btn-fail-changeid" class="btn-secondary btn-full">
+                <i class="fas fa-id-badge"></i> 修改用户ID
+              </button>
+              <a href="index.html" class="register-fail-home-link">
+                <i class="fas fa-home"></i> 返回首页
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <p class="register-footer-tip">
+        🛡️ 您的掌纹仅用于身份识别，不会用于其他用途。
+      </p>
+    </section>
+  </main>
+
+  <script src="register.js"></script>
+</body>
+</html>

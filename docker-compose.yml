@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  glasswiper:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: glasswiper-app
+    ports:
+      - "8000:3000"  # 主机端口:容器端口
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      # 掌纹网关配置（根据需要取消注释并设置实际值）
+      # - PALM_HOST=your-palm-api-host.example.com
+      # - PALM_BEARER_TOKEN=your_bearer_token_here
+      # - PALM_USER_ID=your_user_id_here
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
